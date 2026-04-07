@@ -5,3 +5,4 @@ Projet Dev M1 MIAGE
 - Alexandre Crespin
 - Guilherme Sampaio
 - Sacha Brezisky
+- Walaedine Sekoub
