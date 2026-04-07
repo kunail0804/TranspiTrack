@@ -7,5 +7,5 @@ Projet Dev M1 MIAGE
 - Sacha Brezisky
 - Walaedine Sekoub
 
-## Sonarcube
+## SonarQube
 https://sonarcloud.io/summary/overall?id=kunail0804_TranspiTrack&branch=main
