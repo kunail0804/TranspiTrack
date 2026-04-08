@@ -28,9 +28,9 @@ public class UserController {
         Model model, 
         HttpSession session){
 
-        String email = (String) session.getAttribute("userEmail");
+        Long userId = (Long) session.getAttribute("userId");
 
-        if(email!=null){
+        if(userId!=null){
             //TODO : à modifier à l'avenir quand la page sera définie
            return "dashboard";
         }
@@ -79,11 +79,11 @@ public class UserController {
             return "formCreate";
         }
 
-        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city); 
+        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city);
 
-        userService.createUser(newUser);
+        User savedUser = userService.createUser(newUser);
 
-        session.setAttribute("userEmail", email);
+        session.setAttribute("userId", savedUser.getId());
 
         model.addAttribute("message", "Création compte réussie");
 

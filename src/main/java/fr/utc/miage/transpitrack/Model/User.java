@@ -80,19 +80,74 @@ public class User {
 
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
     public String getCity() {
         return city;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Gender getGender() {
+        return gender;
     }
 
-    public void setCity(String city) {
-        this.city = city;
+    public double getWeight() {
+        return weight;
     }
 
-    
+    public List<UserSport> getSportsPreference() {
+        return sportsPreference;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+
+    public List<Goal> getGoals() {
+        return goals;
+    }
+
+    public List<Commentary> getComments() {
+        return comments;
+    }
+
+    public List<Challenge> getCreatedChallenges() {
+        return createdChallenges;
+    }
+
+    public List<Challenge> getJoinedChallenges() {
+        return joinedChallenges;
+    }
+
     
 
 }
