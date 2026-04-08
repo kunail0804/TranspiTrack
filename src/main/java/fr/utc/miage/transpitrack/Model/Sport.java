@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Sport {
@@ -20,6 +21,9 @@ public class Sport {
 
     @ManyToMany(mappedBy = "sports")
     private List<Goal> goals;
+
+    @OneToMany(mappedBy = "sport")
+    private List<UserSport> users;
 
     public Sport(Long id, String name, String description, List<Goal> goals) {
         this.id = id;
