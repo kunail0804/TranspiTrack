@@ -30,6 +30,8 @@ public class User {
     private int age;
     private double height;
 
+    private String city;
+
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
@@ -62,12 +64,10 @@ public class User {
     private List<Challenge> joinedChallenges;
 
 
-
-
     public User(){}
 
     public User(String firstName, String name, String email,
-                String password, int age, double height, Gender gender, double weight){
+                String password, int age, double height, Gender gender, double weight, String city){
 
         this.firstName =firstName;
         this.name = name;
@@ -77,7 +77,78 @@ public class User {
         this.height = height;
         this.gender = gender;
         this.weight=weight;
+        this.city = city;
 
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public double getWeight() {
+        return weight;
+    }
+
+    public List<UserSport> getSportsPreference() {
+        return sportsPreference;
+    }
+
+    public List<Activity> getActivities() {
+        return activities;
+    }
+
+    public List<User> getFriends() {
+        return friends;
+    }
+
+    public List<Goal> getGoals() {
+        return goals;
+    }
+
+    public List<Commentary> getComments() {
+        return comments;
+    }
+
+    public List<Challenge> getCreatedChallenges() {
+        return createdChallenges;
+    }
+
+    public List<Challenge> getJoinedChallenges() {
+        return joinedChallenges;
+    }
+
+    
 
 }
