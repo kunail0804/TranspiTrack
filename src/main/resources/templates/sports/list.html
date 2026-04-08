@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste Sports</title>
+</head>
+<body>
+<h1>Sports</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Nom</th>
+        <th>Type</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sport : ${sports}">
+        <td th:text="${sport.name}">Sport Name</td>
+        <td th:if="${sport.sportType != null}" th:text="${sport.sportType.name}">Sport Type</td>
+    </tr>
+    </tbody>
+</table>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste Activités</title>
+</head>
+<body>
+<h1>Ajouter Activité</h1>
+<form th:action="@{/activities/add}" th:object="${activity}" method="post">
+    <label for="date">Date:</label>
+    <input type="date" id="date" th:field="*{date}" required><br><br>
+    <label for="duration">Duration (minutes):</label>
+    <input type="number" id="duration" th:field="*{duration}" required><br><br>
+    <label for="distance">Distance (km):</label>
+    <input type="number" step="0.01" id="distance" th:field="*{distance}" required><br><br>
+    <label for="evaluation">Evaluation:</label>
+    <input type="text" id="evaluation" th:field="*{evaluation}"><br><br>
+    <label for="sport">Sport:</label>
+    <select id="sport" th:field="*{sport}" required>
+        <option th:each="sport : ${sports}" th:value="${sport.id}" th:text="${sport.name}">Sport Name</option>
+    </select><br><br>
+
+    <div th:if="${error}">
+        <p style="color:red;" th:text="${error}"></p>
+    </div>
+    <button type="submit">Ajouter Activité</button>
+</form>
+</body>
+</html>

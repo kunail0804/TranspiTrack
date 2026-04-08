@@ -30,12 +30,52 @@ public class Sport {
     @JoinColumn(name = "sport_type_id", nullable = false)
     private SportType sportType;
 
+    public Sport() {
+    }
+
     public Sport(Long id, String name, String description, List<Goal> goals) {
         this.id = id;
         this.name = name;
         this.description = description;
         //this.goals = goals;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<UserSport> getUsers() {
+        return users;
+    }
+
+    public void setUsers(List<UserSport> users) {
+        this.users = users;
+    }
+
+    public SportType getSportType() {
+        return sportType;
+    }
+
+    public void setSportType(SportType sportType) {
+        this.sportType = sportType;
+    }
+
 
     
 }
