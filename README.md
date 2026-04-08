@@ -9,3 +9,9 @@ Projet Dev M1 MIAGE
 
 ## SonarQube
 https://sonarcloud.io/summary/overall?id=kunail0804_TranspiTrack&branch=main
+
+## Interprétation du sujet
+<img width="1174" height="180" alt="image" src="https://github.com/user-attachments/assets/ec569bfa-9d97-4552-b3fc-d55601757521" />
+Nous avons décidé de mettre les activités comme des éléments que les utilisateurs écrivent après les avoir réalisé.
+Cela signifie donc que les données météos ne sont plus liées aux activités.
+Nous allons sauvegarder les données météo du jour au moment de la création de l'activité et en plus de cela proposer un widget de météo dans le dashboard.
