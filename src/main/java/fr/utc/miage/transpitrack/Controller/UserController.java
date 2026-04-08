@@ -61,7 +61,6 @@ public class UserController {
             model.addAttribute("message", "Age ne peut pas être négatif");
             return "formCreate";
         }
-
         if(height<0){
             model.addAttribute("message", "Taille ne peut pas être négatif");
             return "formCreate";
