@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
@@ -84,6 +85,8 @@ class UserServiceTest {
 
     @Test
     void deleteUserById() {
+        doNothing().when(userRepository).deleteById(1L);
+
         userService.deleteUserById(1L);
 
         verify(userRepository).deleteById(1L);
