@@ -113,6 +113,30 @@ public class User {
         return gender;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
     public double getWeight() {
         return weight;
     }
@@ -141,34 +165,6 @@ public class User {
         return joinedChallenges;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
     public void setGender(Gender gender) {
         this.gender = gender;
     }
@@ -177,6 +173,7 @@ public class User {
         this.weight = weight;
     }
 
-    
-
+    public void setCity(String city) {
+        this.city = city;
+    }
 }

@@ -90,11 +90,11 @@ public class UserController {
             return "formCreate";
         }
 
-        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city); 
+        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city);
 
-        userService.createUser(newUser);
+        User savedUser = userService.createUser(newUser);
 
-        session.setAttribute("userEmail", email);
+        session.setAttribute("userId", savedUser.getId());
 
         model.addAttribute("message", "Création compte réussie");
 
