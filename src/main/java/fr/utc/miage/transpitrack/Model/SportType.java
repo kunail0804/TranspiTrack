@@ -6,10 +6,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 
 @Entity
-public class Sport {
+public class SportType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,15 +18,18 @@ public class Sport {
     private String name;
     private String description;
 
-    @ManyToMany(mappedBy = "sports")
-    private List<Goal> goals;
+    @OneToMany(mappedBy = "sportType")
+    private List<Sport> sports;
 
-    public Sport(Long id, String name, String description, List<Goal> goals) {
+    public SportType(Long id, String name, String description, List<Sport> sports) {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.goals = goals;
+        this.sports = sports;
     }
-
     
 }
+
+
+
+
