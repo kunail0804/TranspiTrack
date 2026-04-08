@@ -63,12 +63,10 @@ public class User {
     private List<Challenge> joinedChallenges;
 
 
-
-
     public User(){}
 
     public User(String firstName, String name, String email,
-                String password, int age, double height, Gender gender, double weight){
+                String password, int age, double height, Gender gender, double weight, String city){
 
         this.firstName =firstName;
         this.name = name;
@@ -78,6 +76,7 @@ public class User {
         this.height = height;
         this.gender = gender;
         this.weight=weight;
+        this.city = city;
 
     }
 
