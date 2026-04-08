@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 public class Challenge {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "challenge_seq")
     private Long id;
 
     private String title;

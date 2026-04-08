@@ -13,20 +13,20 @@ import jakarta.persistence.Table;
 public class Commentary {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "commentary_seq")
     private Long id;
 
     private String message;
 
     @ManyToOne
-    private User autor;
+    private User author;
 
     @OneToOne
     private Activity activity;
 
     public Commentary(String message, User autor, Activity activity) {
         this.message = message;
-        this.autor = autor;
+        this.author = autor;
         this.activity = activity;
     }
 

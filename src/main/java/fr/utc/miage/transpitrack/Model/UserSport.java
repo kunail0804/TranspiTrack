@@ -15,7 +15,7 @@ import jakarta.persistence.Table;
 public class UserSport {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "userSport_seq")
     private Long id;
 
     @ManyToOne

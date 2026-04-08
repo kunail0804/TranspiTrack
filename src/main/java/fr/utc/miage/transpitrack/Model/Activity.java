@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 public class Activity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activiter_seq")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_seq")
     private Long id;
 
     private Date date;

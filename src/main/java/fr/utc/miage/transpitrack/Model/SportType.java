@@ -12,7 +12,7 @@ import jakarta.persistence.OneToMany;
 public class SportType {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator = "sportType_seq")
     private Long id;
 
     private String name;
