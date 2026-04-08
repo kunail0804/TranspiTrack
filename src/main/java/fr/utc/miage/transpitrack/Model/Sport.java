@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 
 @Entity
@@ -19,8 +18,8 @@ public class Sport {
     private String name;
     private String description;
 
-    @ManyToMany(mappedBy = "sports")
-    private List<Goal> goals;
+    //@ManyToMany(mappedBy = "sports")
+    //private List<Goal> goals;
 
     @OneToMany(mappedBy = "sport")
     private List<UserSport> users;
@@ -29,7 +28,7 @@ public class Sport {
         this.id = id;
         this.name = name;
         this.description = description;
-        this.goals = goals;
+        //this.goals = goals;
     }
 
     

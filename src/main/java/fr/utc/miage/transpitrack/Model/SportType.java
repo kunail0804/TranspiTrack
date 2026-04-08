@@ -20,6 +20,7 @@ public class SportType {
 
     @OneToMany(mappedBy = "sportType")
     private List<Sport> sports;
+    
 
     public SportType(Long id, String name, String description, List<Sport> sports) {
         this.id = id;
