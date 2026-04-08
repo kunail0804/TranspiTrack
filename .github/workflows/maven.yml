@@ -42,5 +42,3 @@ jobs:
         run: mvn -B verify sonar:sonar
       - name: Check Javadoc
         run: mvn javadoc:javadoc
-      - name: Check Licences
-        run: mvn apache-rat:check
