@@ -23,7 +23,7 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/users")
 public class UserController {
-
+   
     @Autowired
     UserService userService;
 
@@ -85,16 +85,16 @@ public class UserController {
 
         User userExist = userService.getUserByEmail(email);
 
-        if (userExist != null) {
+        if(userExist!=null){
             model.addAttribute("message", "email dejas existant");
-            return "users/formCreate";
+            return "formCreate";
         }
 
-        User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
+        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city); 
 
-        User savedUser = userService.createUser(newUser);
+        userService.createUser(newUser);
 
-        session.setAttribute("userId", savedUser.getId());
+        session.setAttribute("userEmail", email);
 
         model.addAttribute("message", "Création compte réussie");
 
