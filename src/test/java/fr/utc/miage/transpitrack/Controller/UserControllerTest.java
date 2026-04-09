@@ -35,7 +35,7 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
 
     @Test
-    void formCreate_shouldReturnDashboardWhenUserAlreadyLoggedIn() {
+    void formCreateShouldReturnDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
         String view = userController.formCreate(null, model, session);
@@ -44,9 +44,7 @@ class UserControllerTest {
     }
 
     @Test
-    void formCreate_shouldReturnFormCreateWhenNotLoggedIn() {
-        when(session.getAttribute("userId")).thenReturn(null);
-
+    void formCreateShouldReturnFormCreateWhenNotLoggedIn() {
         String view = userController.formCreate("Bienvenue", model, session);
 
         assertEquals("formCreate", view);
@@ -58,7 +56,7 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
 
     @Test
-    void createUser_shouldReturnFormCreateWhenEmailFormatInvalid() {
+    void createUserShouldReturnFormCreateWhenEmailFormatInvalid() {
         String view = userController.createUser(
                 "Alice", "Dupont", "email-invalide", "secret",
                 25, 165.0, "FEMALE", 60.0, "Paris", model, session);
@@ -68,7 +66,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_shouldReturnFormCreateWhenAgeIsNegative() {
+    void createUserShouldReturnFormCreateWhenAgeIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
                 -1, 165.0, "FEMALE", 60.0, "Paris", model, session);
@@ -78,7 +76,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_shouldReturnFormCreateWhenHeightIsNegative() {
+    void createUserShouldReturnFormCreateWhenHeightIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, -1.0, "FEMALE", 60.0, "Paris", model, session);
@@ -88,7 +86,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_shouldReturnFormCreateWhenWeightIsNegative() {
+    void createUserShouldReturnFormCreateWhenWeightIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, 165.0, "FEMALE", -1.0, "Paris", model, session);
@@ -98,7 +96,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_shouldReturnFormCreateWhenEmailAlreadyExists() {
+    void createUserShouldReturnFormCreateWhenEmailAlreadyExists() {
         when(userService.getUserByEmail("alice@example.com")).thenReturn(new User());
 
         String view = userController.createUser(
@@ -110,7 +108,7 @@ class UserControllerTest {
     }
 
     @Test
-    void createUser_shouldReturnDashboardWhenUserCreatedSuccessfully() {
+    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() {
         User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
         when(userService.createUser(any(User.class))).thenReturn(savedUser);
 
