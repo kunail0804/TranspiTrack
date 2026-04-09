@@ -6,7 +6,7 @@
 </head>
 <body>
 <p th:text = "${message}"></p>
-<form action="/user/createUser" method = "POST">
+<form action="/users/createUser" method = "POST">
     Prenom : <input type="text" placeholder = "Entrez votre prenom" name="firstName" id="firstNameUser" required/><br>
     nom : <input type="text" placeholder = "Entrez votre nom" name="name" id="NameUser" required/><br>
     Age : <input type="number" placeholder = "Entrez votre age" name="age" id="ageUser" required/><br>
@@ -25,7 +25,7 @@
     <button type="submit">Creer un nouveau compte</button>
 </form>
 
-<a th:href="@{/user/formLogin}">
+<a th:href="@{/users/formLogin}">
     <button>Se connecter</button>
 </a>
 </body>
