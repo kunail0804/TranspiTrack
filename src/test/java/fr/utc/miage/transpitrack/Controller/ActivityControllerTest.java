@@ -2,25 +2,28 @@ package fr.utc.miage.transpitrack.Controller;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -144,5 +147,35 @@ class ActivityControllerTest {
 
         assertEquals("redirect:/activities", view);
         verify(activityService).save(activity);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /activities/listActivitiesUser
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void listActivitiesUser_shouldReturnListViewWithActivitiesSortedByDateDesc() {
+        Long userId = 1L;
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        Activity older = new Activity();
+        older.setDate(LocalDate.of(2024, 1, 1));
+        Activity newer = new Activity();
+        newer.setDate(LocalDate.of(2024, 6, 1));
+        
+        when(activityService.getActivitiesByUserId(userId))
+            .thenReturn(Arrays.asList(older, newer));
+
+        String view = activityController.listActivitiesUser(model, session);
+
+        assertEquals("activities/list", view);
+
+        ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
+        verify(model).addAttribute(eq("activities"), captor.capture());
+        List<Activity> sortedActivities = captor.getValue();
+
+        assertEquals(2, sortedActivities.size());
+        assertEquals(newer, sortedActivities.get(0));
+        assertEquals(older, sortedActivities.get(1));
     }
 }
