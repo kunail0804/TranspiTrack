@@ -1,5 +1,7 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -132,6 +134,26 @@ public class UserController {
 
         //TODO : à modifier à l'avenir quand la page sera définie
         return "users/dashboard";
+    }
+
+    @GetMapping("/search")
+    public String searchUser(@RequestParam(required = false) String query,
+                             Model model,
+                             HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/user/formLogin";
+        }
+
+        if (query != null && !query.isBlank()) {
+            model.addAttribute("users", userService.searchUsers(query));
+        } else {
+            model.addAttribute("users", List.of());
+        }
+
+        model.addAttribute("query", query);
+        return "search/searchUser";
     }
 
     @GetMapping("/logout")
