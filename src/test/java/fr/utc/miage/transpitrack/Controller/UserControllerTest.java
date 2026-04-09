@@ -133,67 +133,6 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // GET /user/formLogin
-    // ──────────────────────────────────────────────────────────────
-
-    @Test
-    void formLoginShouldReturnDashboardWhenUserAlreadyLoggedIn() {
-        when(session.getAttribute("userId")).thenReturn(1L);
-
-        String view = userController.formLogin(null, model, session);
-
-        assertEquals("dashboard", view);
-    }
-
-    @Test
-    void formLoginShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.formLogin("Bienvenue", model, session);
-
-        assertEquals("formLogin", view);
-        verify(model).addAttribute("message", "Bienvenue");
-    }
-
-    // ──────────────────────────────────────────────────────────────
-    // POST /user/loginUser
-    // ──────────────────────────────────────────────────────────────
-
-    @Test
-    void loginUserShouldReturnFormLoginWhenEmailDoesNotExist() {
-        String view = userController.loginUser("unknown@example.com", "secret", model, session);
-
-        assertEquals("formLogin", view);
-        verify(model).addAttribute("message", "email ou mots de passe incorrect");
-    }
-
-    @Test
-    void loginUserShouldReturnFormLoginWhenPasswordIsInvalid() {
-        User user = new User();
-        user.setPassword(encoder.encode("secret"));
-        when(userService.getUserByEmail("alice@example.com")).thenReturn(user);
-
-        String view = userController.loginUser("alice@example.com", "wrong", model, session);
-
-        assertEquals("formLogin", view);
-        verify(model).addAttribute("message", "email ou mots de passe incorrect");
-    }
-
-    @Test
-    void loginUserShouldReturnDashboardWhenCredentialsAreValid() throws Exception {
-        User user = new User();
-        Field idField = User.class.getDeclaredField("id");
-        idField.setAccessible(true);
-        idField.set(user, 1L);
-        user.setPassword(encoder.encode("secret"));
-        when(userService.getUserByEmail("alice@example.com")).thenReturn(user);
-
-        String view = userController.loginUser("alice@example.com", "secret", model, session);
-
-        assertEquals("dashboard", view);
-        verify(session).setAttribute("userId", 1L);
-        verify(model).addAttribute("message", "Connexion compte réussie");
-    }
-
-    // ──────────────────────────────────────────────────────────────
     // GET /user/search
     // ──────────────────────────────────────────────────────────────
 
@@ -243,14 +182,145 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // GET /user/logout
+    // GET /user/formUpdate
     // ──────────────────────────────────────────────────────────────
 
     @Test
-    void logoutPageShouldInvalidateSessionAndReturnFormLogin() {
-        String view = userController.logoutPage(session);
+    void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.formUpdate(null, model, session);
 
-        verify(session).invalidate();
         assertEquals("formLogin", view);
+    }
+
+    @Test
+    void formUpdateShouldReturnFormUpdateWithUserWhenLoggedIn() {
+        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        String view = userController.formUpdate("hello", model, session);
+
+        assertEquals("formUpdate", view);
+        verify(model).addAttribute("message", "hello");
+        verify(model).addAttribute("user", user);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /user/updateUser
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenEmailFormatInvalid() {
+        String view = userController.updateUser(
+                "Alice", "Dupont", "email-invalide", "secret",
+                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+
+        assertEquals("formUpdate", view);
+        verify(model).addAttribute("message", "Email n'est pas au bon format");
+    }
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenAgeIsNegative() {
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "secret",
+                -1, 165.0, "FEMALE", 60.0, "Paris", model, session);
+
+        assertEquals("formUpdate", view);
+        verify(model).addAttribute("message", "Age ne peut pas être négatif");
+    }
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenHeightIsNegative() {
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "secret",
+                25, -1.0, "FEMALE", 60.0, "Paris", model, session);
+
+        assertEquals("formUpdate", view);
+        verify(model).addAttribute("message", "Taille ne peut pas être négatif");
+    }
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenWeightIsNegative() {
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "secret",
+                25, 165.0, "FEMALE", -1.0, "Paris", model, session);
+
+        assertEquals("formUpdate", view);
+        verify(model).addAttribute("message", "Poids ne peut pas être négatif");
+    }
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenNewEmailAlreadyTaken() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(userService.getUserByEmail("newemail@example.com")).thenReturn(new User());
+
+        String view = userController.updateUser(
+                "Alice", "Dupont", "newemail@example.com", "secret",
+                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+
+        assertEquals("formUpdate", view);
+        verify(model).addAttribute("message", "email déja existant");
+    }
+
+    @Test
+    void updateUserShouldUpdateAndReturnDashboardWhenEmailChangedAndFree() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "newemail@example.com", "",
+                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+
+        assertEquals("dashboard", view);
+        verify(userService).updateUser(actualUser);
+        verify(model).addAttribute("message", "Modification du compte réussie");
+    }
+
+    @Test
+    void updateUserShouldEncodePasswordWhenEmailChangedAndPasswordNotBlank() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "newemail@example.com", "newpassword",
+                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+
+        assertEquals("dashboard", view);
+        verify(userService).updateUser(actualUser);
+    }
+
+    @Test
+    void updateUserShouldUpdateAndReturnDashboardWhenEmailUnchanged() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "alice@example.com", "",
+                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+
+        assertEquals("dashboard", view);
+        verify(userService).updateUser(actualUser);
+        verify(model).addAttribute("message", "Modification du compte réussie");
+    }
+
+    @Test
+    void updateUserShouldEncodePasswordWhenEmailUnchangedAndPasswordNotBlank() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "alice@example.com", "newpassword",
+                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+
+        assertEquals("dashboard", view);
+        verify(userService).updateUser(actualUser);
     }
 }
