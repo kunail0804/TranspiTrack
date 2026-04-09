@@ -133,7 +133,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/search
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void searchUserShouldRedirectToLoginWhenNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
@@ -182,7 +181,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/formUpdate
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.formUpdate(null, model, session);
@@ -206,7 +204,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/updateUser
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void updateUserShouldReturnFormUpdateWhenEmailFormatInvalid() {
         String view = userController.updateUser(
