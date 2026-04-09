@@ -1,5 +1,6 @@
 package fr.utc.miage.transpitrack.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
@@ -37,7 +38,7 @@ public class User {
     private double weight;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserSport> sportsPreference;
+    private List<UserSport> sportsPreference = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -45,20 +46,19 @@ public class User {
         joinColumns = @JoinColumn(name = "user_id"),
         inverseJoinColumns = @JoinColumn(name = "friend_id")
     )
-    private List<User> friends;
+    private List<User> friends = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Goal> goals;
+    private List<Goal> goals = new ArrayList<>();
 
     @OneToMany(mappedBy = "author")
-    private List<Commentary> comments;
+    private List<Commentary> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "creator")
-    private List<Challenge> createdChallenges;
+    private List<Challenge> createdChallenges = new ArrayList<>();
 
     @ManyToMany
-    private List<Challenge> joinedChallenges;
-
+    private List<Challenge> joinedChallenges = new ArrayList<>();
 
     public User(){}
 

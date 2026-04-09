@@ -33,5 +33,28 @@ public class UserSport {
         this.level = level;
     } 
 
+    public UserSport() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public Sport getSport() {
+        return sport;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
     
 }
