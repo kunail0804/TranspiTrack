@@ -19,13 +19,13 @@
         <option value="FEMALE">F</option>
     </select>
     Email : <input type="text" placeholder = "Entrez votre email" name="email" id="emailUser" required/><br>
-    Mot de passe : <input type="text" placeholder = "Entrez votre mot de passe" name="password" id="passwordUser" required/><br>
+    Mot de passe : <input type="password" placeholder = "Entrez votre mot de passe" name="password" id="passwordUser" required/><br>
     Ville : <input type="text" placeholder = "Entrez votre nom de ville" name="city" id="cityUser" required/><br>
 
     <button type="submit">Creer un nouveau compte</button>
 </form>
 
-<a th:href="@{/user/formConnexion}">
+<a th:href="@{/user/formLogin}">
     <button>Se connecter</button>
 </a>
 </body>
