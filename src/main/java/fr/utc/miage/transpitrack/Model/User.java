@@ -165,15 +165,11 @@ public class User {
         return joinedChallenges;
     }
 
-    public void setGender(Gender gender) {
-        this.gender = gender;
-    }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
     public void setCity(String city) {
         this.city = city;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }
