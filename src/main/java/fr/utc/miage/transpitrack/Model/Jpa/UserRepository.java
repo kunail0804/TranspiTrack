@@ -15,6 +15,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.name = ?1 ")
     List<User> findUserByName(String name);
 
+    @Query("SELECT u FROM User u WHERE " +
+           "LOWER(u.firstName) LIKE LOWER(CONCAT('%', ?1, '%')) OR " +
+           "LOWER(u.name) LIKE LOWER(CONCAT('%', ?1, '%')) OR " +
+           "LOWER(CONCAT(u.firstName, ' ', u.name)) LIKE LOWER(CONCAT('%', ?1, '%'))")
+    List<User> searchByFullName(String query);
+
     @Query("SELECT u FROM User u WHERE u.email = ?1 ")
     User findByEmail(String email);
 
