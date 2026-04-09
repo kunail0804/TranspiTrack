@@ -21,6 +21,10 @@ public class UserService {
         return userRepository.findUserByName(name);
     }
 
+    public List<User> searchUsers(String query){
+        return userRepository.searchByFullName(query);
+    }
+
     public User getUserByEmail(String email){
         return userRepository.findByEmail(email);
     }
