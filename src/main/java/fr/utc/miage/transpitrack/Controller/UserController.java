@@ -1,19 +1,18 @@
 package fr.utc.miage.transpitrack.Controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import jakarta.servlet.http.HttpSession;
-
-import org.springframework.web.bind.annotation.PostMapping;
-
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.User;
+import jakarta.servlet.http.HttpSession;
 
 
 @Controller
@@ -22,6 +21,8 @@ public class UserController {
    
     @Autowired
     UserService userService;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @GetMapping("/formCreate")
     public String formCreate(@RequestParam(required=false) String message,
@@ -78,7 +79,7 @@ public class UserController {
             return "formCreate";
         }
 
-        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city);
+        User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
 
         User savedUser = userService.createUser(newUser);
 
@@ -89,5 +90,55 @@ public class UserController {
         //TODO : à modifier à l'avenir quand la page sera définie
         return "dashboard";
     }
-    
+
+    @GetMapping("/formLogin")
+    public String formLogin(@RequestParam(required=false) String message,
+        Model model, 
+        HttpSession session){
+
+        Long userId = (Long) session.getAttribute("userId");
+
+        if(userId!=null){
+            //TODO : à modifier à l'avenir quand la page sera définie
+           return "dashboard";
+        }
+        model.addAttribute("message", message);
+
+        return "formLogin";
+    }
+
+
+    @PostMapping("/loginUser")
+    public String loginUser(@RequestParam("email") String email,
+                            @RequestParam("password") String password,
+                            Model model,
+                            HttpSession session) {
+
+        User userLogin = userService.getUserByEmail(email);
+
+        if(userLogin==null){
+            model.addAttribute("message", "email ou mots de passe incorrect");
+            return "formLogin";
+        }
+
+        boolean isValid = encoder.matches(password, userLogin.getPassword());
+
+        if(!isValid){
+            model.addAttribute("message", "email ou mots de passe incorrect");
+            return "formLogin";
+        }
+
+        session.setAttribute("userId", userLogin.getId());
+
+        model.addAttribute("message", "Connexion compte réussie");
+
+        //TODO : à modifier à l'avenir quand la page sera définie
+        return "dashboard";
+    }
+
+    @GetMapping("/logout")
+    public String logoutPage(HttpSession session) {
+        session.invalidate();
+        return "formLogin";
+    }
 }

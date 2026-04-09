@@ -1,18 +1,22 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +33,8 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // ──────────────────────────────────────────────────────────────
     // GET /user/formCreate
@@ -108,8 +114,11 @@ class UserControllerTest {
     }
 
     @Test
-    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() {
-        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() throws Exception {
+        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(savedUser, 1L);
         when(userService.createUser(any(User.class))).thenReturn(savedUser);
 
         String view = userController.createUser(
@@ -120,5 +129,78 @@ class UserControllerTest {
         verify(userService).createUser(any(User.class));
         verify(session).setAttribute("userId", savedUser.getId());
         verify(model).addAttribute("message", "Création compte réussie");
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /user/formLogin
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void formLoginShouldReturnDashboardWhenUserAlreadyLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.formLogin(null, model, session);
+
+        assertEquals("dashboard", view);
+    }
+
+    @Test
+    void formLoginShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.formLogin("Bienvenue", model, session);
+
+        assertEquals("formLogin", view);
+        verify(model).addAttribute("message", "Bienvenue");
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /user/loginUser
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void loginUserShouldReturnFormLoginWhenEmailDoesNotExist() {
+        String view = userController.loginUser("unknown@example.com", "secret", model, session);
+
+        assertEquals("formLogin", view);
+        verify(model).addAttribute("message", "email ou mots de passe incorrect");
+    }
+
+    @Test
+    void loginUserShouldReturnFormLoginWhenPasswordIsInvalid() {
+        User user = new User();
+        user.setPassword(encoder.encode("secret"));
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(user);
+
+        String view = userController.loginUser("alice@example.com", "wrong", model, session);
+
+        assertEquals("formLogin", view);
+        verify(model).addAttribute("message", "email ou mots de passe incorrect");
+    }
+
+    @Test
+    void loginUserShouldReturnDashboardWhenCredentialsAreValid() throws Exception {
+        User user = new User();
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(user, 1L);
+        user.setPassword(encoder.encode("secret"));
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(user);
+
+        String view = userController.loginUser("alice@example.com", "secret", model, session);
+
+        assertEquals("dashboard", view);
+        verify(session).setAttribute("userId", 1L);
+        verify(model).addAttribute("message", "Connexion compte réussie");
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /user/logout
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void logoutPageShouldInvalidateSessionAndReturnFormLogin() {
+        String view = userController.logoutPage(session);
+
+        verify(session).invalidate();
+        assertEquals("formLogin", view);
     }
 }
