@@ -25,5 +25,9 @@ public class ActivityService {
         return activityRepository.findAll();
     }
 
-    
+    public List<Activity> getActivitiesByUserId(Long userId) {
+        return activityRepository.findByUserId(userId);
+    }
+
+
 }

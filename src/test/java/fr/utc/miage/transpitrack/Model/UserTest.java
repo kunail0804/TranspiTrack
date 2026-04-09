@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 
-public class UserTest {
+class UserTest {
 
     @Test
-    void getId_shouldReturnNull_whenNotPersisted() {
+    void getIdShouldReturnNullWhenNotPersisted() {
         User user = new User();
         assertNull(user.getId());
     }
