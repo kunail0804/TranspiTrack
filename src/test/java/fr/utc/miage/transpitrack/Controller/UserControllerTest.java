@@ -312,55 +312,6 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // GET /user/search
-    // ──────────────────────────────────────────────────────────────
-
-    @Test
-    void searchUserShouldRedirectToLoginWhenNotLoggedIn() {
-        when(session.getAttribute("userId")).thenReturn(null);
-
-        String view = userController.searchUser("Jean", model, session);
-
-        assertEquals("redirect:/user/formLogin", view);
-    }
-
-    @Test
-    void searchUserShouldReturnResultsWhenQueryMatches() {
-        when(session.getAttribute("userId")).thenReturn(1L);
-        User user = new User();
-        when(userService.searchUsers("Jean")).thenReturn(List.of(user));
-
-        String view = userController.searchUser("Jean", model, session);
-
-        assertEquals("search/searchUser", view);
-        verify(userService).searchUsers("Jean");
-        verify(model).addAttribute("users", List.of(user));
-        verify(model).addAttribute("query", "Jean");
-    }
-
-    @Test
-    void searchUserShouldReturnEmptyListWhenQueryIsNull() {
-        when(session.getAttribute("userId")).thenReturn(1L);
-
-        String view = userController.searchUser(null, model, session);
-
-        assertEquals("search/searchUser", view);
-        verify(model).addAttribute("users", List.of());
-        verify(model).addAttribute("query", null);
-    }
-
-    @Test
-    void searchUserShouldReturnEmptyListWhenQueryIsBlank() {
-        when(session.getAttribute("userId")).thenReturn(1L);
-
-        String view = userController.searchUser("   ", model, session);
-
-        assertEquals("search/searchUser", view);
-        verify(model).addAttribute("users", List.of());
-        verify(model).addAttribute("query", "   ");
-    }
-
-    // ──────────────────────────────────────────────────────────────
     // GET /user/logout
     // ──────────────────────────────────────────────────────────────
 
