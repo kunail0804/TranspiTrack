@@ -102,7 +102,7 @@ public class UserController {
         Long userId = (Long) session.getAttribute("userId");
 
         if(userId==null){
-            //TODO : à modifier à l'avenir quand la page sera définie
+            return "formLogin";
         }
         User user = userService.getUserById(userId);
         model.addAttribute("message", message);
