@@ -87,7 +87,7 @@ public class UserController {
 
         if(userExist!=null){
             model.addAttribute("message", "email dejas existant");
-            return "formCreate";
+            return "users/formCreate";
         }
 
         User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
