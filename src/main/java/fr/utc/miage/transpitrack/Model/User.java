@@ -172,4 +172,8 @@ public class User {
     public void setGender(Gender gender) {
         this.gender = gender;
     }
+
+    public void setWeight(double weight) {
+        this.weight = weight;
+    }
 }
