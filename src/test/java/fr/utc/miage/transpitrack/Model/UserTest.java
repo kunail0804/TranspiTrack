@@ -28,4 +28,29 @@ class UserTest {
         assertEquals(70.0, user.getWeight(), 0.0);
         assertEquals("City", user.getCity());
     }
+
+    @Test
+    void settersShouldUpdateAllFields() {
+        User user = new User();
+
+        user.setFirstName("Bob");
+        user.setName("Martin");
+        user.setEmail("bob@example.com");
+        user.setPassword("newpass");
+        user.setAge(30);
+        user.setHeight(180.0);
+        user.setGender(Gender.MALE);
+        user.setWeight(80.0);
+        user.setCity("Lyon");
+
+        assertEquals("Bob", user.getFirstName());
+        assertEquals("Martin", user.getName());
+        assertEquals("bob@example.com", user.getEmail());
+        assertEquals("newpass", user.getPassword());
+        assertEquals(30, user.getAge());
+        assertEquals(180.0, user.getHeight(), 0.0);
+        assertEquals(Gender.MALE, user.getGender());
+        assertEquals(80.0, user.getWeight(), 0.0);
+        assertEquals("Lyon", user.getCity());
+    }
 }
