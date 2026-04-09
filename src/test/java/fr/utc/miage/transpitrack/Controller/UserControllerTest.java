@@ -1,5 +1,7 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 
+import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -111,8 +114,11 @@ class UserControllerTest {
     }
 
     @Test
-    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() {
-        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() throws Exception {
+        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(savedUser, 1L);
         when(userService.createUser(any(User.class))).thenReturn(savedUser);
 
         String view = userController.createUser(
