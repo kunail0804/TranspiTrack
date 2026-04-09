@@ -6,7 +6,7 @@
 </head>
 <body>
 <p th:text = "${message}"></p>
-<form action="/user/updateUser" method = "POST">
+<form action="/users/updateUser" method = "POST">
     Prenom : <input type="text" th:value="${user.getFirstName()}" placeholder = "Entrez votre prenom" name="firstName" id="firstNameUser" required/><br>
     nom : <input type="text" th:value="${user.getName()}" placeholder = "Entrez votre nom" name="name" id="NameUser" required/><br>
     Age : <input type="number" th:value="${user.getAge()}" placeholder = "Entrez votre age" name="age" id="ageUser" required/><br>

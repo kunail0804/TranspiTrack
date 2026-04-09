@@ -7,7 +7,7 @@
 <body>
     <h1>Rechercher un utilisateur</h1>
 
-    <form action="/user/search" method="GET">
+    <form action="/users/search" method="GET">
         <input type="text" name="query" th:value="${query}" placeholder="Prénom ou nom..." />
         <button type="submit">Rechercher</button>
     </form>
@@ -34,8 +34,5 @@
             </tbody>
         </table>
     </div>
-
-    <br/>
-    <a href="/dashboard">Retour au tableau de bord</a>
 </body>
 </html>
