@@ -79,7 +79,7 @@ public class UserController {
             return "formCreate";
         }
 
-        User newUser = new User(firstName, name, email, password, age, height, Gender.valueOf(gender), weight, city);
+        User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
 
         User savedUser = userService.createUser(newUser);
 
@@ -101,7 +101,6 @@ public class UserController {
 
         if(userId==null){
             //TODO : à modifier à l'avenir quand la page sera définie
-           return "formLogin";
         }
         User user = userService.getUserById(userId);
         model.addAttribute("message", message);
@@ -186,5 +185,53 @@ public class UserController {
     }
 
 
+    @GetMapping("/formLogin")
+    public String formLogin(@RequestParam(required=false) String message,
+        Model model, 
+        HttpSession session){
+
+        Long userId = (Long) session.getAttribute("userId");
     
+        if(userId!=null){
+            //TODO : à modifier à l'avenir quand la page sera définie
+        }
+        model.addAttribute("message", message);
+
+        return "formLogin";
+    }
+
+
+    @PostMapping("/loginUser")
+    public String loginUser(@RequestParam("email") String email,
+                            @RequestParam("password") String password,
+                            Model model,
+                            HttpSession session) {
+
+        User userLogin = userService.getUserByEmail(email);
+
+        if(userLogin==null){
+            model.addAttribute("message", "email ou mots de passe incorrect");
+            return "formLogin";
+        }
+
+        boolean isValid = encoder.matches(password, userLogin.getPassword());
+
+        if(!isValid){
+            model.addAttribute("message", "email ou mots de passe incorrect");
+            return "formLogin";
+        }
+
+        session.setAttribute("userId", userLogin.getId());
+
+        model.addAttribute("message", "Connexion compte réussie");
+
+        //TODO : à modifier à l'avenir quand la page sera définie
+        return "dashboard";
+    }
+
+    @GetMapping("/logout")
+    public String logoutPage(HttpSession session) {
+        session.invalidate();
+        return "formLogin";
+    }
 }
