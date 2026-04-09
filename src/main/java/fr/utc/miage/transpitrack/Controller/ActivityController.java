@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import jakarta.servlet.http.HttpSession;
@@ -23,6 +24,9 @@ public class ActivityController {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private SportService sportService;
@@ -49,7 +53,8 @@ public class ActivityController {
     @PostMapping("/add")
     public String saveActivity(
             @ModelAttribute Activity activity,
-            @RequestParam Long sport
+            @RequestParam Long sport,
+            HttpSession session
     ) {
         int duration = activity.getDuration();
         if (duration <= 0) {
@@ -68,6 +73,9 @@ public class ActivityController {
         
         Sport selectedSport = sportService.getSportById(sport);
         activity.setSport(selectedSport);
+
+        Long userId = (Long) session.getAttribute("userId");
+        activity.setUser(userService.getUserById(userId));
 
         activityService.save(activity);
         return "redirect:/activities";
