@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Modifier mon compte</title>
+</head>
+<body>
+<p th:text = "${message}"></p>
+<form action="/user/updateUser" method = "POST">
+    Prenom : <input type="text" th:value="${user.getFirstName()}" placeholder = "Entrez votre prenom" name="firstName" id="firstNameUser" required/><br>
+    nom : <input type="text" th:value="${user.getName()}" placeholder = "Entrez votre nom" name="name" id="NameUser" required/><br>
+    Age : <input type="number" th:value="${user.getAge()}" placeholder = "Entrez votre age" name="age" id="ageUser" required/><br>
+    Taille : <input type="number" step="0.01" th:value="${user.getHeight()}" placeholder = "Entrez votre taille" name="height" id="heightUser" required/><br>
+    Poids : <input type="number" step="0.01" th:value="${user.getWeight()}" placeholder = "Entrez votre poids" name="weight" id="weightUser" required/><br>
+    <label for="gender-select">Sélectionnez le sexe :</label>
+    <select name="gender" id="gender-select" required>
+        <option value="">--Choisissez votre sexe--</option>
+        <option value="MALE" th:if="${user.gender != null and user.gender.name() == 'MALE'}" selected>M</option>
+        <option value="MALE" th:unless="${user.gender != null and user.gender.name() == 'MALE'}">M</option>
+
+        <option value="FEMALE" th:if="${user.gender != null and user.gender.name() == 'FEMALE'}" selected>F</option>
+        <option value="FEMALE" th:unless="${user.gender != null and user.gender.name() == 'FEMALE'}">F</option>
+    </select>
+    Email : <input type="text" th:value="${user.getEmail()}" placeholder = "Entrez votre email" name="email" id="emailUser" required/><br>
+    Mot de passe : <input type="text" placeholder = "Entrez votre mot de passe" name="password" id="passwordUser"/><br>
+    Ville : <input type="text" th:value="${user.getCity()}" placeholder = "Entrez votre nom de ville" name="city" id="cityUser" required/><br>
+
+    <button type="submit">Mettre à jour</button>
+</form>
+
+</body>
+</html>
