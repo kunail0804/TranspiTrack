@@ -121,4 +121,30 @@ class UserServiceTest {
         assertNull(result);
         verify(userRepository).findById(99L);
     }
+
+    // ──────────────────────────────────────────────────────────────
+    // searchUsers
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void searchUsersShouldReturnMatchingUsers() {
+        User user = new User();
+        when(userRepository.searchByFullName("Jean")).thenReturn(List.of(user));
+
+        List<User> result = userService.searchUsers("Jean");
+
+        assertEquals(1, result.size());
+        assertEquals(user, result.get(0));
+        verify(userRepository).searchByFullName("Jean");
+    }
+
+    @Test
+    void searchUsersShouldReturnEmptyListWhenNoMatch() {
+        when(userRepository.searchByFullName("Inconnu")).thenReturn(List.of());
+
+        List<User> result = userService.searchUsers("Inconnu");
+
+        assertEquals(0, result.size());
+        verify(userRepository).searchByFullName("Inconnu");
+    }
 }
