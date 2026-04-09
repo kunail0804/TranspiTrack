@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-10">
+
+    <div class="max-w-sm bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl p-6 text-white shadow-2xl">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 class="text-2xl font-bold" th:text="${weather.city}">Ville</h2>
+                <p class="text-blue-100" th:text="${weather.weatherCondition}">Ciel dégagé</p>
+            </div>
+            <span class="text-4xl font-bold" th:text="${#numbers.formatDecimal(weather.currentTemp, 1, 0)} + '°'">20°</span>
+        </div>
+
+        <div class="space-y-3 mt-6 border-t border-white/20 pt-4">
+            <div th:each="day : ${weather.forecast}" class="flex justify-between items-center text-sm">
+                <span th:text="${day.date}" class="font-medium">2026-04-10</span>
+                <div class="flex space-x-3">
+                    <span class="font-bold" th:text="${day.maxTemp} + '°'">25°</span>
+                    <span class="opacity-60" th:text="${day.minTemp} + '°'">12°</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

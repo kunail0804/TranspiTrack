@@ -29,6 +29,7 @@ public class User {
     private String password;
     private int age;
     private double height;
+    private String city;
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -79,5 +80,20 @@ public class User {
         this.weight=weight;
 
     }
+
+    public String getCity() {
+        return city;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    
+    
 
 }
