@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter Sport</title>
+</head>
+<body>
+<h1>Ajouter Sport</h1>
+<form th:action="@{/sports/add}" th:object="${sport}" method="post">
+    <label for="name">Nom:</label>
+    <input type="text" id="name" th:field="*{name}" required><br><br>
+    <label for="description">Description:</label>
+    <textarea id="description" th:field="*{description}"></textarea><br><br>
+    <label for="sportType">Type Sport:</label>
+    <select id="sportType" th:field="*{sportType}" required>
+        <option th:each="type : ${sportTypes}" th:value="${type.id}" th:text="${type.name}">Sport Type</option>
+    </select><br><br>
+    
+    <button type="submit">Ajouter Sport</button>
+</form>
+</body>
+</html>

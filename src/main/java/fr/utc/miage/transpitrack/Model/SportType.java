@@ -21,6 +21,9 @@ public class SportType {
     @OneToMany(mappedBy = "sportType")
     private List<Sport> sports;
     
+    public SportType() {
+    
+    }
 
     public SportType(Long id, String name, String description, List<Sport> sports) {
         this.id = id;
@@ -29,6 +32,33 @@ public class SportType {
         this.sports = sports;
     }
     
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public List<Sport> getSports() {
+        return sports;
+    }
+
+    public void setSports(List<Sport> sports) {
+        this.sports = sports;
+    }
 }
 
 

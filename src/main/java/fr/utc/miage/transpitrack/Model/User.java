@@ -40,9 +40,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserSport> sportsPreference;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Activity> activities;
-
     @ManyToMany
     @JoinTable(
         name = "user_friends",
@@ -123,10 +120,6 @@ public class User {
 
     public List<UserSport> getSportsPreference() {
         return sportsPreference;
-    }
-
-    public List<Activity> getActivities() {
-        return activities;
     }
 
     public List<User> getFriends() {

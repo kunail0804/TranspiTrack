@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sport Types</title>
+</head>
+<body>
+<h1>Sport Types</h1>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="sportType : ${sportTypes}">
+        <td th:text="${sportType.name}">Nom</td>
+        <td th:text="${sportType.description}">Description</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
