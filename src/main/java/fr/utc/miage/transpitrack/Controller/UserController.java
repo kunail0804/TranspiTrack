@@ -193,9 +193,10 @@ public class UserController {
         HttpSession session){
 
         Long userId = (Long) session.getAttribute("userId");
-    
+
         if(userId!=null){
             //TODO : à modifier à l'avenir quand la page sera définie
+           return "dashboard";
         }
         model.addAttribute("message", message);
 
