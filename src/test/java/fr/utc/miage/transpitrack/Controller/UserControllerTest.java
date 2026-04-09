@@ -265,7 +265,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/search
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void updateUserShouldEncodePasswordWhenEmailUnchangedAndPasswordNotBlank() {
         User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
@@ -304,7 +303,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/loginUser
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void loginUserShouldReturnFormLoginWhenEmailNotFound() {
         String view = userController.loginUser("unknown@example.com", "secret", model, session);
@@ -342,7 +340,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/logout
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void logoutShouldInvalidateSessionAndReturnFormLogin() {
         String view = userController.logoutPage(session);
