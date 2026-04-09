@@ -1,6 +1,7 @@
 package fr.utc.miage.transpitrack.Model;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ public class SportType {
     private String description;
 
     @OneToMany(mappedBy = "sportType")
-    private List<Sport> sports;
+    private List<Sport> sports = new ArrayList<>();
     
     public SportType() {
     

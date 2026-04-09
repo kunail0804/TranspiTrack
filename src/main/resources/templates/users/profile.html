@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil utilisateur</title>
+</head>
+<body> 
+<h1>Mon profil</h1>
+<p>Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
+<p>Nom: <span th:text="${user.name}">nom de l'utilisateur</span></p>
+<p>Prénom: <span th:text="${user.firstName}">prénom de l'utilisateur</span></p>
+<p>Âge: <span th:text="${user.age}">âge de l'utilisateur</span></p>
+<p>Sexe: <span th:text="${user.gender}">sexe de l'utilisateur</span></p>
+<p>Poids: <span th:text="${user.weight}">poids de l'utilisateur</span></p>
+<p>Taille: <span th:text="${user.height}">taille de l'utilisateur</span></p>
+<p>Ville: <span th:text="${user.city}">ville de l'utilisateur</span></p>
+<p>Sports préférés:</p>
+<ul>
+    <li th:each="us : ${user.sportsPreference}">
+        <span th:text="${us.sport.name}">Sport</span> -
+        <span th:text="${us.level}">Niveau</span>
+    </li>
+</ul>
+
+<button th:href="@{/users/formUpdate}">Modifier mon profil</button>
+</body>
+</html>
