@@ -16,7 +16,7 @@ import jakarta.servlet.http.HttpSession;
 
 
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
    
     @Autowired
@@ -33,11 +33,11 @@ public class UserController {
 
         if(userId!=null){
             //TODO : à modifier à l'avenir quand la page sera définie
-           return "dashboard";
+           return "users/dashboard";
         }
         model.addAttribute("message", message);
 
-        return "formCreate";
+        return "users/formCreate";
     }
 
     @PostMapping("/createUser")
@@ -55,28 +55,28 @@ public class UserController {
 
         if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")){
             model.addAttribute("message", "Email n'est pas au bon format");
-            return "formCreate";
+            return "users/formCreate";
         }
                                 
         if(age<0){
             model.addAttribute("message", "Age ne peut pas être négatif");
-            return "formCreate";
+            return "users/formCreate";
         }
         if(height<0){
             model.addAttribute("message", "Taille ne peut pas être négatif");
-            return "formCreate";
+            return "users/formCreate";
         }
 
         if(weight<0){
             model.addAttribute("message", "Poids ne peut pas être négatif");
-            return "formCreate";
+            return "users/formCreate";
         }
 
         User userExist = userService.getUserByEmail(email);
 
         if(userExist!=null){
             model.addAttribute("message", "email dejas existant");
-            return "formCreate";
+            return "users/formCreate";
         }
 
         User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
@@ -88,7 +88,7 @@ public class UserController {
         model.addAttribute("message", "Création compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "dashboard";
+        return "users/dashboard";
     }
 
     @GetMapping("/formLogin")
@@ -100,11 +100,11 @@ public class UserController {
 
         if(userId!=null){
             //TODO : à modifier à l'avenir quand la page sera définie
-           return "dashboard";
+           return "users/dashboard";
         }
         model.addAttribute("message", message);
 
-        return "formLogin";
+        return "users/formLogin";
     }
 
 
@@ -118,14 +118,14 @@ public class UserController {
 
         if(userLogin==null){
             model.addAttribute("message", "email ou mots de passe incorrect");
-            return "formLogin";
+            return "users/formLogin";
         }
 
         boolean isValid = encoder.matches(password, userLogin.getPassword());
 
         if(!isValid){
             model.addAttribute("message", "email ou mots de passe incorrect");
-            return "formLogin";
+            return "users/formLogin";
         }
 
         session.setAttribute("userId", userLogin.getId());
@@ -133,12 +133,23 @@ public class UserController {
         model.addAttribute("message", "Connexion compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "dashboard";
+        return "users/dashboard";
     }
 
     @GetMapping("/logout")
     public String logoutPage(HttpSession session) {
         session.invalidate();
-        return "formLogin";
+        return "users/formLogin";
+    }
+
+    @GetMapping("/profile")
+    public String profilePage(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+        model.addAttribute("user", user);
+        return "users/profile";
     }
 }
