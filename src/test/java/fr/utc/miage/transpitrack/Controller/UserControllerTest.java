@@ -40,7 +40,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/formCreate
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void formCreateShouldReturnDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -61,7 +60,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/createUser
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void createUserShouldReturnFormCreateWhenEmailFormatInvalid() {
         String view = userController.createUser(
