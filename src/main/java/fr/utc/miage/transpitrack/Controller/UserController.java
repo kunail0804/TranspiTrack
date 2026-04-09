@@ -34,7 +34,7 @@ public class UserController {
 
         if (userId != null) {
             //TODO : à modifier à l'avenir quand la page sera définie
-            return "users/dashboard";
+           return "users/dashboard";
         }
         model.addAttribute("message", message);
 
@@ -195,7 +195,7 @@ public class UserController {
 
         if (userId != null) {
             //TODO : à modifier à l'avenir quand la page sera définie
-            return "users/dashboard";
+           return "users/dashboard";
         }
         model.addAttribute("message", message);
 
