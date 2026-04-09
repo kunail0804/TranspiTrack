@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
@@ -25,7 +26,7 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    void getUserByFirstName() {
+    void getUserByFirstNameShouldReturnMatchingUsers() {
         User user = new User();
         when(userRepository.findUserByFirstName("Alice")).thenReturn(List.of(user));
 
@@ -37,7 +38,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserByName() {
+    void getUserByNameShouldReturnMatchingUsers() {
         User user = new User();
         when(userRepository.findUserByName("Dupont")).thenReturn(List.of(user));
 
@@ -49,7 +50,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserByEmail() {
+    void getUserByEmailShouldReturnUser() {
         User user = new User();
         when(userRepository.findByEmail("alice@example.com")).thenReturn(user);
 
@@ -60,7 +61,7 @@ class UserServiceTest {
     }
 
     @Test
-    void createUser() {
+    void createUserShouldReturnSavedUser() {
         User user = new User();
         when(userRepository.save(user)).thenReturn(user);
 
@@ -71,7 +72,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getAllUsers() {
+    void getAllUsersShouldReturnAllUsers() {
         User user1 = new User();
         User user2 = new User();
         when(userRepository.findAll()).thenReturn(List.of(user1, user2));
@@ -83,14 +84,14 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserById() {
+    void deleteUserByIdShouldCallRepository() {
         userService.deleteUserById(1L);
 
         verify(userRepository).deleteById(1L);
     }
 
     @Test
-    void updateUser() {
+    void updateUserShouldReturnUpdatedUser() {
         User user = new User();
         when(userRepository.save(user)).thenReturn(user);
 
@@ -101,7 +102,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUserById() {
+    void getUserByIdShouldReturnUserWhenFound() {
         User user = new User();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 

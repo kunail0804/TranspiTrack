@@ -1,5 +1,7 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.lang.reflect.Field;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 
+import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -111,8 +114,11 @@ class UserControllerTest {
     }
 
     @Test
-    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() {
-        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() throws Exception {
+        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(savedUser, 1L);
         when(userService.createUser(any(User.class))).thenReturn(savedUser);
 
         String view = userController.createUser(
@@ -130,7 +136,7 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
 
     @Test
-    void formLogin_shouldReturnDashboardWhenUserAlreadyLoggedIn() {
+    void formLoginShouldReturnDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
         String view = userController.formLogin(null, model, session);
@@ -139,9 +145,7 @@ class UserControllerTest {
     }
 
     @Test
-    void formLogin_shouldReturnFormLoginWhenNotLoggedIn() {
-        when(session.getAttribute("userId")).thenReturn(null);
-
+    void formLoginShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.formLogin("Bienvenue", model, session);
 
         assertEquals("formLogin", view);
@@ -149,56 +153,54 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // POST /user/LoginUser
+    // POST /user/loginUser
     // ──────────────────────────────────────────────────────────────
 
     @Test
-    void loginUser_shouldReturnFormLoginWhenEmailDoesNotExist() {
-
-        when(userService.getUserByEmail("email-invalide")).thenReturn(null);
-
-        String view = userController.loginUser(
-                "email-invalide", "secret",
-                model, session);
+    void loginUserShouldReturnFormLoginWhenEmailDoesNotExist() {
+        String view = userController.loginUser("unknown@example.com", "secret", model, session);
 
         assertEquals("formLogin", view);
         verify(model).addAttribute("message", "email ou mots de passe incorrect");
     }
 
     @Test
-    void loginUser_shouldReturnFormLoginWhenPasswordIsInvalid() {
-
+    void loginUserShouldReturnFormLoginWhenPasswordIsInvalid() {
         User user = new User();
         user.setPassword(encoder.encode("secret"));
-
         when(userService.getUserByEmail("alice@example.com")).thenReturn(user);
 
-        String view = userController.loginUser(
-                "alice@example.com", "wrong",
-                model, session);
+        String view = userController.loginUser("alice@example.com", "wrong", model, session);
 
         assertEquals("formLogin", view);
         verify(model).addAttribute("message", "email ou mots de passe incorrect");
     }
 
-
     @Test
-    void loginUser_shouldReturnDashboardWhenEmailAndPasswordValid() {
+    void loginUserShouldReturnDashboardWhenCredentialsAreValid() throws Exception {
         User user = new User();
-        user.setId(1L);
-        user.setEmail("alice@example.com");
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(user, 1L);
         user.setPassword(encoder.encode("secret"));
-        user.setId(1L);
-
         when(userService.getUserByEmail("alice@example.com")).thenReturn(user);
 
-        String view = userController.loginUser(
-                "alice@example.com", "secret",
-                model, session);
+        String view = userController.loginUser("alice@example.com", "secret", model, session);
 
         assertEquals("dashboard", view);
         verify(session).setAttribute("userId", 1L);
         verify(model).addAttribute("message", "Connexion compte réussie");
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // GET /user/logout
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void logoutPageShouldInvalidateSessionAndReturnFormLogin() {
+        String view = userController.logoutPage(session);
+
+        verify(session).invalidate();
+        assertEquals("formLogin", view);
+    }
 }
