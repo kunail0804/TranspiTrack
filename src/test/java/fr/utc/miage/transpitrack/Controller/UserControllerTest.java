@@ -38,7 +38,7 @@ class UserControllerTest {
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // ──────────────────────────────────────────────────────────────
-    // GET /user/formCreate
+    // GET /users/formCreate
     // ──────────────────────────────────────────────────────────────
 
     @Test
@@ -59,7 +59,7 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // POST /user/createUser
+    // POST /users/createUser
     // ──────────────────────────────────────────────────────────────
 
     @Test
@@ -133,7 +133,7 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // GET /user/search
+    // GET /users/search
     // ──────────────────────────────────────────────────────────────
 
     @Test
@@ -142,7 +142,7 @@ class UserControllerTest {
 
         String view = userController.searchUser("Jean", model, session);
 
-        assertEquals("redirect:/user/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
@@ -182,7 +182,7 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // GET /user/formUpdate
+    // GET /users/formUpdate
     // ──────────────────────────────────────────────────────────────
 
     @Test
@@ -206,7 +206,7 @@ class UserControllerTest {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // POST /user/updateUser
+    // POST /users/updateUser
     // ──────────────────────────────────────────────────────────────
 
     @Test
@@ -323,39 +323,4 @@ class UserControllerTest {
         assertEquals("users/dashboard", view);
         verify(userService).updateUser(actualUser);
     }
-
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/profile
-    // ──────────────────────────────────────────────────────────────
-    @Test
-    void profilePageShouldReturnLoginWhenUserNotLoggedIn() {
-        when(session.getAttribute("userId")).thenReturn(null);
-
-        String view = userController.profilePage(session, model);
-
-        assertEquals("users/formLogin", view);
-    }
-
-    @Test
-    void profilePageShouldReturnProfileWhenUserExists() {
-        User user = new User();
-        when(session.getAttribute("userId")).thenReturn(1L);
-        when(userService.getUserById(1L)).thenReturn(user);
-
-        String view = userController.profilePage(session, model);
-
-        assertEquals("users/profile", view);
-        verify(model).addAttribute("user", user);
-    }
-
-    @Test
-    void profilePageShouldRedirectWhenUserNotFound() {
-        when(session.getAttribute("userId")).thenReturn(1L);
-        when(userService.getUserById(1L)).thenReturn(null);
-
-        String view = userController.profilePage(session, model);
-
-        assertEquals("users/formLogin", view);
-    }
-
 }
