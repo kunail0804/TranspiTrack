@@ -7,7 +7,7 @@
 <body>
     <h1>Rechercher un utilisateur</h1>
 
-    <form action="/user/search" method="GET">
+    <form action="/users/search" method="GET">
         <input type="text" name="query" th:value="${query}" placeholder="Prénom ou nom..." />
         <button type="submit">Rechercher</button>
     </form>
@@ -22,6 +22,7 @@
                     <th>Nom</th>
                     <th>Ville</th>
                     <th>Âge</th>
+                    <th>Profil</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +31,9 @@
                     <td th:text="${user.name}"></td>
                     <td th:text="${user.city}"></td>
                     <td th:text="${user.age}"></td>
+                    <td>
+                        <a th:href="@{/users/profile/{id}(id=${user.id})}">Voir le profil</a>
+                    </td>
                 </tr>
             </tbody>
         </table>

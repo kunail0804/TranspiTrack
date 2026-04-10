@@ -32,6 +32,18 @@ public class Challenge {
         this.creator = creator;
     }
 
+    public String getTitle() {
+        return title;
+    }
+
+    public String getVisibility() {
+        return visibility;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
     
 
 }
