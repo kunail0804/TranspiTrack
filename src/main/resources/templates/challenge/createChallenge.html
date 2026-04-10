@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un Challenge</title>
+</head>
+<body>
+    <h1>Créer un nouveau Challenge</h1>
+
+    <form action="/challenges/create" method="POST">
+        
+        <div>
+            <label for="title">Intitulé du challenge :</label>
+            <input type="text" id="title" name="title" required placeholder="Ex: Courir 10km...">
+        </div>
+        <br>
+
+        <div>
+            <label for="durationDays">Durée de validité (en jours) :</label>
+            <input type="number" id="durationDays" name="durationDays" required min="1" placeholder="Ex: 7">
+        </div>
+        <br>
+
+        <div>
+            <label for="visibility">Statut :</label>
+            <select id="visibility" name="visibility" required>
+                <option value="AMIS">Visible uniquement par mes amis</option>
+                <option value="PUBLIC">Public (Tout le monde)</option>
+            </select>
+        </div>
+        <br>
+
+        <button type="submit">Lancer le challenge !</button>
+    </form>
+
+    <br>
+    <a href="/users/dashboard">Annuler et retourner au tableau de bord</a>
+
+</body>
+</html>
