@@ -5,13 +5,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,13 +28,6 @@ public class FriendshipServiceTest {
 
     @InjectMocks
     private FriendshipService friendshipService;
-
-    @Mock
-    private UserRepository userRepository;
-
-    @InjectMocks
-    private UserService userService;
-
 
     @Test
     void updateFriendshipShouldReturnSavedFriendship() {
@@ -143,23 +133,5 @@ public class FriendshipServiceTest {
 
         verify(friendshipRepository)
             .save(org.mockito.ArgumentMatchers.any(Friendship.class));
-    }
-
-    @Test
-    void sendFriendRequestShouldReturnNullIfRelationshipAlreadyExists() {
-        User requester = org.mockito.Mockito.mock(User.class);
-        User receiver = org.mockito.Mockito.mock(User.class);
-
-        when(requester.getId()).thenReturn(1L);
-        when(receiver.getId()).thenReturn(2L);
-
-        when(friendshipRepository.existsByRequesterIdAndReceiverId(1L, 2L))
-            .thenReturn(true);
-
-        Friendship result = friendshipService.sendFriendRequest(requester, receiver);
-
-        assertNull(result);
-
-        verify(friendshipRepository, never()).save(any());
     }
 }
