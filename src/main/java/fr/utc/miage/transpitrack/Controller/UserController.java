@@ -95,7 +95,7 @@ public class UserController {
         model.addAttribute("message", "Création compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "users/dashboard";
+        return "redirect:/users/dashboard";
     }
 
 
@@ -188,7 +188,7 @@ public class UserController {
         model.addAttribute("message", "Modification du compte réussie");
 
         //TODO : à modifier à l'avenir quand la page "profil" sera définie
-        return "users/dashboard";
+        return "redirect:/users/dashboard";
     }
 
 
@@ -233,7 +233,7 @@ public class UserController {
         model.addAttribute("message", "Connexion compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "users/dashboard";
+        return "redirect:/users/dashboard";
     }
 
     @GetMapping("/search")
@@ -266,6 +266,7 @@ public class UserController {
     public String profilePage(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
             return "users/formLogin";
         }
         User user = userService.getUserById(userId);
@@ -273,6 +274,11 @@ public class UserController {
             return "users/formLogin";
         }
         model.addAttribute("user", user);
+
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
+        activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        model.addAttribute("activities", activities);
+
         return "users/profile";
     }
 

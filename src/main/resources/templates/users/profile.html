@@ -26,6 +26,8 @@
     </li>
 </ul>
 
+<button th:href="@{/users/formUpdate}">Modifier mon profil</button>
+
 <hr>
 
 <h2>Activités</h2>
@@ -55,6 +57,5 @@
 <a th:if="${isOwner}" th:href="@{/users/formUpdate}">
     <button>Modifier mon profil</button>
 </a>
-
 </body>
 </html>

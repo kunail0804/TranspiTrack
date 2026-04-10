@@ -15,7 +15,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
 
+import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +27,9 @@ class UserControllerTest {
 
     @Mock
     private UserService userService;
+
+    @Mock
+    private ActivityService activityService;
 
     @Mock
     private Model model;
@@ -126,7 +131,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, 165.0, "FEMALE", 60.0, "Paris", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).createUser(any(User.class));
         verify(session).setAttribute("userId", savedUser.getId());
         verify(model).addAttribute("message", "Création compte réussie");
@@ -275,7 +280,7 @@ class UserControllerTest {
                 "Bob", "Martin", "newemail@example.com", "",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
         verify(model).addAttribute("message", "Modification du compte réussie");
     }
@@ -291,7 +296,7 @@ class UserControllerTest {
                 "Bob", "Martin", "newemail@example.com", "newpassword",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
     }
 
@@ -305,7 +310,7 @@ class UserControllerTest {
                 "Bob", "Martin", "alice@example.com", "",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
         verify(model).addAttribute("message", "Modification du compte réussie");
     }
@@ -320,7 +325,119 @@ class UserControllerTest {
                 "Bob", "Martin", "alice@example.com", "newpassword",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /users/formLogin
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void formLoginShouldReturnDashboardWhenAlreadyLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.formLogin(null, model, session);
+
+        assertEquals("users/dashboard", view);
+    }
+
+    @Test
+    void formLoginShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.formLogin("Connectez-vous", model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "Connectez-vous");
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /users/loginUser
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void loginUserShouldReturnFormLoginWhenEmailNotFound() {
+        String view = userController.loginUser("unknown@example.com", "secret", model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "email ou mots de passe incorrect");
+    }
+
+    @Test
+    void loginUserShouldReturnFormLoginWhenPasswordInvalid() {
+        User userLogin = new User("Alice", "Dupont", "alice@example.com", encoder.encode("correct"), 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(userLogin);
+
+        String view = userController.loginUser("alice@example.com", "wrong", model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "email ou mots de passe incorrect");
+    }
+
+    @Test
+    void loginUserShouldReturnDashboardWhenCredentialsValid() throws Exception {
+        User userLogin = new User("Alice", "Dupont", "alice@example.com", encoder.encode("secret"), 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        Field idField = User.class.getDeclaredField("id");
+        idField.setAccessible(true);
+        idField.set(userLogin, 1L);
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(userLogin);
+
+        String view = userController.loginUser("alice@example.com", "secret", model, session);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(session).setAttribute("userId", 1L);
+        verify(model).addAttribute("message", "Connexion compte réussie");
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /users/logout
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void logoutShouldInvalidateSessionAndReturnFormLogin() {
+        String view = userController.logoutPage(session);
+
+        assertEquals("users/formLogin", view);
+        verify(session).invalidate();
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /users/profile
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void profilePageShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.profilePage(session, model);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
+
+    @Test
+    void profilePageShouldReturnFormLoginWhenUserNotFound() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(null);
+
+        String view = userController.profilePage(session, model);
+
+        assertEquals("users/formLogin", view);
+    }
+
+    @Test
+    void profilePageShouldReturnProfileWithUserAndActivitiesSortedByDateDesc() {
+        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        Activity older = new Activity();
+        older.setDate(java.time.LocalDate.of(2024, 1, 1));
+        Activity newer = new Activity();
+        newer.setDate(java.time.LocalDate.of(2024, 6, 1));
+        when(activityService.getActivitiesByUserId(1L)).thenReturn(new java.util.ArrayList<>(List.of(older, newer)));
+
+        String view = userController.profilePage(session, model);
+
+        assertEquals("users/profile", view);
+        verify(model).addAttribute("user", user);
+        verify(model).addAttribute("activities", List.of(newer, older));
     }
 }
