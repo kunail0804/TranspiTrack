@@ -22,6 +22,7 @@
                     <th>Nom</th>
                     <th>Ville</th>
                     <th>Âge</th>
+                    <th>Profil</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +31,9 @@
                     <td th:text="${user.name}"></td>
                     <td th:text="${user.city}"></td>
                     <td th:text="${user.age}"></td>
+                    <td>
+                        <a th:href="@{/users/profile/{id}(id=${user.id})}">Voir le profil</a>
+                    </td>
                 </tr>
             </tbody>
         </table>
