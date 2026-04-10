@@ -38,6 +38,16 @@ class UserServiceTest {
     }
 
     @Test
+    void getUserByFirstNameShouldReturnEmptyListWhenNoMatch() {
+        when(userRepository.findUserByFirstName("Inconnu")).thenReturn(List.of());
+
+        List<User> result = userService.getUserByFirstName("Inconnu");
+
+        assertEquals(0, result.size());
+        verify(userRepository).findUserByFirstName("Inconnu");
+    }
+
+    @Test
     void getUserByNameShouldReturnMatchingUsers() {
         User user = new User();
         when(userRepository.findUserByName("Dupont")).thenReturn(List.of(user));
@@ -50,6 +60,16 @@ class UserServiceTest {
     }
 
     @Test
+    void getUserByNameShouldReturnEmptyListWhenNoMatch() {
+        when(userRepository.findUserByName("Inconnu")).thenReturn(List.of());
+
+        List<User> result = userService.getUserByName("Inconnu");
+
+        assertEquals(0, result.size());
+        verify(userRepository).findUserByName("Inconnu");
+    }
+
+    @Test
     void getUserByEmailShouldReturnUser() {
         User user = new User();
         when(userRepository.findByEmail("alice@example.com")).thenReturn(user);
@@ -58,6 +78,14 @@ class UserServiceTest {
 
         assertEquals(user, result);
         verify(userRepository).findByEmail("alice@example.com");
+    }
+
+    @Test
+    void getUserByEmailShouldReturnNullWhenNotFound() {
+        User result = userService.getUserByEmail("unknown@example.com");
+
+        assertNull(result);
+        verify(userRepository).findByEmail("unknown@example.com");
     }
 
     @Test

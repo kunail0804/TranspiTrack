@@ -23,5 +23,26 @@
 </ul>
 
 <button th:href="@{/users/formUpdate}">Modifier mon profil</button>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Duration</th>
+        <th>Distance</th>
+        <th>Evaluation</th>
+        <th>Sport</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="activity : ${activities}">
+        <td th:text="${activity.date}">2023-01-01</td>
+        <td th:text="${activity.duration}">0</td>
+        <td th:text="${activity.distance}">0.0</td>
+        <td th:text="${activity.evaluation}">0.0</td>
+        <td th:text="${activity.sport.name}">Nom du Sport</td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

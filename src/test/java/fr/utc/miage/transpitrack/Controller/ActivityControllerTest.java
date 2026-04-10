@@ -2,25 +2,27 @@ package fr.utc.miage.transpitrack.Controller;
 
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +51,7 @@ class ActivityControllerTest {
     // ──────────────────────────────────────────────────────────────
 
     @Test
+    @SuppressWarnings("unchecked")
     void listActivitiesShouldReturnListViewWithActivitiesSortedByDateDesc() {
         Activity older = new Activity();
         older.setDate(LocalDate.of(2024, 1, 1));
@@ -59,7 +62,11 @@ class ActivityControllerTest {
         String view = activityController.listActivities(model);
 
         assertEquals("activities/list", view);
-        verify(model).addAttribute(any(String.class), any());
+        ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
+        verify(model).addAttribute(eq("activities"), captor.capture());
+        List<Activity> sorted = captor.getValue();
+        assertEquals(newer, sorted.get(0));
+        assertEquals(older, sorted.get(1));
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -71,7 +78,8 @@ class ActivityControllerTest {
         String view = activityController.addActivity(null, model, session);
 
         assertEquals("activities/add", view);
-        verify(model, times(2)).addAttribute(any(String.class), any());
+        verify(model).addAttribute(eq("activity"), any(Activity.class));
+        verify(model).addAttribute(eq("sports"), any());
     }
 
     @Test
