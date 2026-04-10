@@ -41,20 +41,6 @@ class UserTest {
     }
 
     @Test
-    void setEmailShouldUpdateEmail() {
-        User user = new User();
-        user.setEmail("new@example.com");
-        assertEquals("new@example.com", user.getEmail());
-    }
-
-    @Test
-    void setPasswordShouldUpdatePassword() {
-        User user = new User();
-        user.setPassword("newpassword");
-        assertEquals("newpassword", user.getPassword());
-    }
-
-    @Test
     void settersShouldUpdateAllFields() {
         User user = new User();
 

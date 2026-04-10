@@ -12,7 +12,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,6 +51,7 @@ class ActivityControllerTest {
     // ──────────────────────────────────────────────────────────────
 
     @Test
+    @SuppressWarnings("unchecked")
     void listActivitiesShouldReturnListViewWithActivitiesSortedByDateDesc() {
         Activity older = new Activity();
         older.setDate(LocalDate.of(2024, 1, 1));
@@ -62,7 +62,11 @@ class ActivityControllerTest {
         String view = activityController.listActivities(model);
 
         assertEquals("activities/list", view);
-        verify(model).addAttribute(any(String.class), any());
+        ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
+        verify(model).addAttribute(eq("activities"), captor.capture());
+        List<Activity> sorted = captor.getValue();
+        assertEquals(newer, sorted.get(0));
+        assertEquals(older, sorted.get(1));
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -74,7 +78,8 @@ class ActivityControllerTest {
         String view = activityController.addActivity(null, model, session);
 
         assertEquals("activities/add", view);
-        verify(model, times(2)).addAttribute(any(String.class), any());
+        verify(model).addAttribute(eq("activity"), any(Activity.class));
+        verify(model).addAttribute(eq("sports"), any());
     }
 
     @Test
