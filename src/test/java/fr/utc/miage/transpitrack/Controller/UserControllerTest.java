@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -287,11 +288,11 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(actualUser);
         when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
 
-        String view = userController.updateUser(
+        userController.updateUser(
                 "Bob", "Martin", "newemail@example.com", "newpassword",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertTrue(encoder.matches("newpassword", actualUser.getPassword()));
         verify(userService).updateUser(actualUser);
     }
 
@@ -316,11 +317,11 @@ class UserControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
 
-        String view = userController.updateUser(
+        userController.updateUser(
                 "Bob", "Martin", "alice@example.com", "newpassword",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertTrue(encoder.matches("newpassword", actualUser.getPassword()));
         verify(userService).updateUser(actualUser);
     }
 

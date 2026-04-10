@@ -138,6 +138,16 @@ class ActivityControllerTest {
     }
 
     @Test
+    void listActivitiesShouldReturnListViewWithEmptyList() {
+        when(activityService.getAllActivities()).thenReturn(new java.util.ArrayList<>());
+
+        String view = activityController.listActivities(model);
+
+        assertEquals("activities/list", view);
+        verify(model).addAttribute(eq("activities"), any());
+    }
+
+    @Test
     void saveActivityShouldSaveAndRedirectWhenValid() {
         Activity activity = new Activity();
         activity.setDuration(30);

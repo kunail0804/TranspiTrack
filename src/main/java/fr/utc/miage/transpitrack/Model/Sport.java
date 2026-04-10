@@ -34,11 +34,10 @@ public class Sport {
     public Sport() {
     }
 
-    public Sport(Long id, String name, String description, List<Goal> goals) {
+    public Sport(Long id, String name, String description) {
         this.id = id;
         this.name = name;
         this.description = description;
-        //this.goals = goals;
     }
 
     public Long getId() {

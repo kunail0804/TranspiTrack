@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -32,6 +33,16 @@ class SportControllerTest {
 
     @Test
     void listSportsShouldReturnListView() {
+        String view = sportController.listSports(model);
+
+        assertEquals("sports/list", view);
+        verify(model).addAttribute(eq("sports"), any());
+    }
+
+    @Test
+    void listSportsShouldReturnListViewWhenEmpty() {
+        when(sportService.getAllSports()).thenReturn(new java.util.ArrayList<>());
+
         String view = sportController.listSports(model);
 
         assertEquals("sports/list", view);

@@ -86,7 +86,7 @@ public class WeatherService {
         }
     }
 
-    private String interpretWeatherCode(int code) {
+    String interpretWeatherCode(int code) {
         if (code == 0) return "Ciel dégagé";
         if (code >= 1 && code <= 3) return "Partiellement nuageux";
         if (code >= 45 && code <= 48) return "Brouillard";
