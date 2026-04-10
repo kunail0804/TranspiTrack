@@ -2,14 +2,88 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Creer un compte</title>
-</head>
-<body>
-    <p th:text = "${message}"></p>
-    <h1>HELLOOOOOOOOOOOO</h1>
+    <title>Dashboard</title>
 
-    <form action="/users/logout" method = "GET">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <p th:text="${message}"></p>
+
+    <h1>Dashboard</h1>
+
+    <h3>Stats par sport</h3>
+
+    <table border="1">
+        <tr>
+            <th>Sport</th>
+            <th>Distance</th>
+            <th>Durée</th>
+            <th>Sessions</th>
+        </tr>
+
+        <tr th:each="sport : ${distanceBySport.keySet()}">
+            <td th:text="${sport.name}"></td>
+            <td th:text="${distanceBySport.get(sport)}"></td>
+            <td th:text="${durationBySport.get(sport)}"></td>
+            <td th:text="${countBySport.get(sport)}"></td>
+        </tr>
+    </table>
+
+    <br>
+
+    <!-- 📊 GRAPH SMALL -->
+    <div style="width: 500px;">
+        <canvas id="chartSport"></canvas>
+    </div>
+
+    <br>
+
+    <form action="/users/logout" method="GET">
         <button type="submit">Se déconnecter</button>
     </form>
-</body>
+
+    </body>
+
+    <!-- 📊 CHART SCRIPT -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        let distanceData = [[${distanceBySportName}]];
+
+        let labels = Object.keys(distanceData);
+        let data = Object.values(distanceData);
+
+        let colors = labels.map(() =>
+            `rgba(${Math.floor(Math.random()*255)},
+                ${Math.floor(Math.random()*255)},
+                ${Math.floor(Math.random()*255)}, 0.6)`
+        );
+
+        new Chart(document.getElementById('chartSport'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Distance par sport',
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                devicePixelRatio: 2, 
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+        /*]]>*/
+    </script>
+
 </html>

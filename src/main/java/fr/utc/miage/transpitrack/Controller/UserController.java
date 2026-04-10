@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
@@ -94,7 +94,7 @@ public class UserController {
         model.addAttribute("message", "Création compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "users/dashboard";
+        return "redirect:/users/dashboard";
     }
 
 
@@ -187,7 +187,7 @@ public class UserController {
         model.addAttribute("message", "Modification du compte réussie");
 
         //TODO : à modifier à l'avenir quand la page "profil" sera définie
-        return "users/dashboard";
+        return "redirect:/users/dashboard";
     }
 
 
@@ -232,7 +232,7 @@ public class UserController {
         model.addAttribute("message", "Connexion compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "users/dashboard";
+        return "redirect:/users/dashboard";
     }
 
     @GetMapping("/search")
