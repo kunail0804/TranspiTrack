@@ -2,29 +2,88 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body class="bg-gray-100 p-10">
 
-    <div class="max-w-sm bg-gradient-to-br from-blue-500 to-blue-700 rounded-3xl p-6 text-white shadow-2xl">
-        <div class="flex justify-between items-start mb-4">
-            <div>
-                <h2 class="text-2xl font-bold" th:text="${weather.city}">Ville</h2>
-                <p class="text-blue-100" th:text="${weather.weatherCondition}">Ciel dégagé</p>
-            </div>
-            <span class="text-4xl font-bold" th:text="${#numbers.formatDecimal(weather.currentTemp, 1, 0)} + '°'">20°</span>
-        </div>
+<body>
 
-        <div class="space-y-3 mt-6 border-t border-white/20 pt-4">
-            <div th:each="day : ${weather.forecast}" class="flex justify-between items-center text-sm">
-                <span th:text="${day.date}" class="font-medium">2026-04-10</span>
-                <div class="flex space-x-3">
-                    <span class="font-bold" th:text="${day.maxTemp} + '°'">25°</span>
-                    <span class="opacity-60" th:text="${day.minTemp} + '°'">12°</span>
-                </div>
-            </div>
-        </div>
+    <p th:text="${message}"></p>
+
+    <h1>Dashboard</h1>
+
+    <h3>Stats par sport</h3>
+
+    <table border="1">
+        <tr>
+            <th>Sport</th>
+            <th>Distance</th>
+            <th>Durée</th>
+            <th>Sessions</th>
+        </tr>
+
+        <tr th:each="sport : ${distanceBySport.keySet()}">
+            <td th:text="${sport.name}"></td>
+            <td th:text="${distanceBySport.get(sport)}"></td>
+            <td th:text="${durationBySport.get(sport)}"></td>
+            <td th:text="${countBySport.get(sport)}"></td>
+        </tr>
+    </table>
+
+    <br>
+
+    <!-- 📊 GRAPH SMALL -->
+    <div style="width: 500px;">
+        <canvas id="chartSport"></canvas>
     </div>
 
-</body>
+    <br>
+
+    <form action="/users/logout" method="GET">
+        <button type="submit">Se déconnecter</button>
+    </form>
+
+    </body>
+
+    <!-- 📊 CHART SCRIPT -->
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+
+        let distanceData = [[${distanceBySportName}]];
+
+        let labels = Object.keys(distanceData);
+        let data = Object.values(distanceData);
+
+        let colors = labels.map(() =>
+            `rgba(${Math.floor(Math.random()*255)},
+                ${Math.floor(Math.random()*255)},
+                ${Math.floor(Math.random()*255)}, 0.6)`
+        );
+
+        new Chart(document.getElementById('chartSport'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Distance par sport',
+                    data: data,
+                    backgroundColor: colors,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                devicePixelRatio: 2, 
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+        /*]]>*/
+    </script>
+
 </html>

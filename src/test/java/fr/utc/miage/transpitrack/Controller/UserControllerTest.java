@@ -130,7 +130,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, 165.0, "FEMALE", 60.0, "Paris", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).createUser(any(User.class));
         verify(session).setAttribute("userId", savedUser.getId());
         verify(model).addAttribute("message", "Création compte réussie");
@@ -228,7 +228,7 @@ class UserControllerTest {
                 "Bob", "Martin", "newemail@example.com", "",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
         verify(model).addAttribute("message", "Modification du compte réussie");
     }
@@ -258,7 +258,7 @@ class UserControllerTest {
                 "Bob", "Martin", "alice@example.com", "",
                 30, 180.0, "MALE", 80.0, "Lyon", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
         verify(model).addAttribute("message", "Modification du compte réussie");
     }
@@ -332,7 +332,7 @@ class UserControllerTest {
 
         String view = userController.loginUser("alice@example.com", "secret", model, session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(session).setAttribute("userId", 1L);
         verify(model).addAttribute("message", "Connexion compte réussie");
     }
