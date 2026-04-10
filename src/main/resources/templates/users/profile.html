@@ -5,11 +5,12 @@
     <title th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Profil utilisateur</title>
 </head>
 <body> 
+<p th:if="${msg}" th:text="${msg}"></p>
 <a th:href="@{/user/search}">Retour à la recherche</a>
 
 <h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Mon profil</h1>
 
-<p>Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
+<p th:if="${!isOwner}">Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
 <p>Nom: <span th:text="${user.name}">nom de l'utilisateur</span></p>
 <p>Prénom: <span th:text="${user.firstName}">prénom de l'utilisateur</span></p>
 <p>Âge: <span th:text="${user.age}">âge de l'utilisateur</span></p>
@@ -28,25 +29,39 @@
 
 <button th:href="@{/users/formUpdate}">Modifier mon profil</button>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Date</th>
-        <th>Duration</th>
-        <th>Distance</th>
-        <th>Evaluation</th>
-        <th>Sport</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="activity : ${activities}">
-        <td th:text="${activity.date}">2023-01-01</td>
-        <td th:text="${activity.duration}">0</td>
-        <td th:text="${activity.distance}">0.0</td>
-        <td th:text="${activity.evaluation}">0.0</td>
-        <td th:text="${activity.sport.name}">Nom du Sport</td>
-    </tr>
-    </tbody>
-</table>
+<hr>
+
+<h2>Activités</h2>
+<ul>
+    <li th:each="activity : ${activities}">
+        <strong>Date:</strong> <span th:text="${activity.date}"></span> -
+        <strong>Distance:</strong> <span th:text="${activity.distance}"></span> km -
+        <strong>Durée:</strong> <span th:text="${activity.duration}"></span> min
+    </li>
+    <li th:if="${activities == null or activities.isEmpty()}">
+        Aucune activité enregistrée.
+    </li>
+</ul>
+
+<h2>Challenges créés</h2>
+<ul>
+    <li th:each="challenge : ${user.createdChallenges}">
+        <span th:text="${challenge.title}">Titre</span>
+    </li>
+    <li th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
+        Aucun challenge créé.
+    </li>
+</ul>
+
+<hr>
+
+<a th:if="${isOwner}" th:href="@{/users/formUpdate}">
+    <button>Modifier mon profil</button>
+</a>
+<a th:if="${!isOwner && !requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
+    <button>Ajouter en ami</button>
+</a>
+<a th:if="${!isOwner && requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
+    <button disabled>Ajouter en ami</button>
 </body>
 </html>

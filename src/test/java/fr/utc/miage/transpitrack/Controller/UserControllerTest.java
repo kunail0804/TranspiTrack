@@ -8,6 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -19,6 +22,7 @@ import org.springframework.ui.Model;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -40,6 +44,9 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
+
+    @Mock
+    private FriendshipService friendshipService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 

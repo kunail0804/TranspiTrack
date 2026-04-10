@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -28,6 +29,9 @@ public class UserController {
 
     @Autowired
     ActivityService activityService;
+
+    @Autowired
+    FriendshipService friendshipService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -283,7 +287,7 @@ public class UserController {
     }
 
     @GetMapping("/profile/{id}")
-    public String viewProfile(@PathVariable("id") Long profileId,Model model,HttpSession session) {
+    public String viewProfile(@PathVariable("id") Long profileId, @RequestParam(required = false) String msg, Model model, HttpSession session) {
     
     Long currentUserId = (Long) session.getAttribute("userId");
     if (currentUserId == null) {
@@ -299,9 +303,14 @@ public class UserController {
 
     boolean isOwner = currentUserId.equals(profileId);
 
+    boolean requestSent = friendshipService.requestOrFriendshipExists(currentUserId, profileId);
+
+
     model.addAttribute("user", profileUser);
     model.addAttribute("activities", userActivities); 
     model.addAttribute("isOwner", isOwner);
+    model.addAttribute("requestSent", requestSent);
+    model.addAttribute("msg", msg);
 
     return "users/profile";
 }
