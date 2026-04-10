@@ -16,69 +16,68 @@ import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
-
 @Controller
-@RequestMapping("/user")
+@RequestMapping("/users")
 public class UserController {
-   
+
     @Autowired
     UserService userService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @GetMapping("/formCreate")
-    public String formCreate(@RequestParam(required=false) String message,
-        Model model, 
-        HttpSession session){
+    public String formCreate(@RequestParam(required = false) String message,
+            Model model,
+            HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
 
-        if(userId!=null){
+        if (userId != null) {
             //TODO : à modifier à l'avenir quand la page sera définie
-           return "dashboard";
+            return "users/dashboard";
         }
         model.addAttribute("message", message);
 
-        return "formCreate";
+        return "users/formCreate";
     }
 
     @PostMapping("/createUser")
-    public String createUser(@RequestParam("firstName") String firstName, 
-                            @RequestParam("name") String name,
-                            @RequestParam("email") String email,
-                            @RequestParam("password") String password,
-                            @RequestParam("age") int age, 
-                            @RequestParam("height") double height,
-                            @RequestParam("gender") String gender,
-                            @RequestParam("weight") double weight,
-                            @RequestParam("city") String city, 
-                            Model model,
-                            HttpSession session) {
+    public String createUser(@RequestParam("firstName") String firstName,
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam("password") String password,
+            @RequestParam("age") int age,
+            @RequestParam("height") double height,
+            @RequestParam("gender") String gender,
+            @RequestParam("weight") double weight,
+            @RequestParam("city") String city,
+            Model model,
+            HttpSession session) {
 
-        if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")){
+        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")) {
             model.addAttribute("message", "Email n'est pas au bon format");
-            return "formCreate";
-        }
-                                
-        if(age<0){
-            model.addAttribute("message", "Age ne peut pas être négatif");
-            return "formCreate";
-        }
-        if(height<0){
-            model.addAttribute("message", "Taille ne peut pas être négatif");
-            return "formCreate";
+            return "users/formCreate";
         }
 
-        if(weight<0){
+        if (age < 0) {
+            model.addAttribute("message", "Age ne peut pas être négatif");
+            return "users/formCreate";
+        }
+        if (height < 0) {
+            model.addAttribute("message", "Taille ne peut pas être négatif");
+            return "users/formCreate";
+        }
+
+        if (weight < 0) {
             model.addAttribute("message", "Poids ne peut pas être négatif");
-            return "formCreate";
+            return "users/formCreate";
         }
 
         User userExist = userService.getUserByEmail(email);
 
-        if(userExist!=null){
+        if (userExist != null) {
             model.addAttribute("message", "email dejas existant");
-            return "formCreate";
+            return "users/formCreate";
         }
 
         User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
@@ -90,25 +89,25 @@ public class UserController {
         model.addAttribute("message", "Création compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "dashboard";
+        return "users/dashboard";
     }
 
 
     @GetMapping("/formUpdate")
-    public String formUpdate(@RequestParam(required=false) String message,
+    public String formUpdate(@RequestParam(required = false) String message,
         Model model, 
         HttpSession session){
 
         Long userId = (Long) session.getAttribute("userId");
 
         if(userId==null){
-            return "formLogin";
+            return "users/formLogin";
         }
         User user = userService.getUserById(userId);
         model.addAttribute("message", message);
         model.addAttribute("user", user);
 
-        return "formUpdate";
+        return "users/formUpdate";
     }
 
     @PostMapping("/updateUser")
@@ -126,21 +125,21 @@ public class UserController {
 
         if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")){
             model.addAttribute("message", "Email n'est pas au bon format");
-            return "formUpdate";
+            return "users/formUpdate";
         }
                                 
         if(age<0){
             model.addAttribute("message", "Age ne peut pas être négatif");
-            return "formUpdate";
+            return "users/formUpdate";
         }
         if(height<0){
             model.addAttribute("message", "Taille ne peut pas être négatif");
-            return "formUpdate";
+            return "users/formUpdate";
         }
 
         if(weight<0){
             model.addAttribute("message", "Poids ne peut pas être négatif");
-            return "formUpdate";
+            return "users/formUpdate";
         }
 
         Long actualUserId = (Long) session.getAttribute("userId");
@@ -164,7 +163,7 @@ public class UserController {
                 actualUser.setCity(city);
             }else{
                 model.addAttribute("message", "email déja existant");
-                return "formUpdate";
+                return "users/formUpdate";
             }
         }else{
                 actualUser.setName(name);
@@ -183,44 +182,44 @@ public class UserController {
         model.addAttribute("message", "Modification du compte réussie");
 
         //TODO : à modifier à l'avenir quand la page "profil" sera définie
-        return "dashboard";
+        return "users/dashboard";
     }
 
 
     @GetMapping("/formLogin")
-    public String formLogin(@RequestParam(required=false) String message,
-        Model model, 
-        HttpSession session){
+    public String formLogin(@RequestParam(required = false) String message,
+            Model model,
+            HttpSession session) {
 
         Long userId = (Long) session.getAttribute("userId");
-    
-        if(userId!=null){
+
+        if (userId != null) {
             //TODO : à modifier à l'avenir quand la page sera définie
+            return "users/dashboard";
         }
         model.addAttribute("message", message);
 
-        return "formLogin";
+        return "users/formLogin";
     }
-
 
     @PostMapping("/loginUser")
     public String loginUser(@RequestParam("email") String email,
-                            @RequestParam("password") String password,
-                            Model model,
-                            HttpSession session) {
+            @RequestParam("password") String password,
+            Model model,
+            HttpSession session) {
 
         User userLogin = userService.getUserByEmail(email);
 
-        if(userLogin==null){
+        if (userLogin == null) {
             model.addAttribute("message", "email ou mots de passe incorrect");
-            return "formLogin";
+            return "users/formLogin";
         }
 
         boolean isValid = encoder.matches(password, userLogin.getPassword());
 
-        if(!isValid){
+        if (!isValid) {
             model.addAttribute("message", "email ou mots de passe incorrect");
-            return "formLogin";
+            return "users/formLogin";
         }
 
         session.setAttribute("userId", userLogin.getId());
@@ -228,7 +227,7 @@ public class UserController {
         model.addAttribute("message", "Connexion compte réussie");
 
         //TODO : à modifier à l'avenir quand la page sera définie
-        return "dashboard";
+        return "users/dashboard";
     }
 
     @GetMapping("/search")
@@ -238,7 +237,7 @@ public class UserController {
 
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
-            return "redirect:/user/formLogin";
+            return "redirect:/users/formLogin";
         }
 
         if (query != null && !query.isBlank()) {
@@ -254,6 +253,20 @@ public class UserController {
     @GetMapping("/logout")
     public String logoutPage(HttpSession session) {
         session.invalidate();
-        return "formLogin";
+        return "users/formLogin";
+    }
+
+    @GetMapping("/profile")
+    public String profilePage(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+        if (user == null) {
+            return "users/formLogin";
+        }
+        model.addAttribute("user", user);
+        return "users/profile";
     }
 }

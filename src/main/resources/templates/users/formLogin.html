@@ -6,13 +6,13 @@
 </head>
 <body>
 <p th:text = "${message}"></p>
-<form action="/user/loginUser" method = "POST">
+<form action="/users/loginUser" method = "POST">
     Email : <input type="text" placeholder = "Entrez votre email" name="email" id="emailUser" required/><br>
     Mot de passe : <input type="password" placeholder = "Entrez votre mot de passe" name="password" id="passwordUser" required/><br>
     <button type="submit">Se connecter</button>
 </form>
 
-<a th:href="@{/user/formCreate}">
+<a th:href="@{/users/formCreate}">
     <button>Créer un compte</button>
 </a>
 </body>
