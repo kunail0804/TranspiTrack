@@ -24,8 +24,7 @@ public class Challenge {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
-    public Challenge(Long id, String title, String visibility, Duration duration, User creator) {
-        this.id = id;
+    public Challenge(String title, String visibility, Duration duration, User creator) {
         this.title = title;
         this.visibility = visibility;
         this.duration = duration;
