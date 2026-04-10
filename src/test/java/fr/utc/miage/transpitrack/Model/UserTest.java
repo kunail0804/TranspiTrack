@@ -3,6 +3,7 @@ package fr.utc.miage.transpitrack.Model;
 import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
@@ -63,5 +64,16 @@ class UserTest {
         assertEquals(Gender.MALE, user.getGender());
         assertEquals(80.0, user.getWeight(), 0.0);
         assertEquals("Lyon", user.getCity());
+    }
+
+    @Test
+    void relationshipGettersShouldReturnEmptyListsByDefault() {
+        User user = new User();
+        assertNotNull(user.getSportsPreference());
+        assertNotNull(user.getFriends());
+        assertNotNull(user.getGoals());
+        assertNotNull(user.getComments());
+        assertNotNull(user.getCreatedChallenges());
+        assertNotNull(user.getJoinedChallenges());
     }
 }
