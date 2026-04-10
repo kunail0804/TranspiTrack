@@ -2,10 +2,13 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Profil utilisateur</title>
+    <title th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Profil utilisateur</title>
 </head>
 <body> 
-<h1>Mon profil</h1>
+<a th:href="@{/user/search}">Retour à la recherche</a>
+
+<h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Mon profil</h1>
+
 <p>Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
 <p>Nom: <span th:text="${user.name}">nom de l'utilisateur</span></p>
 <p>Prénom: <span th:text="${user.firstName}">prénom de l'utilisateur</span></p>
@@ -14,6 +17,7 @@
 <p>Poids: <span th:text="${user.weight}">poids de l'utilisateur</span></p>
 <p>Taille: <span th:text="${user.height}">taille de l'utilisateur</span></p>
 <p>Ville: <span th:text="${user.city}">ville de l'utilisateur</span></p>
+
 <p>Sports préférés:</p>
 <ul>
     <li th:each="us : ${user.sportsPreference}">
@@ -24,25 +28,34 @@
 
 <button th:href="@{/users/formUpdate}">Modifier mon profil</button>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>Date</th>
-        <th>Duration</th>
-        <th>Distance</th>
-        <th>Evaluation</th>
-        <th>Sport</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="activity : ${activities}">
-        <td th:text="${activity.date}">2023-01-01</td>
-        <td th:text="${activity.duration}">0</td>
-        <td th:text="${activity.distance}">0.0</td>
-        <td th:text="${activity.evaluation}">0.0</td>
-        <td th:text="${activity.sport.name}">Nom du Sport</td>
-    </tr>
-    </tbody>
-</table>
+<hr>
+
+<h2>Activités</h2>
+<ul>
+    <li th:each="activity : ${activities}">
+        <strong>Date:</strong> <span th:text="${activity.date}"></span> -
+        <strong>Distance:</strong> <span th:text="${activity.distance}"></span> km -
+        <strong>Durée:</strong> <span th:text="${activity.duration}"></span> min
+    </li>
+    <li th:if="${activities == null or activities.isEmpty()}">
+        Aucune activité enregistrée.
+    </li>
+</ul>
+
+<h2>Challenges créés</h2>
+<ul>
+    <li th:each="challenge : ${user.createdChallenges}">
+        <span th:text="${challenge.title}">Titre</span>
+    </li>
+    <li th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
+        Aucun challenge créé.
+    </li>
+</ul>
+
+<hr>
+
+<a th:if="${isOwner}" th:href="@{/users/formUpdate}">
+    <button>Modifier mon profil</button>
+</a>
 </body>
 </html>

@@ -7,6 +7,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -280,4 +281,28 @@ public class UserController {
 
         return "users/profile";
     }
+
+    @GetMapping("/profile/{id}")
+    public String viewProfile(@PathVariable("id") Long profileId,Model model,HttpSession session) {
+    
+    Long currentUserId = (Long) session.getAttribute("userId");
+    if (currentUserId == null) {
+        return "redirect:/users/formLogin";
+    }
+
+    User profileUser = userService.getUserById(profileId);
+    if (profileUser == null) {
+        return "redirect:/users/search"; 
+    }
+
+    List<Activity> userActivities = activityService.getActivitiesByUserId(profileId);
+
+    boolean isOwner = currentUserId.equals(profileId);
+
+    model.addAttribute("user", profileUser);
+    model.addAttribute("activities", userActivities); 
+    model.addAttribute("isOwner", isOwner);
+
+    return "users/profile";
+}
 }

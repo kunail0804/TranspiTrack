@@ -440,4 +440,53 @@ class UserControllerTest {
         verify(model).addAttribute("user", user);
         verify(model).addAttribute("activities", List.of(newer, older));
     }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /users/profile/{id}
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void viewProfileShouldRedirectToFormLoginWhenNotLoggedIn() {
+        String view = userController.viewProfile(2L, model, session);
+
+        assertEquals("redirect:/users/formLogin", view);
+    }
+
+    @Test
+    void viewProfileShouldRedirectToSearchWhenProfileUserNotFound() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(2L)).thenReturn(null);
+
+        String view = userController.viewProfile(2L, model, session);
+
+        assertEquals("redirect:/users/search", view);
+    }
+
+    @Test
+    void viewProfileShouldReturnProfileViewWithIsOwnerTrueWhenViewingOwnProfile() {
+        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(activityService.getActivitiesByUserId(1L)).thenReturn(new java.util.ArrayList<>());
+
+        String view = userController.viewProfile(1L, model, session);
+
+        assertEquals("users/profile", view);
+        verify(model).addAttribute("user", user);
+        verify(model).addAttribute("isOwner", true);
+    }
+
+    @Test
+    void viewProfileShouldReturnProfileViewWithIsOwnerFalseWhenViewingOtherUserProfile() {
+        User profileUser = new User("Bob", "Martin", "bob@example.com", "secret", 30, 180.0, Gender.MALE, 80.0, "Lyon");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(2L)).thenReturn(profileUser);
+        when(activityService.getActivitiesByUserId(2L)).thenReturn(new java.util.ArrayList<>());
+
+        String view = userController.viewProfile(2L, model, session);
+
+        assertEquals("users/profile", view);
+        verify(model).addAttribute("user", profileUser);
+        verify(model).addAttribute("isOwner", false);
+    }
 }
