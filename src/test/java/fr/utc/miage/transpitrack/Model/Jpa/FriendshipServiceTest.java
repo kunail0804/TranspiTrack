@@ -29,7 +29,6 @@ public class FriendshipServiceTest {
     @InjectMocks
     private FriendshipService friendshipService;
 
-
     @Test
     void updateFriendshipShouldReturnSavedFriendship() {
         Friendship friendship = new Friendship();
