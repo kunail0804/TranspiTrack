@@ -7,6 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
@@ -18,6 +21,7 @@ import org.springframework.ui.Model;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -39,6 +43,9 @@ class UserControllerTest {
 
     @InjectMocks
     private UserController userController;
+
+    @Mock
+    private FriendshipService friendshipService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -447,7 +454,7 @@ class UserControllerTest {
 
     @Test
     void viewProfileShouldRedirectToFormLoginWhenNotLoggedIn() {
-        String view = userController.viewProfile(2L, model, session);
+        String view = userController.viewProfile(2L, null, model, session);
 
         assertEquals("redirect:/users/formLogin", view);
     }
@@ -457,36 +464,44 @@ class UserControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(2L)).thenReturn(null);
 
-        String view = userController.viewProfile(2L, model, session);
+        String view = userController.viewProfile(2L, null, model, session);
 
         assertEquals("redirect:/users/search", view);
     }
 
     @Test
     void viewProfileShouldReturnProfileViewWithIsOwnerTrueWhenViewingOwnProfile() {
-        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+
+        User user = new User();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
-        when(activityService.getActivitiesByUserId(1L)).thenReturn(new java.util.ArrayList<>());
+        when(activityService.getActivitiesByUserId(1L)).thenReturn(List.of());
+        when(friendshipService.requestOrFriendshipExists(1L, 1L)).thenReturn(false);
 
-        String view = userController.viewProfile(1L, model, session);
+        String view = userController.viewProfile(1L, null, model, session);
 
         assertEquals("users/profile", view);
+
         verify(model).addAttribute("user", user);
         verify(model).addAttribute("isOwner", true);
+        verify(model).addAttribute(eq("requestSent"), anyBoolean());
     }
 
     @Test
     void viewProfileShouldReturnProfileViewWithIsOwnerFalseWhenViewingOtherUserProfile() {
-        User profileUser = new User("Bob", "Martin", "bob@example.com", "secret", 30, 180.0, Gender.MALE, 80.0, "Lyon");
+
+        User profileUser = new User();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(2L)).thenReturn(profileUser);
-        when(activityService.getActivitiesByUserId(2L)).thenReturn(new java.util.ArrayList<>());
+        when(activityService.getActivitiesByUserId(2L)).thenReturn(List.of());
+        when(friendshipService.requestOrFriendshipExists(1L, 2L)).thenReturn(true);
 
-        String view = userController.viewProfile(2L, model, session);
+        String view = userController.viewProfile(2L, null, model, session);
 
         assertEquals("users/profile", view);
+
         verify(model).addAttribute("user", profileUser);
         verify(model).addAttribute("isOwner", false);
+        verify(model).addAttribute(eq("requestSent"), anyBoolean());
     }
 }

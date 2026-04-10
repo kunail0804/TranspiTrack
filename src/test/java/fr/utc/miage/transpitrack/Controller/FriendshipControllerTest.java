@@ -41,7 +41,7 @@ class FriendshipControllerTest {
 
         String result = controller.addFriend(2L, session, model);
 
-        assertEquals("redirect:/users/login?error=Vous devez être connecté pour ajouter un ami", result);
+        assertEquals("redirect:/users/login?msg=Vous devez etre connecte pour ajouter un ami", result);
     }
 
     @Test
@@ -52,7 +52,7 @@ class FriendshipControllerTest {
 
         String result = controller.addFriend(null, session, model);
 
-        assertEquals("redirect:/users/profile/null?error=ID de l'ami est requis", result);
+        assertEquals("redirect:/users/profile/null?msg=ID de l'ami est requis", result);
     }
 
     @Test
@@ -64,7 +64,7 @@ class FriendshipControllerTest {
 
         String result = controller.addFriend(1L, session, model);
 
-        assertEquals("redirect:/users/profile/1?error=Vous ne pouvez pas vous ajouter en tant qu'ami", result);
+        assertEquals("redirect:/users/profile/1?msg=Vous ne pouvez pas vous ajouter en tant qu'ami", result);
     }
 
     @Test
@@ -81,7 +81,7 @@ class FriendshipControllerTest {
 
         String result = controller.addFriend(2L, session, model);
 
-        assertEquals("redirect:/users/profile/2?error=Erreur lors de la création de la demande d'amitié", result);
+        assertEquals("redirect:/users/profile/2?msg=Erreur lors de la creation de la demande d'amitie", result);
     }
 
     @Test
@@ -99,6 +99,6 @@ class FriendshipControllerTest {
 
         String result = controller.addFriend(2L, session, model);
 
-        assertEquals("redirect:/users/profile/2?success=Demande d'amitié envoyée avec succès", result);
+        assertEquals("redirect:/users/profile/2?msg=Demande d'amitie envoyee avec succes", result);
     }
 }
