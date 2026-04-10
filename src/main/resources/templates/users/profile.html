@@ -5,11 +5,12 @@
     <title th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Profil utilisateur</title>
 </head>
 <body> 
+<p th:if="${msg}" th:text="${msg}"></p>
 <a th:href="@{/user/search}">Retour à la recherche</a>
 
 <h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Mon profil</h1>
 
-<p>Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
+<p th:if="${!isOwner}">Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
 <p>Nom: <span th:text="${user.name}">nom de l'utilisateur</span></p>
 <p>Prénom: <span th:text="${user.firstName}">prénom de l'utilisateur</span></p>
 <p>Âge: <span th:text="${user.age}">âge de l'utilisateur</span></p>
@@ -57,5 +58,10 @@
 <a th:if="${isOwner}" th:href="@{/users/formUpdate}">
     <button>Modifier mon profil</button>
 </a>
+<a th:if="${!isOwner && !requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
+    <button>Ajouter en ami</button>
+</a>
+<a th:if="${!isOwner && requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
+    <button disabled>Ajouter en ami</button>
 </body>
 </html>
