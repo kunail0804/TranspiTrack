@@ -80,23 +80,4 @@ public class ActivityController {
         activityService.save(activity);
         return "redirect:/activities";
     }
-
-    @GetMapping("/listActivitiesUser")
-    public String listActivitiesUser(Model model,
-                                    HttpSession session){
-        Long userId = (Long) session.getAttribute("userId");
-
-        if(userId==null){
-            model.addAttribute("message", "Il faut êtres connecter !");
-            return "formLogin";
-        }
-
-        List<Activity> activities = activityService.getActivitiesByUserId(userId);
-        activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
-        model.addAttribute("activities", activities);
-
-        return "activities/list";
-    }
-    
-    
 }

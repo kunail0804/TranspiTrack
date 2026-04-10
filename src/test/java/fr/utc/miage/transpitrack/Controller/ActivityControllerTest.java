@@ -148,34 +148,4 @@ class ActivityControllerTest {
         assertEquals("redirect:/activities", view);
         verify(activityService).save(activity);
     }
-
-    // ──────────────────────────────────────────────────────────────
-    // GET /activities/listActivitiesUser
-    // ──────────────────────────────────────────────────────────────
-
-    @Test
-    void listActivitiesUser_shouldReturnListViewWithActivitiesSortedByDateDesc() {
-        Long userId = 1L;
-        when(session.getAttribute("userId")).thenReturn(userId);
-
-        Activity older = new Activity();
-        older.setDate(LocalDate.of(2024, 1, 1));
-        Activity newer = new Activity();
-        newer.setDate(LocalDate.of(2024, 6, 1));
-        
-        when(activityService.getActivitiesByUserId(userId))
-            .thenReturn(Arrays.asList(older, newer));
-
-        String view = activityController.listActivitiesUser(model, session);
-
-        assertEquals("activities/list", view);
-
-        ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
-        verify(model).addAttribute(eq("activities"), captor.capture());
-        List<Activity> sortedActivities = captor.getValue();
-
-        assertEquals(2, sortedActivities.size());
-        assertEquals(newer, sortedActivities.get(0));
-        assertEquals(older, sortedActivities.get(1));
-    }
 }

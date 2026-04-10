@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
@@ -22,6 +24,9 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ActivityService activityService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -260,6 +265,7 @@ public class UserController {
     public String profilePage(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute("userId");
         if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
             return "users/formLogin";
         }
         User user = userService.getUserById(userId);
@@ -267,6 +273,11 @@ public class UserController {
             return "users/formLogin";
         }
         model.addAttribute("user", user);
+
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
+        activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        model.addAttribute("activities", activities);
+
         return "users/profile";
     }
 }
