@@ -32,12 +32,6 @@ public class FriendshipServiceTest {
     @InjectMocks
     private FriendshipService friendshipService;
 
-    @Mock
-    private UserRepository userRepository;
-
-    @InjectMocks
-    private UserService userService;
-
 
     @Test
     void updateFriendshipShouldReturnSavedFriendship() {
