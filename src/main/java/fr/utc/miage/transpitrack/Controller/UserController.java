@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
+import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
@@ -64,11 +65,6 @@ public class UserController {
             Model model,
             HttpSession session) {
 
-        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")) {
-            model.addAttribute("message", "Email n'est pas au bon format");
-            return "users/formCreate";
-        }
-
         if (age < 0) {
             model.addAttribute("message", "Age ne peut pas être négatif");
             return "users/formCreate";
@@ -90,11 +86,15 @@ public class UserController {
             return "users/formCreate";
         }
 
-        User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
+        try{
+            User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
 
-        User savedUser = userService.createUser(newUser);
-
-        session.setAttribute("userId", savedUser.getId());
+            User savedUser = userService.createUser(newUser);
+            session.setAttribute("userId", savedUser.getId());
+        } catch (Exception e) {
+            model.addAttribute("message", "Email invalide");
+            return "users/formCreate";
+        }
 
         model.addAttribute("message", "Création compte réussie");
 
@@ -132,11 +132,6 @@ public class UserController {
                             @RequestParam("city") String city, 
                             Model model,
                             HttpSession session) {
-
-        if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")){
-            model.addAttribute("message", "Email n'est pas au bon format");
-            return "users/formUpdate";
-        }
                                 
         if(age<0){
             model.addAttribute("message", "Age ne peut pas être négatif");
@@ -159,18 +154,18 @@ public class UserController {
         if(!actualUser.getEmail().equals(email)){
             User userExist = userService.getUserByEmail(email);
 
-            if(userExist==null){
-                actualUser.setName(name);
-                actualUser.setFirstName(firstName);
-                actualUser.setAge(age);
-                actualUser.setGender(Gender.valueOf(gender));
-                actualUser.setEmail(email);
-                if(!password.isBlank()){
-                    actualUser.setPassword(encoder.encode(password));
-                }
-                actualUser.setHeight(height);
-                actualUser.setWeight(weight);
-                actualUser.setCity(city);
+            if(userExist==null){                
+                    actualUser.setName(name);
+                    actualUser.setFirstName(firstName);
+                    actualUser.setAge(age);
+                    actualUser.setGender(Gender.valueOf(gender));
+                    actualUser.setEmail(email);
+                    if(!password.isBlank()){
+                        actualUser.setPassword(encoder.encode(password));
+                    }
+                    actualUser.setHeight(height);
+                    actualUser.setWeight(weight);
+                    actualUser.setCity(city);
             }else{
                 model.addAttribute("message", "email déja existant");
                 return "users/formUpdate";
@@ -187,8 +182,12 @@ public class UserController {
                 actualUser.setWeight(weight);
                 actualUser.setCity(city);
         }
-
-        userService.updateUser(actualUser);
+        try{
+            userService.updateUser(actualUser);
+        } catch (Exception e) {
+            model.addAttribute("message", "Email invalide");
+            return "users/formUpdate";
+        }
         model.addAttribute("message", "Modification du compte réussie");
 
         //TODO : à modifier à l'avenir quand la page "profil" sera définie
@@ -277,11 +276,19 @@ public class UserController {
         if (user == null) {
             return "users/formLogin";
         }
-        model.addAttribute("user", user);
+        
 
         List<Activity> activities = activityService.getActivitiesByUserId(userId);
+        List<Friendship> friendships = friendshipService.getMyFriendships(userId);
+        List<User> friends = friendships.stream().map(f -> f.getRequester().getId().equals(userId) ? f.getReceiver() : f.getRequester()).toList();
+        int pendingFriendships = friendshipService.getMyPendingFriendships(userId).size();
+
+        model.addAttribute("user", user);
         activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
         model.addAttribute("activities", activities);
+        model.addAttribute("friends", friends);
+        model.addAttribute("pendingFriendships", pendingFriendships);
+        model.addAttribute("isOwner", true);
 
         return "users/profile";
     }
