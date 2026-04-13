@@ -131,29 +131,6 @@ public class Activity {
         if (sport == null || user == null) return 0;
         return sport.getMetValue() * user.getWeight() * (duration / 60.0);
     }
-    public String getCity() {
-        return city;
-    }
-
-    public Double getTemperature() {
-        return temperature;
-    }
-
-    public String getWeatherCondition() {
-        return weatherCondition;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setTemperature(Double temperature) {
-        this.temperature = temperature;
-    }
-
-    public void setWeatherCondition(String weatherCondition) {
-        this.weatherCondition = weatherCondition;
-    }
 
 }
 
