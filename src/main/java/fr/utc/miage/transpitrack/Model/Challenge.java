@@ -24,6 +24,8 @@ public class Challenge {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
+    public Challenge() {}
+
     public Challenge(String title, String visibility, Duration duration, User creator) {
         this.title = title;
         this.visibility = visibility;
@@ -31,20 +33,16 @@ public class Challenge {
         this.creator = creator;
     }
 
-    public String getTitle() {
-        return title;
-    }
+    public Long getId() { return id; }
+    public String getTitle() { return title; }
+    public String getVisibility() { return visibility; }
+    public Duration getDuration() { return duration; }
+    public User getCreator() { return creator; }
 
-    public String getVisibility() {
-        return visibility;
-    }
-
-    public Duration getDuration() {
-        return duration;
-    }
-
-    
-
+    public void setTitle(String title) { this.title = title; }
+    public void setVisibility(String visibility) { this.visibility = visibility; }
+    public void setDuration(Duration duration) { this.duration = duration; }
+    public void setCreator(User creator) { this.creator = creator; }
 }
 
 
