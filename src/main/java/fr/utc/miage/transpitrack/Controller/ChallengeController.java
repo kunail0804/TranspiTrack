@@ -43,6 +43,11 @@ public class ChallengeController {
             return "redirect:/users/formLogin";
         }
 
+        if (durationDays < 0) {
+            model.addAttribute("errorMessage", "Durée négative, veuillez insérer une durée valide");
+            return "challenge/createChallenge"; 
+        }
+
         User creator = userService.getUserById(userId);
 
         Duration duration = Duration.ofDays(durationDays);
