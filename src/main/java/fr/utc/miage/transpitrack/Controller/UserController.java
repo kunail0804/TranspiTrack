@@ -1,5 +1,8 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import fr.utc.miage.transpitrack.Model.Jpa.UserSportRepository;
+import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +18,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
+
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
+
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
+
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.UserSport;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -33,6 +44,12 @@ public class UserController {
 
     @Autowired
     FriendshipService friendshipService;
+
+    @Autowired
+    UserSportService userSportService;
+
+    @Autowired
+    SportService sportService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -293,6 +310,7 @@ public class UserController {
         return "users/profile";
     }
 
+
     @GetMapping("/profile/{id}")
     public String viewProfile(@PathVariable("id") Long profileId, @RequestParam(required = false) String msg, Model model, HttpSession session) {
     
@@ -321,4 +339,108 @@ public class UserController {
 
     return "users/profile";
 }
+
+    @GetMapping("/consultationPreferences")
+    public String consultationPreferences(Model model,
+                                          HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+        List<Sport> sports = sportService.getAllSports();
+
+        model.addAttribute("sportsPreference", user.getSportsPreference());
+        model.addAttribute("sports", sports);
+        return "users/listPreferences";
+    }
+
+    @PostMapping("/addPreference")
+    public String addPreference(@RequestParam("sport") Long sportId,
+                                @RequestParam("level") Level level,
+                                Model model,
+                                HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(sportId == null || level == null){
+            return "redirect:/users/consultationPreferences";
+        }
+
+        Sport sport = sportService.getSportById(sportId);
+
+        User user = userService.getUserById(userId);
+       
+        UserSport userSportExist = userSportService.getUserSportByUserAndSport(user, sport);
+        if(userSportExist!=null){
+            model.addAttribute("message", "Ce sport est dejas dans votre liste !");
+            return "redirect:/users/consultationPreferences";
+        }
+        
+
+        UserSport userSport = new UserSport(user, sport, level);
+        userSportService.createUserSport(userSport);
+        user.addPreference(userSport);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationPreferences";
+    }
+
+     @PostMapping("/updateLevel")
+    public String updateLevel(@RequestParam("userSport") Long userSportId,
+                              @RequestParam("level") Level level,
+                              Model model,
+                              HttpSession session){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+         if(userSportId == null || level == null){
+            return "redirect:/users/consultationPreferences";
+        }
+
+        UserSport userSport = userSportService.getUserSportById(userSportId);
+
+        User user = userService.getUserById(userId);
+        user.deletePreference(userSport);
+
+        userSport.setLevel(level);
+        userSportService.updateUserSport(userSport);
+
+        user.addPreference(userSport);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationPreferences";
+    }
+
+    @PostMapping("/deletePreference")
+    public String deletePreference(@RequestParam("userSport") Long userSportId,
+                                   Model model,
+                                   HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(userSportId == null){
+            return "redirect:/users/consultationPreferences";
+        }
+        UserSport userSport = userSportService.getUserSportById(userSportId);
+
+        userSportService.deleteUserSport(userSport);
+
+        User user = userService.getUserById(userId);
+        user.deletePreference(userSport);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationPreferences";
+    }
 }
