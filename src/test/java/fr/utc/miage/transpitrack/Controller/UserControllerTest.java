@@ -23,10 +23,15 @@ import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
+import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.UserSport;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -49,6 +54,12 @@ class UserControllerTest {
 
     @Mock
     private FriendshipService friendshipService;
+
+    @Mock
+    private SportService sportService;
+
+    @Mock
+    private UserSportService userSportService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -509,5 +520,166 @@ class UserControllerTest {
         verify(model).addAttribute("user", profileUser);
         verify(model).addAttribute("isOwner", false);
         verify(model).addAttribute(eq("requestSent"), anyBoolean());
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /users/consultationPreferences
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void consultationPreferencesShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.consultationPreferences(model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
+
+    @Test
+    void consultationPreferencesShouldReturnPreferencesViewWhenLoggedIn() {
+        User user = new User();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(sportService.getAllSports()).thenReturn(List.of(new Sport()));
+
+        String view = userController.consultationPreferences(model, session);
+
+        assertEquals("users/listPreferences", view);
+        verify(model).addAttribute("sportsPreference", user.getSportsPreference());
+        verify(model).addAttribute(eq("sports"), any());
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /users/addPreference
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void addPreferenceShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.addPreference(1L, Level.BEGINNER, model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
+
+    @Test
+    void addPreferenceShouldRedirectWhenSportIdIsNull() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.addPreference(null, Level.BEGINNER, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+    }
+
+    @Test
+    void addPreferenceShouldRedirectWhenLevelIsNull() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.addPreference(1L, null, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+    }
+
+    @Test
+    void addPreferenceShouldRedirectWhenSportAlreadyInList() {
+        User user = new User();
+        Sport sport = new Sport();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(sportService.getSportById(1L)).thenReturn(sport);
+        when(userSportService.getUserSportByUserAndSport(user, sport))
+                .thenReturn(new UserSport(user, sport, Level.BEGINNER));
+
+        String view = userController.addPreference(1L, Level.BEGINNER, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+        verify(model).addAttribute("message", "Ce sport est dejas dans votre liste !");
+    }
+
+    @Test
+    void addPreferenceShouldSaveAndRedirectWhenValid() {
+        User user = new User();
+        Sport sport = new Sport();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(sportService.getSportById(1L)).thenReturn(sport);
+        when(userSportService.getUserSportByUserAndSport(user, sport)).thenReturn(null);
+
+        String view = userController.addPreference(1L, Level.INTERMEDIATE, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+        verify(userSportService).createUserSport(any(UserSport.class));
+        verify(userService).updateUser(user);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /users/updateLevel
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void updateLevelShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
+
+    @Test
+    void updateLevelShouldRedirectWhenUserSportIdIsNull() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.updateLevel(null, Level.ADVANCED, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+    }
+
+    @Test
+    void updateLevelShouldUpdateLevelAndRedirectWhenValid() {
+        User user = new User();
+        UserSport us = new UserSport(user, new Sport(), Level.BEGINNER);
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(userSportService.getUserSportById(1L)).thenReturn(us);
+
+        String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+        verify(userSportService).updateUserSport(us);
+        verify(userService).updateUser(user);
+        assertEquals(Level.ADVANCED, us.getLevel());
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /users/deletePreference
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void deletePreferenceShouldReturnFormLoginWhenNotLoggedIn() {
+        String view = userController.deletePreference(1L, model, session);
+
+        assertEquals("users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
+
+    @Test
+    void deletePreferenceShouldRedirectWhenUserSportIdIsNull() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.deletePreference(null, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+    }
+
+    @Test
+    void deletePreferenceShouldDeleteAndRedirectWhenValid() {
+        User user = new User();
+        UserSport us = new UserSport(user, new Sport(), Level.BEGINNER);
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(userSportService.getUserSportById(1L)).thenReturn(us);
+
+        String view = userController.deletePreference(1L, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+        verify(userSportService).deleteUserSport(us);
+        verify(userService).updateUser(user);
     }
 }
