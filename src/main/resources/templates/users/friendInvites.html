@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mes invitations d'amis</title>
+</head>
+<body>
+<p th:if="${msg != null}" th:text="${msg}">Message de succès ou d'erreur</p>
+<h1>Mes invitations d'amis</h1>
+<p th:if="${#lists.isEmpty(friendInvites)}">Vous n'avez aucune invitation d'ami en attente.</p>
+<ul th:if="${!#lists.isEmpty(friendInvites)}">
+    <li th:each="invite : ${friendInvites}">
+        <span th:text="${invite.requester.name}">Nom de l'ami</span>
+        <form th:action="@{/users/friends/accept/{id}(id=${invite.id})}" method="post" style="display:inline">
+            <button type="submit">Accepter</button>
+        </form>
+        <form th:action="@{/users/friends/reject/{id}(id=${invite.id})}" method="post" style="display:inline">
+            <button type="submit">Refuser</button>
+        </form>
+    </li>
+</ul>
+<a th:href="@{/users/profile}">
+    <button>Retour à mon profil</button>
+</a>
+</body>
+</html>

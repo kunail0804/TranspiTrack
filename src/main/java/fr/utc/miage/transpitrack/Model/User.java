@@ -16,6 +16,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name="user")
@@ -26,7 +27,10 @@ public class User {
 
     private String firstName;
     private String name;
+
+    @Email
     private String email;
+    
     private String password;
     private int age;
     private double height;

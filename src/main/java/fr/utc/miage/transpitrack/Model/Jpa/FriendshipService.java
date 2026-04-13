@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 
 @Service
 public class FriendshipService {
@@ -56,6 +56,19 @@ public class FriendshipService {
 
         Friendship friendship = new Friendship(requester, receiver);
         return friendshipRepository.save(friendship);
+    }
+
+    public Friendship getFriendshipById(Long friendshipId) {
+        return friendshipRepository.findById(friendshipId).orElse(null);
+    }
+
+    public void acceptFriendRequest(Friendship friendship) {
+        friendship.setStatus(FriendshipStatus.ACCEPTED);
+        friendshipRepository.save(friendship);
+    }
+
+    public void rejectFriendRequest(Friendship friendship) {
+        friendshipRepository.delete(friendship);
     }
 
 }

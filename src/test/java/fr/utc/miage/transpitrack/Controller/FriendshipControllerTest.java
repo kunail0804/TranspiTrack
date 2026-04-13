@@ -1,6 +1,8 @@
 package fr.utc.miage.transpitrack.Controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.Test;
@@ -85,6 +87,22 @@ class FriendshipControllerTest {
     }
 
     @Test
+    void addFriendShouldRedirectToLoginWhenUserIdIsNull() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String result = controller.addFriend(2L, session, model);
+
+        assertEquals(
+                "redirect:/users/login?msg=Vous devez etre connecte pour ajouter un ami",
+                result
+        );
+
+        verifyNoInteractions(userService);
+        verifyNoInteractions(friendshipService);
+    }
+
+    @Test
     void shouldSucceedWhenFriendRequestIsCreated() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
@@ -100,5 +118,136 @@ class FriendshipControllerTest {
         String result = controller.addFriend(2L, session, model);
 
         assertEquals("redirect:/users/profile/2?msg=Demande d'amitie envoyee avec succes", result);
+    }
+
+    @Test
+    void showInvitesShouldRedirectWhenUserNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String result = controller.showInvites(null, session, model);
+
+        assertEquals("redirect:/users/login?msg=Vous devez etre connecte pour voir vos invitations", result);
+    }
+
+    @Test
+    void showInvitesShouldReturnViewWithModel() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        when(friendshipService.getMyPendingFriendships(1L))
+                .thenReturn(java.util.List.of());
+
+        String result = controller.showInvites("msg", session, model);
+
+        assertEquals("users/friendInvites", result);
+
+        verify(model).addAttribute(eq("friendInvites"), any());
+        verify(model).addAttribute("msg", "msg");
+    }
+
+    @Test
+    void acceptInviteShouldRedirectWhenUserNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String result = controller.acceptInvite(1L, session);
+
+        assertEquals("redirect:/users/login?msg=Vous devez etre connecte pour accepter une invitation", result);
+    }
+
+    @Test
+    void acceptInviteShouldFailWhenFriendshipNotFound() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        when(friendshipService.getFriendshipById(1L)).thenReturn(null);
+
+        String result = controller.acceptInvite(1L, session);
+
+        assertEquals("redirect:/users/friends/invites?msg=Invitation non trouvee", result);
+    }
+
+    @Test
+    void acceptInviteShouldFailWhenUserIsNotReceiver() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        User requester = new User();
+        requester.setName("Bob");
+
+        User receiver = mock(User.class);
+        when(receiver.getId()).thenReturn(2L);
+
+        Friendship friendship = mock(Friendship.class);
+        when(friendship.getReceiver()).thenReturn(receiver);
+
+        when(friendshipService.getFriendshipById(1L)).thenReturn(friendship);
+
+        String result = controller.acceptInvite(1L, session);
+
+        assertEquals("redirect:/users/friends/invites?msg=Invitation non trouvee", result);
+    }
+
+    @Test
+    void acceptInviteShouldSucceed() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        User requester = mock(User.class);
+        when(requester.getName()).thenReturn("Bob");
+
+        User receiver = mock(User.class);
+        when(receiver.getId()).thenReturn(1L);
+
+        Friendship friendship = mock(Friendship.class);
+        when(friendship.getReceiver()).thenReturn(receiver);
+        when(friendship.getRequester()).thenReturn(requester);
+
+        when(friendshipService.getFriendshipById(1L)).thenReturn(friendship);
+
+        String result = controller.acceptInvite(1L, session);
+
+        assertEquals("redirect:/users/friends/invites?msg=Vous etes maintenant amis avec Bob", result);
+
+        verify(friendshipService).acceptFriendRequest(friendship);
+    }
+
+    @Test
+    void rejectInviteShouldRedirectWhenUserNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String result = controller.refuseInvite(1L, session);
+
+        assertEquals("redirect:/users/login?msg=Vous devez etre connecte pour refuser une invitation", result);
+    }
+
+    @Test
+    void rejectInviteShouldFailWhenFriendshipNotFound() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        when(friendshipService.getFriendshipById(1L)).thenReturn(null);
+
+        String result = controller.refuseInvite(1L, session);
+
+        assertEquals("redirect:/users/friends/invites?msg=Invitation non trouvee", result);
+    }
+
+    @Test
+    void rejectInviteShouldSucceed() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        Friendship friendship = mock(Friendship.class);
+
+        when(friendshipService.getFriendshipById(1L)).thenReturn(friendship);
+
+        String result = controller.refuseInvite(1L, session);
+
+        assertEquals("redirect:/users/friends/invites?msg=Invitation refusee", result);
+
+        verify(friendshipService).rejectFriendRequest(friendship);
     }
 }
