@@ -178,6 +178,12 @@ public class User {
         this.weight = weight;
     }
 
-    
+    public void addGoal(Goal goal){
+        this.goals.add(goal);
+    }
+
+    public void deleteGoal(Goal goal){
+        this.goals.remove(goal);
+    }
 
 }

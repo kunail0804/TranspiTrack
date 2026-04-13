@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Goal;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
+import fr.utc.miage.transpitrack.Model.Jpa.GoalService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +34,9 @@ public class UserController {
 
     @Autowired
     FriendshipService friendshipService;
+
+    @Autowired
+    GoalService goalService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -314,4 +319,102 @@ public class UserController {
 
     return "users/profile";
 }
+
+    @GetMapping("/consultationGoals")
+    public String consultationGoals(Model model,
+                                          HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+
+        model.addAttribute("goals", user.getGoals());
+        return "goals/listGoals";
+    }
+
+    @PostMapping("/addGoal")
+    public String addGoal(@RequestParam("goal") String textGoal,
+                          @RequestParam("targetDistance") Double distance,
+                          Model model,
+                          HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(textGoal == null || distance == null){
+            return "redirect:/users/consultationGoals";
+        }
+
+        User user = userService.getUserById(userId);
+
+        Goal goal = new Goal(distance, textGoal, user);
+        
+        goalService.createGoal(goal);
+        user.addGoal(goal);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationGoals";
+    }
+
+     @PostMapping("/updateGoal")
+    public String updateGoal(@RequestParam("goalId") Long goalId,
+                             @RequestParam("goal") String textGoal,
+                             @RequestParam("targetDistance") Double distance,
+                             Model model,
+                             HttpSession session){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(textGoal == null || distance == null){
+            return "redirect:/users/consultationGoals";
+        }
+
+
+        Goal goal = goalService.getGoalById(goalId);
+
+        User user = userService.getUserById(userId);
+        user.deleteGoal(goal);
+
+        goal.setGoalText(textGoal);
+        goal.setTargetDistance(distance);
+        goalService.updateGoal(goal);
+
+        user.addGoal(goal);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationGoals";
+    }
+
+    @PostMapping("/deleteGoal")
+    public String deleteGoal(@RequestParam("goalId") Long goalId,
+                                   Model model,
+                                   HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(goalId == null){
+            return "redirect:/users/consultationPreferences";
+        }
+        Goal goal = goalService.getGoalById(goalId);
+
+        goalService.deleteGoal(goal);
+
+        User user = userService.getUserById(userId);
+        user.deleteGoal(goal);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationGoals";
+    }
+
 }
