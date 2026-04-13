@@ -127,5 +127,9 @@ public class Activity {
         this.weatherCondition = weatherCondition;
     }
 
+    public double getTotalCaloriesAct() {
+        if (sport == null || user == null) return 0;
+        return sport.getMetValue() * user.getWeight() * (duration / 60.0);
+    }
 }
 

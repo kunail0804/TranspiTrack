@@ -5,6 +5,54 @@
     <title>Dashboard</title>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* ── Onglets ── */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            border-bottom: 2px solid #ccc;
+            margin-bottom: 16px;
+        }
+        .tab-btn {
+            padding: 8px 20px;
+            cursor: pointer;
+            background: #f0f0f0;
+            border: 1px solid #ccc;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            font-size: 1em;
+        }
+        .tab-btn.active {
+            background: #fff;
+            border-bottom: 2px solid #fff;
+            margin-bottom: -2px;
+            font-weight: bold;
+        }
+        .tab-panel {
+            display: none;
+        }
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ── Activités dépliables ── */
+        .activity-details {
+            display: none;
+            background-color: #f9f9f9;
+        }
+        .activity-details.open {
+            display: table-row;
+        }
+        .toggle-btn {
+            cursor: pointer;
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 0.85em;
+        }
+    </style>
 </head>
 
 <body>
@@ -13,29 +61,105 @@
 
     <h1>Dashboard</h1>
 
-    <h3>Stats par sport</h3>
+    <!-- ── NAVIGATION ONGLETS ──────────────────────────────── -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('general', this)">Général</button>
+        <button class="tab-btn" onclick="switchTab('activities', this)">Activités</button>
+    </div>
 
-    <table border="1">
-        <tr>
-            <th>Sport</th>
-            <th>Distance</th>
-            <th>Durée</th>
-            <th>Sessions</th>
-        </tr>
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- ONGLET GÉNÉRAL                                         -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="tab-general" class="tab-panel active">
 
-        <tr th:each="sport : ${distanceBySport.keySet()}">
-            <td th:text="${sport.name}"></td>
-            <td th:text="${distanceBySport.get(sport)}"></td>
-            <td th:text="${durationBySport.get(sport)}"></td>
-            <td th:text="${countBySport.get(sport)}"></td>
-        </tr>
-    </table>
+        <!-- ── STATS PAR SPORT ──────────────────────────────── -->
+        <h3>Stats par sport</h3>
 
-    <br>
+        <table border="1">
+            <tr>
+                <th>Sport</th>
+                <th>Distance (km)</th>
+                <th>Durée (min)</th>
+                <th>Sessions</th>
+                <th>Calories (kcal)</th>
+            </tr>
+            <tr th:each="sport : ${distanceBySport.keySet()}">
+                <td th:text="${sport.name}"></td>
+                <td th:text="${distanceBySport.get(sport)}"></td>
+                <td th:text="${durationBySport.get(sport)}"></td>
+                <td th:text="${countBySport.get(sport)}"></td>
+                <td th:text="${#numbers.formatDecimal(caloriesBySport.get(sport), 1, 1)}"></td>
+            </tr>
+        </table>
 
-    <!-- 📊 GRAPH SMALL -->
-    <div style="width: 500px;">
-        <canvas id="chartSport"></canvas>
+        <!-- ── TOTAL CALORIES ──────────────────────────────── -->
+        <p>
+            <strong>Total calories dépensées : </strong>
+            <span th:text="${#numbers.formatDecimal(totalCalories, 1, 1)}"></span> kcal
+        </p>
+
+        <br>
+
+        <!-- ── GRAPHIQUE DISTANCE ────────────────────────────── -->
+        <h3>Distance par sport</h3>
+        <div style="width: 500px;">
+            <canvas id="chartDistance"></canvas>
+        </div>
+
+        <br>
+
+        <!-- ── GRAPHIQUE CALORIES ────────────────────────────── -->
+        <h3>Calories par sport</h3>
+        <div style="width: 500px;">
+            <canvas id="chartCalories"></canvas>
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════ -->
+    <!-- ONGLET ACTIVITÉS                                       -->
+    <!-- ══════════════════════════════════════════════════════ -->
+    <div id="tab-activities" class="tab-panel">
+
+        <a href="/activities/add"><button type="button">+ Ajouter une activité</button></a>
+
+        <br><br>
+
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Sport</th>
+                    <th>Date</th>
+                    <th>Distance (km)</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <th:block th:each="activity, stat : ${activities}">
+                    <tr>
+                        <td th:text="${activity.sport.name}"></td>
+                        <td th:text="${activity.date}"></td>
+                        <td th:text="${activity.distance}"></td>
+                        <td>
+                            <button class="toggle-btn"
+                                    th:data-target="|details-${stat.index}|"
+                                    onclick="toggleDetails(this)">▼</button>
+                        </td>
+                    </tr>
+                    <tr class="activity-details" th:id="|details-${stat.index}|">
+                        <td colspan="4">
+                            <strong>Durée :</strong>
+                            <span th:text="${activity.duration}"></span> min &nbsp;|&nbsp;
+                            <strong>Évaluation :</strong>
+                            <span th:text="${activity.evaluation}"></span> &nbsp;|&nbsp;
+                            <strong>Calories :</strong>
+                            <span th:text="${#numbers.formatDecimal(activity.getTotalCaloriesAct(), 1, 1)}"></span> kcal
+                        </td>
+                    </tr>
+                </th:block>
+            </tbody>
+        </table>
+
     </div>
 
     <br>
@@ -44,46 +168,83 @@
         <button type="submit">Se déconnecter</button>
     </form>
 
-    </body>
+</body>
 
-    <!-- 📊 CHART SCRIPT -->
-    <script th:inline="javascript">
-        /*<![CDATA[*/
+<!-- ── SCRIPTS ──────────────────────────────────────────────── -->
+<script th:inline="javascript">
+    /*<![CDATA[*/
 
-        let distanceData = [[${distanceBySportName}]];
+    function switchTab(name, btn) {
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('tab-' + name).classList.add('active');
+        btn.classList.add('active');
+    }
 
-        let labels = Object.keys(distanceData);
-        let data = Object.values(distanceData);
+    function toggleDetails(btn) {
+        const targetId = btn.getAttribute('data-target');
+        const row = document.getElementById(targetId);
+        row.classList.toggle('open');
+        btn.textContent = row.classList.contains('open') ? '▲' : '▼';
+    }
 
-        let colors = labels.map(() =>
-            `rgba(${Math.floor(Math.random()*255)},
-                ${Math.floor(Math.random()*255)},
-                ${Math.floor(Math.random()*255)}, 0.6)`
-        );
+    // Graphique distance
+    let distanceData = [[${distanceBySportName}]];
+    let distanceLabels = Object.keys(distanceData);
+    let distanceValues = Object.values(distanceData);
 
-        new Chart(document.getElementById('chartSport'), {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Distance par sport',
-                    data: data,
-                    backgroundColor: colors,
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                devicePixelRatio: 2, 
-                plugins: {
-                    legend: {
-                        display: true
-                    }
-                }
-            }
-        });
-        /*]]>*/
-    </script>
+    let distanceColors = distanceLabels.map(() =>
+        `rgba(${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, 0.6)`
+    );
+
+    new Chart(document.getElementById('chartDistance'), {
+        type: 'bar',
+        data: {
+            labels: distanceLabels,
+            datasets: [{
+                label: 'Distance (km)',
+                data: distanceValues,
+                backgroundColor: distanceColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: 2,
+            plugins: { legend: { display: true } }
+        }
+    });
+
+    // Graphique calories
+    let caloriesData = [[${caloriesBySportName}]];
+    let caloriesLabels = Object.keys(caloriesData);
+    let caloriesValues = Object.values(caloriesData);
+
+    let caloriesColors = caloriesLabels.map(() =>
+        `rgba(${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, ${Math.floor(Math.random()*200)}, 0.6)`
+    );
+
+    new Chart(document.getElementById('chartCalories'), {
+        type: 'bar',
+        data: {
+            labels: caloriesLabels,
+            datasets: [{
+                label: 'Calories (kcal)',
+                data: caloriesValues,
+                backgroundColor: caloriesColors,
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            devicePixelRatio: 2,
+            plugins: { legend: { display: true } }
+        }
+    });
+
+    /*]]>*/
+</script>
 
 </html>

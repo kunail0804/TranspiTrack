@@ -83,7 +83,7 @@ public class ActivityController {
         weatherService.assignWeatherToActivity(activity);
 
         activityService.save(activity);
-        return "redirect:/activities";
+        return "redirect:/users/dashboard";
     }
 
     @GetMapping("/listActivitiesUser")
