@@ -12,6 +12,9 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -52,7 +55,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/formCreate
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void formCreateShouldReturnDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -73,7 +75,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/createUser
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void createUserShouldReturnFormCreateWhenEmailFormatInvalid() {
         String view = userController.createUser(
@@ -81,7 +82,7 @@ class UserControllerTest {
                 25, 165.0, "FEMALE", 60.0, "Paris", model, session);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Email n'est pas au bon format");
+        verify(model).addAttribute("message", "Email invalide");
     }
 
     @Test
@@ -147,7 +148,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/search
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void searchUserShouldRedirectToLoginWhenNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
@@ -196,7 +196,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/formUpdate
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.formUpdate(null, model, session);
@@ -220,15 +219,27 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/updateUser
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void updateUserShouldReturnFormUpdateWhenEmailFormatInvalid() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        User actualUser = mock(User.class);
+        when(actualUser.getEmail()).thenReturn("old@email.com");
+
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(userService.getUserByEmail("email-invalide")).thenReturn(null);
+
+        doThrow(new RuntimeException())
+                .when(userService).updateUser(any(User.class));
+
         String view = userController.updateUser(
                 "Alice", "Dupont", "email-invalide", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", model, session
+        );
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Email n'est pas au bon format");
+        verify(model).addAttribute("message", "Email invalide");
+
     }
 
     @Test
@@ -339,7 +350,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/formLogin
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void formLoginShouldReturnDashboardWhenAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -360,7 +370,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/loginUser
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void loginUserShouldReturnFormLoginWhenEmailNotFound() {
         String view = userController.loginUser("unknown@example.com", "secret", model, session);
@@ -398,7 +407,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/logout
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void logoutShouldInvalidateSessionAndReturnFormLogin() {
         String view = userController.logoutPage(session);
@@ -410,7 +418,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/profile
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void profilePageShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.profilePage(session, model);
@@ -451,7 +458,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/profile/{id}
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void viewProfileShouldRedirectToFormLoginWhenNotLoggedIn() {
         String view = userController.viewProfile(2L, null, model, session);
