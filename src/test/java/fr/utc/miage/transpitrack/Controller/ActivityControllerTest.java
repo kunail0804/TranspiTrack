@@ -150,7 +150,7 @@ class ActivityControllerTest {
 
         String view = activityController.saveActivity(activity, 1L, session);
 
-        assertEquals("redirect:/activities", view);
+        assertEquals("redirect:/users/dashboard", view);
         verify(activityService).save(activity);
     }
 }

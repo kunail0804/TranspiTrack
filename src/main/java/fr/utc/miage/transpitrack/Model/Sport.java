@@ -20,6 +20,7 @@ public class Sport {
 
     private String name;
     private String description;
+    private double metValue;
 
     //@ManyToMany(mappedBy = "sports")
     //private List<Goal> goals;
@@ -67,6 +68,14 @@ public class Sport {
 
     public void setUsers(List<UserSport> users) {
         this.users = users;
+    }
+
+    public double getMetValue() {
+        return metValue;
+    }
+
+    public void setMetValue(double metValue) {
+        this.metValue = metValue;
     }
 
     public SportType getSportType() {

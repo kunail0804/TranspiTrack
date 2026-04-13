@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,10 @@ class DashboardControllerTest {
         verify(model).addAttribute("durationBySport", java.util.Map.of());
         verify(model).addAttribute("countBySport", java.util.Map.of());
         verify(model).addAttribute("distanceBySportName", java.util.Map.of());
+        verify(model).addAttribute("caloriesBySport", java.util.Map.of());
+        verify(model).addAttribute("caloriesBySportName", java.util.Map.of());
+        verify(model).addAttribute("totalCalories", 0.0);
+        verify(model).addAttribute(eq("activities"), any());
     }
 
     // ─────────────────────────────────────────────
@@ -84,11 +89,13 @@ class DashboardControllerTest {
         a1.setSport(running);
         a1.setDistance(10.0);
         a1.setDuration(60);
+        a1.setDate(LocalDate.of(2024, 1, 1));
 
         Activity a2 = new Activity();
         a2.setSport(running);
         a2.setDistance(5.0);
         a2.setDuration(30);
+        a2.setDate(LocalDate.of(2024, 6, 1));
 
         when(activityService.getActivitiesByUserId(1L))
                 .thenReturn(List.of(a1, a2));
@@ -103,5 +110,13 @@ class DashboardControllerTest {
         verify(model).addAttribute(eq("durationBySport"), any());
         verify(model).addAttribute(eq("countBySport"), any());
         verify(model).addAttribute(eq("distanceBySportName"), any());
+        verify(model).addAttribute(eq("caloriesBySport"), any());
+        verify(model).addAttribute(eq("caloriesBySportName"), any());
+        verify(model).addAttribute(eq("totalCalories"), any());
+        verify(model).addAttribute(eq("activities"), any());
+        verify(model).addAttribute(eq("caloriesBySport"), any());
+        verify(model).addAttribute(eq("caloriesBySportName"), any());
+        verify(model).addAttribute(eq("totalCalories"), any());
+        verify(model).addAttribute(eq("activities"), any());
     }
 }
