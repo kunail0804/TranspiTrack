@@ -178,6 +178,14 @@ public class User {
         this.weight = weight;
     }
 
+    public void addPreference(UserSport userSport){
+        this.sportsPreference.add(userSport);
+    }
+
+    public void deletePreference(UserSport userSport){
+        this.sportsPreference.remove(userSport);
+    }
+
     
 
 }
