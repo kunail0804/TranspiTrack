@@ -62,4 +62,44 @@ class ActivityTest {
     void getTotalCaloriesShouldReturnOne() {
         assertEquals(1, new Activity().getTotalCalories());
     }
+
+    @Test
+    void getTotalCaloriesActShouldReturnZeroWhenSportOrUserIsNull() {
+        Activity noSport = new Activity();
+        noSport.setUser(new User());
+        assertEquals(0, noSport.getTotalCaloriesAct());
+
+        Activity noUser = new Activity();
+        noUser.setSport(new Sport());
+        assertEquals(0, noUser.getTotalCaloriesAct());
+    }
+
+    @Test
+    void getTotalCaloriesActShouldComputeCorrectly() {
+        // calories = MET * poids * (durée / 60)
+        // 8.0 * 70.0 * (60 / 60.0) = 560.0
+        Sport sport = new Sport();
+        sport.setMetValue(8.0);
+
+        User user = new User();
+        user.setWeight(70.0);
+
+        Activity activity = new Activity(LocalDate.now(), 60, 10.0, "good", sport, user);
+
+        assertEquals(560.0, activity.getTotalCaloriesAct(), 0.001);
+    }
+
+    @Test
+    void getTotalCaloriesActShouldScaleWithDuration() {
+        // 6.0 * 80.0 * (30 / 60.0) = 240.0
+        Sport sport = new Sport();
+        sport.setMetValue(6.0);
+
+        User user = new User();
+        user.setWeight(80.0);
+
+        Activity activity = new Activity(LocalDate.now(), 30, 5.0, "ok", sport, user);
+
+        assertEquals(240.0, activity.getTotalCaloriesAct(), 0.001);
+    }
 }

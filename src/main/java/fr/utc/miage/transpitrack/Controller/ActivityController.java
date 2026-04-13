@@ -78,6 +78,6 @@ public class ActivityController {
         activity.setUser(userService.getUserById(userId));
 
         activityService.save(activity);
-        return "redirect:/activities";
+        return "redirect:/users/dashboard";
     }
 }

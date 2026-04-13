@@ -1,5 +1,6 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,52 +34,53 @@ public class DashboardController {
             return "users/formLogin";
         }
 
-        List<Activity> activityUser = activityService.getActivitiesByUserId(userId);
+        List<Activity> activityUser = new ArrayList<>(activityService.getActivitiesByUserId(userId));
 
         Map<Sport, Double> distanceBySport = new HashMap<>();
         Map<Sport, Integer> durationBySport = new HashMap<>();
         Map<Sport, Integer> countBySport = new HashMap<>();
         Map<String, Double> distanceBySportName = new HashMap<>();
+        Map<Sport, Double> caloriesBySport = new HashMap<>();
+        Map<String, Double> caloriesBySportName = new HashMap<>();
+        double totalCalories = 0;
 
         for (Activity activity : activityUser) {
             Sport sport = activity.getSport();
+            String sportName = sport.getName();
+            double calories = activity.getTotalCaloriesAct();
 
-            //Distance totale parcouru par sport
-            if(!distanceBySport.containsKey(sport)){
-                distanceBySport.put(sport, activity.getDistance());
-            }else{
-                distanceBySport.put(sport, distanceBySport.get(sport) + activity.getDistance());
-            }
+            // Distance totale par sport
+            distanceBySport.merge(sport, activity.getDistance(), Double::sum);
 
-            //Duree totale effectuer par sport
-            if(!durationBySport.containsKey(sport)){
-                durationBySport.put(sport, activity.getDuration());
-            }else{
-                durationBySport.put(sport, durationBySport.get(sport) + activity.getDuration());
-            }
+            // Durée totale par sport
+            durationBySport.merge(sport, activity.getDuration(), Integer::sum);
 
-             //Nombre de séance totale effectuer par sport
-            if(!countBySport.containsKey(sport)){
-                countBySport.put(sport, 1);
-            }else{
-                countBySport.put(sport, countBySport.get(sport) + 1);
-            }
+            // Nombre de séances par sport
+            countBySport.merge(sport, 1, Integer::sum);
 
-            String sportName = activity.getSport().getName();
+            // Distance par nom de sport (pour le graphique)
+            distanceBySportName.merge(sportName, activity.getDistance(), Double::sum);
 
-            if(!distanceBySportName.containsKey(sportName)){
-                distanceBySportName.put(sportName, activity.getDistance());
-            }else{
-                distanceBySportName.put(sportName, distanceBySportName.get(sportName) + activity.getDistance());
-            }
+            // Calories par sport
+            caloriesBySport.merge(sport, calories, Double::sum);
 
+            // Calories par nom de sport (pour le graphique)
+            caloriesBySportName.merge(sportName, calories, Double::sum);
+
+            totalCalories += calories;
         }
 
-        
+        // Tri des activités par date décroissante pour le tableau
+        activityUser.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+
         model.addAttribute("distanceBySport", distanceBySport);
         model.addAttribute("durationBySport", durationBySport);
         model.addAttribute("countBySport", countBySport);
         model.addAttribute("distanceBySportName", distanceBySportName);
+        model.addAttribute("caloriesBySport", caloriesBySport);
+        model.addAttribute("caloriesBySportName", caloriesBySportName);
+        model.addAttribute("totalCalories", totalCalories);
+        model.addAttribute("activities", activityUser);
 
         return "users/dashboard";
     }

@@ -1,7 +1,6 @@
 package fr.utc.miage.transpitrack.Model;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -98,6 +97,11 @@ public class Activity {
 
     public int getTotalCalories(){
         return 1;
+    }
+
+    public double getTotalCaloriesAct() {
+        if (sport == null || user == null) return 0;
+        return sport.getMetValue() * user.getWeight() * (duration / 60.0);
     }
 }
 
