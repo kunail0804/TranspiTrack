@@ -45,6 +45,7 @@ public class UserController {
     @Autowired
     FriendshipService friendshipService;
 
+    @Autowired
     UserSportService userSportService;
 
     @Autowired
