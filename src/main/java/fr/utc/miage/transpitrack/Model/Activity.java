@@ -23,6 +23,10 @@ public class Activity {
     private double distance;
     private String evaluation;
 
+    private String city;
+    private Double temperature; 
+    private String weatherCondition;
+
     @ManyToOne
     private Sport sport;
 
@@ -98,5 +102,30 @@ public class Activity {
     public int getTotalCalories(){
         return 1;
     }
+
+    public String getCity() {
+        return city;
+    }
+
+    public Double getTemperature() {
+        return temperature;
+    }
+
+    public String getWeatherCondition() {
+        return weatherCondition;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public void setTemperature(Double temperature) {
+        this.temperature = temperature;
+    }
+
+    public void setWeatherCondition(String weatherCondition) {
+        this.weatherCondition = weatherCondition;
+    }
+
 }
 

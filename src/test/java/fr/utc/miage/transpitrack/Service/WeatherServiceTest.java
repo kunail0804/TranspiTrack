@@ -1,8 +1,11 @@
 package fr.utc.miage.transpitrack.Service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +16,7 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import fr.utc.miage.transpitrack.Dto.WeatherResponse;
 import fr.utc.miage.transpitrack.Model.Jpa.UserRepository;
 import fr.utc.miage.transpitrack.Model.User;
 
@@ -32,8 +36,6 @@ class WeatherServiceTest {
         testUser = new User();
         testUser.setCity("Paris");
     }
-
-    // ── getWeatherForUser ──────────────────────────────────────────
 
     @Test
     void getWeatherForUserShouldThrowWhenUserNotFound() {
@@ -66,8 +68,6 @@ class WeatherServiceTest {
 
         assertTrue(exception.getMessage().contains("pas de ville renseignée"));
     }
-
-    // ── interpretWeatherCode ───────────────────────────────────────
 
     @Test
     void interpretWeatherCodeShouldReturnCielDegageForCode0() {
@@ -109,5 +109,39 @@ class WeatherServiceTest {
     void interpretWeatherCodeShouldReturnNuageuxForUnknownCode() {
         assertEquals("Nuageux", weatherService.interpretWeatherCode(10));
         assertEquals("Nuageux", weatherService.interpretWeatherCode(80));
+    }
+
+    @Test
+    void getWeatherForUserShouldReturnWeatherAnd7DayForecastOnSuccess() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        WeatherResponse response = weatherService.getWeatherForUser(1L);
+
+        assertNotNull(response, "La réponse météo ne doit pas être nulle");
+        assertEquals("Paris", response.getCity());
+        assertNotNull(response.getForecast(), "La liste des prévisions ne doit pas être nulle");
+        assertEquals(7, response.getForecast().size(), "On doit récupérer les prévisions sur 7 jours");
+    }
+
+    @Test
+    void assignWeatherToActivityShouldPopulateWeatherFields() {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("Toulouse");
+        activity.setDate(LocalDate.now());
+        weatherService.assignWeatherToActivity(activity);
+        assertNotNull(activity.getTemperature(), "La température doit être récupérée depuis l'API");
+        assertNotNull(activity.getWeatherCondition(), "La condition météo doit être récupérée depuis l'API");
+        System.out.println("Test Activité - Météo à " + activity.getCity() + " : " 
+                + activity.getTemperature() + "°C, " + activity.getWeatherCondition());
+    }
+
+    @Test
+    void assignWeatherToActivityShouldDoNothingIfCityIsEmpty() {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("");
+        activity.setDate(LocalDate.now());
+        weatherService.assignWeatherToActivity(activity);
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
     }
 }

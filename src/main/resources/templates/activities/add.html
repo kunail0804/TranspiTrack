@@ -19,6 +19,10 @@
     <select id="sport" th:field="*{sport}" required>
         <option th:each="sport : ${sports}" th:value="${sport.id}" th:text="${sport.name}">Sport Name</option>
     </select><br><br>
+    <div>
+        <label>Ville de l'activité :</label>
+        <input type="text" th:field="*{city}" required />
+    </div>
 
     <div th:if="${error}">
         <p style="color:red;" th:text="${error}"></p>

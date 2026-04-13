@@ -72,7 +72,10 @@ public class WeatherService {
             JsonNode daily = weatherData.get("daily");
             List<WeatherResponse.ForecastDay> forecast = new ArrayList<>();
             
-            for (int i = 0; i < 3; i++) {
+            int daysAvailable = daily.get("time").size();
+            int daysToFetch = Math.min(daysAvailable, 7); 
+            
+            for (int i = 0; i < daysToFetch; i++) {
                 String date = daily.get("time").get(i).asText();
                 double min = daily.get("temperature_2m_min").get(i).asDouble();
                 double max = daily.get("temperature_2m_max").get(i).asDouble();
@@ -94,5 +97,47 @@ public class WeatherService {
         if (code >= 71 && code <= 77) return "Neige";
         if (code >= 95 && code <= 99) return "Orage";
         return "Nuageux";
+    }
+
+    public void assignWeatherToActivity(fr.utc.miage.transpitrack.Model.Activity activity) {
+        if (activity.getCity() == null || activity.getCity().isBlank() || activity.getDate() == null) {
+            return; 
+        }
+        
+        try {
+            String encodedCity = URLEncoder.encode(activity.getCity(), StandardCharsets.UTF_8);
+            String geoUrl = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodedCity + "&count=1&language=fr";
+
+            HttpRequest geoRequest = HttpRequest.newBuilder().uri(URI.create(geoUrl)).GET().build();
+            HttpResponse<String> geoResponseStr = httpClient.send(geoRequest, HttpResponse.BodyHandlers.ofString());
+            JsonNode geoResponse = objectMapper.readTree(geoResponseStr.body());
+
+            if (geoResponse == null || !geoResponse.has("results") || geoResponse.get("results").isEmpty()) {
+                return; 
+            }
+
+            JsonNode locationData = geoResponse.get("results").get(0);
+            double lat = locationData.get("latitude").asDouble();
+            double lon = locationData.get("longitude").asDouble();
+
+            String dateStr = activity.getDate().toString(); 
+            String weatherUrl = "https://api.open-meteo.com/v1/forecast?latitude=" + lat + "&longitude=" + lon +
+                    "&start_date=" + dateStr + "&end_date=" + dateStr + "&daily=temperature_2m_max,weathercode&timezone=auto";
+
+            HttpRequest weatherRequest = HttpRequest.newBuilder().uri(URI.create(weatherUrl)).GET().build();
+            HttpResponse<String> weatherResponseStr = httpClient.send(weatherRequest, HttpResponse.BodyHandlers.ofString());
+            JsonNode weatherData = objectMapper.readTree(weatherResponseStr.body());
+
+            if (weatherData.has("daily")) {
+                JsonNode daily = weatherData.get("daily");
+                double temp = daily.get("temperature_2m_max").get(0).asDouble();
+                int code = daily.get("weathercode").get(0).asInt();
+
+                activity.setTemperature(temp);
+                activity.setWeatherCondition(interpretWeatherCode(code));
+            }
+        } catch (Exception e) {
+            System.err.println("Impossible de récupérer la météo pour l'activité : " + e.getMessage());
+        }
     }
 }

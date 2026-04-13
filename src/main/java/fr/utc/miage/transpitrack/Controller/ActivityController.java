@@ -31,6 +31,9 @@ public class ActivityController {
     @Autowired
     private SportService sportService;
 
+    @Autowired
+    private fr.utc.miage.transpitrack.Service.WeatherService weatherService;
+
     @RequestMapping("")
     public String listActivities(Model model) {
         List<Activity> activities = activityService.getAllActivities();
@@ -76,6 +79,8 @@ public class ActivityController {
 
         Long userId = (Long) session.getAttribute("userId");
         activity.setUser(userService.getUserById(userId));
+
+        weatherService.assignWeatherToActivity(activity);
 
         activityService.save(activity);
         return "redirect:/activities";

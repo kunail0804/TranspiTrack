@@ -21,7 +21,7 @@ public class WeatherViewController {
             WeatherResponse weather = weatherService.getWeatherForUser(userId);
             
             model.addAttribute("weather", weather);
-            return "weather"; 
+            return "dashboard"; 
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             return "error";
