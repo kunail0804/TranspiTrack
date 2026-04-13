@@ -51,8 +51,7 @@ class ChallengeControllerTest {
 
     @Test
     void createChallengeShouldRedirectToFormLoginWhenNotLoggedIn() {
-        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", session, model);
-
+        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", 1L, session, model);
         assertEquals("redirect:/users/formLogin", view);
     }
 
@@ -61,9 +60,9 @@ class ChallengeControllerTest {
         User creator = new User();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(creator);
-        when(challengeService.createChallenge(any(Challenge.class))).thenReturn(new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator));
+        when(challengeService.createChallenge(any(Challenge.class))).thenReturn(new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator, null));
 
-        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", session, model);
+        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", 1L, session, model);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).getUserById(1L);
@@ -78,6 +77,7 @@ class ChallengeControllerTest {
                 "Course rapide", 
                 -5, 
                 "Public", 
+                1L,
                 session, 
                 model
         );

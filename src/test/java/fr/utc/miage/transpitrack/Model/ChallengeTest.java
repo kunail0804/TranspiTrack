@@ -10,7 +10,7 @@ class ChallengeTest {
     @Test
     void constructorShouldCreateChallengeWithAllFields() {
         User creator = new User();
-        Challenge challenge = new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator);
+        Challenge challenge = new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator, null);
 
         assertNotNull(challenge);
     }

@@ -5,10 +5,10 @@ import java.time.Duration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
@@ -26,7 +26,7 @@ class ChallengeServiceTest {
     @Test
     void createChallengeShouldReturnSavedChallenge() {
         User creator = new User();
-        Challenge challenge = new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator);
+        Challenge challenge = new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator, null);
         when(challengeRepository.save(challenge)).thenReturn(challenge);
 
         Challenge result = challengeService.createChallenge(challenge);
