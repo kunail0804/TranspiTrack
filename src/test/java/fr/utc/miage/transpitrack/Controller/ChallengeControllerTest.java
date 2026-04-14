@@ -16,7 +16,9 @@ import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
@@ -25,6 +27,7 @@ class ChallengeControllerTest {
 
     @Mock private ChallengeService challengeService;
     @Mock private UserService userService;
+    @Mock private SportService sportService;
     @Mock private Model model;
     @Mock private HttpSession session;
 
@@ -58,9 +61,11 @@ class ChallengeControllerTest {
     @Test
     void createChallengeShouldCreateAndRedirectToDashboardWhenLoggedIn() {
         User creator = new User();
+        Sport sport = new Sport();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(creator);
-        when(challengeService.createChallenge(any(Challenge.class))).thenReturn(new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator, null));
+        when(sportService.getSportById(1L)).thenReturn(sport);
+        when(challengeService.createChallenge(any(Challenge.class))).thenReturn(new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator, sport));
 
         String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", 1L, session, model);
 
