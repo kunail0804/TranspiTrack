@@ -31,7 +31,7 @@ class WeatherViewControllerTest {
 
         String view = weatherViewController.showWeatherPage(1L, model);
 
-        assertEquals("weather", view);
+        assertEquals("users/dashboard", view);
         verify(model).addAttribute("weather", weather);
     }
 

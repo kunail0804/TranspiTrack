@@ -13,9 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;

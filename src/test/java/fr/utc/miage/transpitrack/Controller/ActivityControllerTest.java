@@ -25,6 +25,7 @@ import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Service.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +42,9 @@ class ActivityControllerTest {
 
     @Mock
     private BadgeService badgeService;
+
+    @Mock
+    private WeatherService weatherService;
 
     @Mock
     private Model model;

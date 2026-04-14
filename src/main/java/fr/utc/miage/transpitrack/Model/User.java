@@ -36,8 +36,6 @@ public class User {
     private double height;
     private String city;
 
-    private String city;
-
     @Enumerated(EnumType.STRING)
     private Gender gender;
 

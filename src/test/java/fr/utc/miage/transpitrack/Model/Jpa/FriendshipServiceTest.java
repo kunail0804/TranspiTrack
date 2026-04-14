@@ -128,6 +128,8 @@ public class FriendshipServiceTest {
         when(friendshipRepository.save(org.mockito.ArgumentMatchers.any(Friendship.class)))
                 .thenReturn(saved);
 
+        Friendship result = friendshipService.sendFriendRequest(requester, receiver);
+
         assertEquals(receiver, result.getReceiver());
 
         verify(friendshipRepository)

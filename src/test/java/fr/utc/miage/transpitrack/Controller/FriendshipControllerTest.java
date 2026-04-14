@@ -120,6 +120,8 @@ class FriendshipControllerTest {
         assertEquals("redirect:/users/profile/2?msg=Demande d'amitie envoyee avec succes", result);
     }
 
+    @Test
+    void showInvitesShouldRedirectWhenNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
 
         String result = controller.showInvites(null, session, model);
