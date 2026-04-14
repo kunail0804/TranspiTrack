@@ -1,5 +1,8 @@
 package fr.utc.miage.transpitrack.Service;
 
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -13,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,6 +30,9 @@ class WeatherServiceTest {
 
     @Mock
     private UserRepository userRepository;
+
+    @Mock
+    private HttpClient httpClient;
 
     @InjectMocks
     private WeatherService weatherService;
@@ -112,27 +120,54 @@ class WeatherServiceTest {
     }
 
     @Test
-    void getWeatherForUserShouldReturnWeatherAnd7DayForecastOnSuccess() {
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldReturnWeatherAnd7DayForecastOnSuccess() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
+        String weatherJson = "{\"current_weather\":{\"temperature\":22.0,\"weathercode\":0},"
+                + "\"daily\":{\"time\":[\"2024-01-01\",\"2024-01-02\",\"2024-01-03\","
+                + "\"2024-01-04\",\"2024-01-05\",\"2024-01-06\",\"2024-01-07\"],"
+                + "\"temperature_2m_min\":[10,11,12,13,14,15,16],"
+                + "\"temperature_2m_max\":[20,21,22,23,24,25,26]}}";
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn(weatherJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
 
         WeatherResponse response = weatherService.getWeatherForUser(1L);
 
-        assertNotNull(response, "La réponse météo ne doit pas être nulle");
+        assertNotNull(response);
         assertEquals("Paris", response.getCity());
-        assertNotNull(response.getForecast(), "La liste des prévisions ne doit pas être nulle");
-        assertEquals(7, response.getForecast().size(), "On doit récupérer les prévisions sur 7 jours");
+        assertEquals(22.0, response.getCurrentTemp(), 0.001);
+        assertNotNull(response.getForecast());
+        assertEquals(7, response.getForecast().size());
     }
 
     @Test
-    void assignWeatherToActivityShouldPopulateWeatherFields() {
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldPopulateWeatherFields() throws Exception {
         fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
         activity.setCity("Toulouse");
         activity.setDate(LocalDate.now());
+
+        String geoJson = "{\"results\":[{\"latitude\":43.60,\"longitude\":1.44,\"name\":\"Toulouse\"}]}";
+        String weatherJson = "{\"daily\":{\"temperature_2m_max\":[25.0],\"weathercode\":[0]}}";
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn(weatherJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+
         weatherService.assignWeatherToActivity(activity);
-        assertNotNull(activity.getTemperature(), "La température doit être récupérée depuis l'API");
-        assertNotNull(activity.getWeatherCondition(), "La condition météo doit être récupérée depuis l'API");
-        System.out.println("Test Activité - Météo à " + activity.getCity() + " : " 
-                + activity.getTemperature() + "°C, " + activity.getWeatherCondition());
+
+        assertNotNull(activity.getTemperature());
+        assertNotNull(activity.getWeatherCondition());
+        assertEquals(25.0, activity.getTemperature(), 0.001);
+        assertEquals("Ciel dégagé", activity.getWeatherCondition());
     }
 
     @Test

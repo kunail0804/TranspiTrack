@@ -25,7 +25,9 @@ public class WeatherService {
     @Autowired
     private UserRepository userRepository;
 
-    private final HttpClient httpClient = HttpClient.newHttpClient();
+    @Autowired
+    private HttpClient httpClient;
+
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public WeatherResponse getWeatherForUser(Long userId) {
