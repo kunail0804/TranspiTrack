@@ -76,4 +76,54 @@ class UserTest {
         assertNotNull(user.getCreatedChallenges());
         assertNotNull(user.getJoinedChallenges());
     }
+
+    // ── Logique métier ─────────────────────────────────────────────
+
+    @Test
+    void addPreferenceShouldAddUserSportToList() {
+        User user = new User();
+        UserSport us = new UserSport();
+
+        user.addPreference(us);
+
+        assertEquals(1, user.getSportsPreference().size());
+        assertEquals(us, user.getSportsPreference().get(0));
+    }
+
+    @Test
+    void addPreferenceShouldSupportMultipleEntries() {
+        User user = new User();
+        UserSport us1 = new UserSport();
+        UserSport us2 = new UserSport();
+
+        user.addPreference(us1);
+        user.addPreference(us2);
+
+        assertEquals(2, user.getSportsPreference().size());
+    }
+
+    @Test
+    void deletePreferenceShouldRemoveUserSportFromList() {
+        User user = new User();
+        UserSport us = new UserSport();
+
+        user.addPreference(us);
+        user.deletePreference(us);
+
+        assertEquals(0, user.getSportsPreference().size());
+    }
+
+    @Test
+    void deletePreferenceShouldOnlyRemoveTargetEntry() {
+        User user = new User();
+        UserSport us1 = new UserSport();
+        UserSport us2 = new UserSport();
+
+        user.addPreference(us1);
+        user.addPreference(us2);
+        user.deletePreference(us1);
+
+        assertEquals(1, user.getSportsPreference().size());
+        assertEquals(us2, user.getSportsPreference().get(0));
+    }
 }
