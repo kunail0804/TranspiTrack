@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
+import fr.utc.miage.transpitrack.Model.ChallengeScore;
 import fr.utc.miage.transpitrack.Model.Friendship;
+import fr.utc.miage.transpitrack.Model.Jpa.ChallengeScoreService;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
@@ -38,6 +40,9 @@ public class ChallengeController {
 
     @Autowired
     FriendshipService friendshipService;
+
+    @Autowired
+    ChallengeScoreService challengeScoreService;
 
     @GetMapping("/formCreate")
     public String formCreateChallenge(HttpSession session, Model model) {
@@ -132,11 +137,39 @@ public class ChallengeController {
    
     @GetMapping("/details/{id}")
     public String showChallengeDetails(@PathVariable("id") Long id, HttpSession session, Model model) {
-    if (session.getAttribute("userId") == null) {
-        return "redirect:/users/formLogin";
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        User currentUser = userService.getUserById(userId);
+        Challenge challenge = challengeService.getChallengeById(id);
+
+        boolean canAddScore = currentUser.isTheCreatorOfTheChallenge(challenge)
+                || currentUser.isAlreadyJoinChallenge(challenge);
+
+        model.addAttribute("challenge", challenge);
+        model.addAttribute("canAddScore", canAddScore);
+        model.addAttribute("scores", challengeScoreService.getScoresByChallenge(challenge));
+        return "challenge/detailChallenge";
     }
-    Challenge challenge = challengeService.getChallengeById(id);
-    model.addAttribute("challenge", challenge);
-    return "challenge/detailChallenge"; 
-}
+
+    @PostMapping("/details/{id}/addScore")
+    public String addScore(@PathVariable("id") Long id,
+                           @RequestParam("score") double score,
+                           HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        User currentUser = userService.getUserById(userId);
+        Challenge challenge = challengeService.getChallengeById(id);
+
+        boolean canAddScore = currentUser.isTheCreatorOfTheChallenge(challenge)
+                || currentUser.isAlreadyJoinChallenge(challenge);
+
+        if (canAddScore) {
+            challengeScoreService.addScore(new ChallengeScore(currentUser, challenge, score));
+        }
+        return "redirect:/challenges/details/" + id;
+    }
 }

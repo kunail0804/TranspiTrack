@@ -18,7 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
+import fr.utc.miage.transpitrack.Model.ChallengeScore;
 import fr.utc.miage.transpitrack.Model.Friendship;
+import fr.utc.miage.transpitrack.Model.Jpa.ChallengeScoreService;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
@@ -34,6 +36,7 @@ class ChallengeControllerTest {
     @Mock private UserService userService;
     @Mock private SportService sportService;
     @Mock private FriendshipService friendshipService;
+    @Mock private ChallengeScoreService challengeScoreService;
     @Mock private Model model;
     @Mock private HttpSession session;
 
@@ -234,14 +237,131 @@ class ChallengeControllerTest {
 
     @Test
     void showChallengeDetailsShouldReturnDetailViewWhenLoggedIn() {
-        Challenge mockChallenge = new Challenge();
+        User user = new User();
+        Challenge challenge = new Challenge();
         when(session.getAttribute("userId")).thenReturn(1L);
-        when(challengeService.getChallengeById(1L)).thenReturn(mockChallenge);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
 
         String view = challengeController.showChallengeDetails(1L, session, model);
 
         assertEquals("challenge/detailChallenge", view);
         verify(challengeService).getChallengeById(1L);
-        verify(model).addAttribute("challenge", mockChallenge);
+        verify(model).addAttribute("challenge", challenge);
+    }
+
+    @Test
+    void showChallengeDetailsShouldSetCanAddScoreTrueWhenUserIsCreator() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
+
+        challengeController.showChallengeDetails(1L, session, model);
+
+        verify(model).addAttribute("canAddScore", true);
+    }
+
+    @Test
+    void showChallengeDetailsShouldSetCanAddScoreTrueWhenUserIsParticipant() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(false);
+        when(user.isAlreadyJoinChallenge(challenge)).thenReturn(true);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
+
+        challengeController.showChallengeDetails(1L, session, model);
+
+        verify(model).addAttribute("canAddScore", true);
+    }
+
+    @Test
+    void showChallengeDetailsShouldSetCanAddScoreFalseWhenUserIsNeitherCreatorNorParticipant() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
+
+        challengeController.showChallengeDetails(1L, session, model);
+
+        verify(model).addAttribute("canAddScore", false);
+    }
+
+    @Test
+    void showChallengeDetailsShouldAddScoresListToModel() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        List<ChallengeScore> scores = List.of(new ChallengeScore(user, challenge, 10.0));
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(scores);
+
+        challengeController.showChallengeDetails(1L, session, model);
+
+        verify(model).addAttribute("scores", scores);
+    }
+
+    // ── POST /challenges/details/{id}/addScore ─────────────────────
+
+    @Test
+    void addScoreShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = challengeController.addScore(1L, 50.0, session);
+        assertEquals("redirect:/users/formLogin", view);
+        verify(challengeScoreService, never()).addScore(any());
+    }
+
+    @Test
+    void addScoreShouldSaveScoreAndRedirectWhenUserIsCreator() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
+
+        String view = challengeController.addScore(1L, 88.0, session);
+
+        assertEquals("redirect:/challenges/details/1", view);
+        verify(challengeScoreService).addScore(any(ChallengeScore.class));
+    }
+
+    @Test
+    void addScoreShouldSaveScoreAndRedirectWhenUserIsParticipant() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(false);
+        when(user.isAlreadyJoinChallenge(challenge)).thenReturn(true);
+
+        String view = challengeController.addScore(1L, 55.0, session);
+
+        assertEquals("redirect:/challenges/details/1", view);
+        verify(challengeScoreService).addScore(any(ChallengeScore.class));
+    }
+
+    @Test
+    void addScoreShouldNotSaveScoreAndRedirectWhenUserIsNeitherCreatorNorParticipant() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+
+        String view = challengeController.addScore(1L, 30.0, session);
+
+        assertEquals("redirect:/challenges/details/1", view);
+        verify(challengeScoreService, never()).addScore(any());
     }
 }
