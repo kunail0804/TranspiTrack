@@ -22,6 +22,7 @@ import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.User;
 
+import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
@@ -47,6 +48,9 @@ public class UserController {
 
     @Autowired
     UserSportService userSportService;
+
+    @Autowired
+    BadgeService badgeService;
 
     @Autowired
     SportService sportService;
@@ -306,6 +310,7 @@ public class UserController {
         model.addAttribute("friends", friends);
         model.addAttribute("pendingFriendships", pendingFriendships);
         model.addAttribute("isOwner", true);
+        model.addAttribute("userBadges", badgeService.getUserBadges(user));
 
         return "users/profile";
     }
@@ -332,10 +337,11 @@ public class UserController {
 
 
     model.addAttribute("user", profileUser);
-    model.addAttribute("activities", userActivities); 
+    model.addAttribute("activities", userActivities);
     model.addAttribute("isOwner", isOwner);
     model.addAttribute("requestSent", requestSent);
     model.addAttribute("msg", msg);
+    model.addAttribute("userBadges", badgeService.getUserBadges(profileUser));
 
     return "users/profile";
 }

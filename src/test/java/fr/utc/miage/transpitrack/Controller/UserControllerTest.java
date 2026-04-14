@@ -25,6 +25,7 @@ import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
@@ -60,6 +61,9 @@ class UserControllerTest {
 
     @Mock
     private UserSportService userSportService;
+
+    @Mock
+    private BadgeService badgeService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
