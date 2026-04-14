@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -17,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
+import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
@@ -116,12 +118,65 @@ class ChallengeControllerTest {
         verify(model).addAttribute(eq("friendsChallenges"), any());
     }
 
+    @Test
+    void listChallengesShouldIncludeChallengesCreatedByFriendWhenUserIsRequester() {
+        Challenge friendChallenge = new Challenge();
+        User friend = mock(User.class);
+        when(friend.getCreatedChallenges()).thenReturn(List.of(friendChallenge));
+
+        User requester = mock(User.class);
+        when(requester.getId()).thenReturn(1L);
+
+        Friendship friendship = mock(Friendship.class);
+        when(friendship.getRequester()).thenReturn(requester);
+        when(friendship.getReceiver()).thenReturn(friend);
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(friendshipService.getMyFriendships(1L)).thenReturn(List.of(friendship));
+        when(challengeService.getChallengesByVisibility("PUBLIC")).thenReturn(List.of());
+
+        String view = challengeController.listChallenges(session, model);
+
+        assertEquals("challenge/listChallenges", view);
+        verify(model).addAttribute(eq("friendsChallenges"), any());
+    }
+
+    @Test
+    void listChallengesShouldIncludeChallengesCreatedByFriendWhenUserIsReceiver() {
+        Challenge friendChallenge = new Challenge();
+        User friend = mock(User.class);
+        when(friend.getCreatedChallenges()).thenReturn(List.of(friendChallenge));
+        when(friend.getId()).thenReturn(99L);
+
+        Friendship friendship = mock(Friendship.class);
+        when(friendship.getRequester()).thenReturn(friend);
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(friendshipService.getMyFriendships(1L)).thenReturn(List.of(friendship));
+        when(challengeService.getChallengesByVisibility("PUBLIC")).thenReturn(List.of());
+
+        String view = challengeController.listChallenges(session, model);
+
+        assertEquals("challenge/listChallenges", view);
+        verify(model).addAttribute(eq("friendsChallenges"), any());
+    }
+
     // ── POST /challenges/joinChallenge ─────────────────────────────
 
     @Test
     void joinChallengeShouldRedirectToFormLoginWhenNotLoggedIn() {
         String view = challengeController.getMethodName(1L, model, session);
         assertEquals("redirect:/users/formLogin", view);
+    }
+
+    @Test
+    void joinChallengeShouldRedirectToListWhenChallengeIdIsNull() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = challengeController.getMethodName(null, model, session);
+
+        assertEquals("redirect:/challenges/list", view);
+        verify(userService, never()).getUserById(any());
     }
 
     @Test
