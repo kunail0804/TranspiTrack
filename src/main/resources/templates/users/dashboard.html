@@ -154,6 +154,12 @@
                             <span th:text="${activity.evaluation}"></span> &nbsp;|&nbsp;
                             <strong>Calories :</strong>
                             <span th:text="${#numbers.formatDecimal(activity.getTotalCaloriesAct(), 1, 1)}"></span> kcal
+                            <div th:if="${activity.city != null and activity.city != ''}" style="margin-top: 8px; color: #0284c7; background: #e0f2fe; padding: 6px; border-radius: 4px; display: inline-block;">
+                                📍 <strong th:text="${activity.city}">Ville</strong> &nbsp;|&nbsp; 
+                                🌤️ <strong>Météo :</strong> 
+                                <span th:text="${activity.temperature != null ? activity.temperature + '°C' : 'N/A'}"></span> - 
+                                <span th:text="${activity.weatherCondition != null ? activity.weatherCondition : 'Non disponible'}"></span>
+                            </div>
                         </td>
                     </tr>
                 </th:block>
@@ -189,7 +195,7 @@
     }
 
     // Graphique distance
-    let distanceData = [[${distanceBySportName}]];
+    let distanceData = /*[[${distanceBySportName}]]*/ [];
     let distanceLabels = Object.keys(distanceData);
     let distanceValues = Object.values(distanceData);
 
@@ -217,7 +223,7 @@
     });
 
     // Graphique calories
-    let caloriesData = [[${caloriesBySportName}]];
+    let caloriesData = /*[[${caloriesBySportName}]]*/ [];
     let caloriesLabels = Object.keys(caloriesData);
     let caloriesValues = Object.values(caloriesData);
 
