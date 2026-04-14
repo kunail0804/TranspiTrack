@@ -13,4 +13,5 @@ import fr.utc.miage.transpitrack.Model.User;
 public interface ChallengeScoreRepository extends JpaRepository<ChallengeScore, Long> {
     List<ChallengeScore> findByChallenge(Challenge challenge);
     ChallengeScore findByUserAndChallenge(User user, Challenge challenge);
+    List<ChallengeScore> findByChallengeIdOrderByScoreDesc(Long challengeId);
 }

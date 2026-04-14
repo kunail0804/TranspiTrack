@@ -26,4 +26,10 @@ public class ChallengeScoreService {
     public ChallengeScore getScoreByUserAndChallenge(User user, Challenge challenge) {
         return challengeScoreRepository.findByUserAndChallenge(user, challenge);
     }
+
+    public List<ChallengeScore> getClassementParChallenge(Long challengeId) {
+        
+        List<ChallengeScore> listeTriee = challengeScoreRepository.findByChallengeIdOrderByScoreDesc(challengeId);
+        return listeTriee;
+    }
 }
