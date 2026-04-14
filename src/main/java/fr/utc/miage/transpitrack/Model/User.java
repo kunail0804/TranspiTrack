@@ -34,7 +34,6 @@ public class User {
     private String password;
     private int age;
     private double height;
-
     private String city;
 
     @Enumerated(EnumType.STRING)
@@ -196,7 +195,4 @@ public class User {
     public void deletePreference(UserSport userSport){
         this.sportsPreference.remove(userSport);
     }
-
-    
-
 }

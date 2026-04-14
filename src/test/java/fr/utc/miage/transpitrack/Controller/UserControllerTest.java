@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -23,6 +24,10 @@ import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Goal;
@@ -353,7 +358,6 @@ class UserControllerTest {
         verify(userService).updateUser(actualUser);
         verify(model).addAttribute("message", "Modification du compte réussie");
     }
-
     @Test
     void updateUserShouldEncodePasswordWhenEmailUnchangedAndPasswordNotBlank() {
         User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
