@@ -112,9 +112,7 @@ class UserServiceTest {
     }
 
     @Test
-    void deleteUserById() {
-        doNothing().when(userRepository).deleteById(1L);
-
+    void deleteUserByIdShouldCallRepository() {
         userService.deleteUserById(1L);
 
         verify(userRepository).deleteById(1L);

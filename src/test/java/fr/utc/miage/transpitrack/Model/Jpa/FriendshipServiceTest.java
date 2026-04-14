@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -25,13 +26,11 @@ import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 
 @ExtendWith(MockitoExtension.class)
 public class FriendshipServiceTest {
-    
     @Mock
     private FriendshipRepository friendshipRepository;
 
     @InjectMocks
     private FriendshipService friendshipService;
-
 
     @Test
     void updateFriendshipShouldReturnSavedFriendship() {
@@ -57,9 +56,9 @@ public class FriendshipServiceTest {
         Friendship f2 = new Friendship();
 
         when(friendshipRepository.findByStatusAndRequesterId(FriendshipStatus.ACCEPTED, 1L))
-            .thenReturn(List.of(f1));
+                .thenReturn(List.of(f1));
         when(friendshipRepository.findByStatusAndReceiverId(FriendshipStatus.ACCEPTED, 1L))
-            .thenReturn(List.of(f2));
+                .thenReturn(List.of(f2));
 
         List<Friendship> result = friendshipService.getMyFriendships(1L);
 
@@ -73,7 +72,7 @@ public class FriendshipServiceTest {
         Friendship f1 = new Friendship();
 
         when(friendshipRepository.findByStatusAndReceiverId(FriendshipStatus.PENDING, 1L))
-            .thenReturn(List.of(f1));
+                .thenReturn(List.of(f1));
 
         List<Friendship> result = friendshipService.getMyPendingFriendships(1L);
 
@@ -84,9 +83,9 @@ public class FriendshipServiceTest {
     @Test
     void requestOrFriendshipExistsShouldReturnTrueWhenExistsInSameDirection() {
         when(friendshipRepository.existsByRequesterIdAndReceiverId(1L, 2L))
-            .thenReturn(true);
+                .thenReturn(true);
         when(friendshipRepository.existsByRequesterIdAndReceiverId(2L, 1L))
-            .thenReturn(false);
+                .thenReturn(false);
 
         boolean result = friendshipService.requestOrFriendshipExists(1L, 2L);
 
@@ -98,9 +97,9 @@ public class FriendshipServiceTest {
     @Test
     void requestOrFriendshipExistsShouldReturnTrueWhenExistsInReverseDirection() {
         when(friendshipRepository.existsByRequesterIdAndReceiverId(1L, 2L))
-            .thenReturn(false);
+                .thenReturn(false);
         when(friendshipRepository.existsByRequesterIdAndReceiverId(2L, 1L))
-            .thenReturn(true);
+                .thenReturn(true);
 
         boolean result = friendshipService.requestOrFriendshipExists(1L, 2L);
 
@@ -110,9 +109,9 @@ public class FriendshipServiceTest {
     @Test
     void requestOrFriendshipExistsShouldReturnFalseWhenNoRelationshipExists() {
         when(friendshipRepository.existsByRequesterIdAndReceiverId(1L, 2L))
-            .thenReturn(false);
+                .thenReturn(false);
         when(friendshipRepository.existsByRequesterIdAndReceiverId(2L, 1L))
-            .thenReturn(false);
+                .thenReturn(false);
 
         boolean result = friendshipService.requestOrFriendshipExists(1L, 2L);
 
@@ -127,33 +126,76 @@ public class FriendshipServiceTest {
         Friendship saved = new Friendship(requester, receiver);
 
         when(friendshipRepository.save(org.mockito.ArgumentMatchers.any(Friendship.class)))
-            .thenReturn(saved);
+                .thenReturn(saved);
 
-        Friendship result = friendshipService.sendFriendRequest(requester, receiver);
-
-        assertEquals(requester, result.getRequester());
         assertEquals(receiver, result.getReceiver());
-        assertEquals(FriendshipStatus.PENDING, result.getStatus());
 
         verify(friendshipRepository)
-            .save(org.mockito.ArgumentMatchers.any(Friendship.class));
+                .save(org.mockito.ArgumentMatchers.any(Friendship.class));
     }
 
     @Test
-    void sendFriendRequestShouldReturnNullIfRelationshipAlreadyExists() {
-        User requester = org.mockito.Mockito.mock(User.class);
-        User receiver = org.mockito.Mockito.mock(User.class);
+    void sendFriendRequestShouldReturnNullWhenRelationshipAlreadyExists() {
+
+        User requester = mock(User.class);
+        User receiver = mock(User.class);
 
         when(requester.getId()).thenReturn(1L);
         when(receiver.getId()).thenReturn(2L);
 
-        when(friendshipRepository.existsByRequesterIdAndReceiverId(1L, 2L))
-            .thenReturn(true);
+        when(friendshipRepository.existsByRequesterIdAndReceiverId(1L, 2L)).thenReturn(true);
 
         Friendship result = friendshipService.sendFriendRequest(requester, receiver);
 
-        assertNull(result);
+        assertEquals(null, result);
 
+        verify(friendshipRepository).existsByRequesterIdAndReceiverId(1L, 2L);
         verify(friendshipRepository, never()).save(any());
+    }
+
+    @Test
+    void getFriendshipByIdShouldReturnFriendshipWhenExists() {
+
+        Friendship friendship = new Friendship();
+
+        when(friendshipRepository.findById(1L))
+                .thenReturn(java.util.Optional.of(friendship));
+
+        Friendship result = friendshipService.getFriendshipById(1L);
+
+        assertEquals(friendship, result);
+        verify(friendshipRepository).findById(1L);
+    }
+
+    @Test
+    void getFriendshipByIdShouldReturnNullWhenNotFound() {
+
+        when(friendshipRepository.findById(1L))
+                .thenReturn(java.util.Optional.empty());
+
+        Friendship result = friendshipService.getFriendshipById(1L);
+
+        assertEquals(null, result);
+    }
+
+    @Test
+    void acceptFriendRequestShouldUpdateStatusAndSave() {
+
+        Friendship friendship = mock(Friendship.class);
+
+        friendshipService.acceptFriendRequest(friendship);
+
+        verify(friendship).setStatus(FriendshipStatus.ACCEPTED);
+        verify(friendshipRepository).save(friendship);
+    }
+
+    @Test
+    void rejectFriendRequestShouldDeleteFriendship() {
+
+        Friendship friendship = new Friendship();
+
+        friendshipService.rejectFriendRequest(friendship);
+
+        verify(friendshipRepository).delete(friendship);
     }
 }

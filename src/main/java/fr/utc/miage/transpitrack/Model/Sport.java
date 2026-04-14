@@ -35,7 +35,7 @@ public class Sport {
     public Sport() {
     }
 
-    public Sport(Long id, String name, String description) {
+    public Sport(Long id, String name, String description, List<Goal> goals) {
         this.id = id;
         this.name = name;
         this.description = description;

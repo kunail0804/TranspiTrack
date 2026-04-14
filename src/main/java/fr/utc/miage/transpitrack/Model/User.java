@@ -16,6 +16,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name="user")
@@ -26,10 +27,15 @@ public class User {
 
     private String firstName;
     private String name;
+
+    @Email
     private String email;
+    
     private String password;
     private int age;
     private double height;
+    private String city;
+
     private String city;
 
     @Enumerated(EnumType.STRING)
@@ -113,30 +119,6 @@ public class User {
         return gender;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
-    }
-
-    public void setHeight(double height) {
-        this.height = height;
-    }
-
     public double getWeight() {
         return weight;
     }
@@ -165,6 +147,30 @@ public class User {
         return joinedChallenges;
     }
 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
     public void setCity(String city) {
         this.city = city;
     }
@@ -175,5 +181,20 @@ public class User {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public void addGoal(Goal goal){
+        this.goals.add(goal);
+    }
+
+    public void deleteGoal(Goal goal){
+        this.goals.remove(goal);
+    }
+    public void addPreference(UserSport userSport){
+        this.sportsPreference.add(userSport);
+    }
+
+    public void deletePreference(UserSport userSport){
+        this.sportsPreference.remove(userSport);
     }
 }

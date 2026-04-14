@@ -21,6 +21,14 @@
         </div>
         <br>
 
+        <label for="sport">Sport :</label>
+        <select name="sportId" id="sport" required>
+            <option value="">-- Choisir un sport --</option>
+            <option th:each="s : ${sports}" 
+                    th:value="${s.id}" 
+                    th:text="${s.name}">Nom du Sport</option>
+        </select>
+
         <div>
             <label for="visibility">Statut :</label>
             <select id="visibility" name="visibility" required>

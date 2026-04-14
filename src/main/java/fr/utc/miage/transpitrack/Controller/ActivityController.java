@@ -16,6 +16,12 @@ import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Service.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -32,7 +38,10 @@ public class ActivityController {
     private SportService sportService;
 
     @Autowired
-    private fr.utc.miage.transpitrack.Service.WeatherService weatherService;
+    private WeatherService weatherService;
+
+    @Autowired
+    private BadgeService badgeService;
 
     @RequestMapping("")
     public String listActivities(Model model) {
@@ -83,6 +92,10 @@ public class ActivityController {
         weatherService.assignWeatherToActivity(activity);
 
         activityService.save(activity);
+
+        User user = userService.getUserById(userId);
+        badgeService.checkAndAwardBadges(user, activityService.getActivitiesByUserId(userId));
+
         return "redirect:/users/dashboard";
     }
 
@@ -102,6 +115,4 @@ public class ActivityController {
 
         return "activities/list";
     }
-    
-    
 }

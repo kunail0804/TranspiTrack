@@ -1,5 +1,8 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import fr.utc.miage.transpitrack.Model.Jpa.UserSportRepository;
+import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +16,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
+import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.Goal;
+
+import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
+
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
+
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.Jpa.GoalService;
+import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.UserSport;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -32,6 +47,18 @@ public class UserController {
 
     @Autowired
     FriendshipService friendshipService;
+
+    @Autowired
+    UserSportService userSportService;
+
+    @Autowired
+    BadgeService badgeService;
+
+    @Autowired
+    SportService sportService;
+
+    @Autowired
+    GoalService goalService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -64,11 +91,6 @@ public class UserController {
             Model model,
             HttpSession session) {
 
-        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")) {
-            model.addAttribute("message", "Email n'est pas au bon format");
-            return "users/formCreate";
-        }
-
         if (age < 0) {
             model.addAttribute("message", "Age ne peut pas être négatif");
             return "users/formCreate";
@@ -90,11 +112,15 @@ public class UserController {
             return "users/formCreate";
         }
 
-        User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
+        try{
+            User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
 
-        User savedUser = userService.createUser(newUser);
-
-        session.setAttribute("userId", savedUser.getId());
+            User savedUser = userService.createUser(newUser);
+            session.setAttribute("userId", savedUser.getId());
+        } catch (Exception e) {
+            model.addAttribute("message", "Email invalide");
+            return "users/formCreate";
+        }
 
         model.addAttribute("message", "Création compte réussie");
 
@@ -132,11 +158,6 @@ public class UserController {
                             @RequestParam("city") String city, 
                             Model model,
                             HttpSession session) {
-
-        if(!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$")){
-            model.addAttribute("message", "Email n'est pas au bon format");
-            return "users/formUpdate";
-        }
                                 
         if(age<0){
             model.addAttribute("message", "Age ne peut pas être négatif");
@@ -159,18 +180,18 @@ public class UserController {
         if(!actualUser.getEmail().equals(email)){
             User userExist = userService.getUserByEmail(email);
 
-            if(userExist==null){
-                actualUser.setName(name);
-                actualUser.setFirstName(firstName);
-                actualUser.setAge(age);
-                actualUser.setGender(Gender.valueOf(gender));
-                actualUser.setEmail(email);
-                if(!password.isBlank()){
-                    actualUser.setPassword(encoder.encode(password));
-                }
-                actualUser.setHeight(height);
-                actualUser.setWeight(weight);
-                actualUser.setCity(city);
+            if(userExist==null){                
+                    actualUser.setName(name);
+                    actualUser.setFirstName(firstName);
+                    actualUser.setAge(age);
+                    actualUser.setGender(Gender.valueOf(gender));
+                    actualUser.setEmail(email);
+                    if(!password.isBlank()){
+                        actualUser.setPassword(encoder.encode(password));
+                    }
+                    actualUser.setHeight(height);
+                    actualUser.setWeight(weight);
+                    actualUser.setCity(city);
             }else{
                 model.addAttribute("message", "email déja existant");
                 return "users/formUpdate";
@@ -187,8 +208,12 @@ public class UserController {
                 actualUser.setWeight(weight);
                 actualUser.setCity(city);
         }
-
-        userService.updateUser(actualUser);
+        try{
+            userService.updateUser(actualUser);
+        } catch (Exception e) {
+            model.addAttribute("message", "Email invalide");
+            return "users/formUpdate";
+        }
         model.addAttribute("message", "Modification du compte réussie");
 
         //TODO : à modifier à l'avenir quand la page "profil" sera définie
@@ -239,7 +264,7 @@ public class UserController {
         //TODO : à modifier à l'avenir quand la page sera définie
         return "redirect:/users/dashboard";
     }
-    
+
     @GetMapping("/search")
     public String searchUser(@RequestParam(required = false) String query,
                              Model model,
@@ -277,14 +302,24 @@ public class UserController {
         if (user == null) {
             return "users/formLogin";
         }
-        model.addAttribute("user", user);
+        
 
         List<Activity> activities = activityService.getActivitiesByUserId(userId);
+        List<Friendship> friendships = friendshipService.getMyFriendships(userId);
+        List<User> friends = friendships.stream().map(f -> f.getRequester().getId().equals(userId) ? f.getReceiver() : f.getRequester()).toList();
+        int pendingFriendships = friendshipService.getMyPendingFriendships(userId).size();
+
+        model.addAttribute("user", user);
         activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
         model.addAttribute("activities", activities);
+        model.addAttribute("friends", friends);
+        model.addAttribute("pendingFriendships", pendingFriendships);
+        model.addAttribute("isOwner", true);
+        model.addAttribute("userBadges", badgeService.getUserBadges(user));
 
         return "users/profile";
     }
+
 
     @GetMapping("/profile/{id}")
     public String viewProfile(@PathVariable("id") Long profileId, @RequestParam(required = false) String msg, Model model, HttpSession session) {
@@ -307,11 +342,214 @@ public class UserController {
 
 
     model.addAttribute("user", profileUser);
-    model.addAttribute("activities", userActivities); 
+    model.addAttribute("activities", userActivities);
     model.addAttribute("isOwner", isOwner);
     model.addAttribute("requestSent", requestSent);
     model.addAttribute("msg", msg);
+    model.addAttribute("userBadges", badgeService.getUserBadges(profileUser));
 
     return "users/profile";
 }
+
+    @GetMapping("/consultationPreferences")
+    public String consultationPreferences(Model model,
+                                          HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+        List<Sport> sports = sportService.getAllSports();
+
+        model.addAttribute("sportsPreference", user.getSportsPreference());
+        model.addAttribute("sports", sports);
+        return "users/listPreferences";
+    }
+
+    @PostMapping("/addPreference")
+    public String addPreference(@RequestParam("sport") Long sportId,
+                                @RequestParam("level") Level level,
+                                Model model,
+                                HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(sportId == null || level == null){
+            return "redirect:/users/consultationPreferences";
+        }
+
+        Sport sport = sportService.getSportById(sportId);
+
+        User user = userService.getUserById(userId);
+       
+        UserSport userSportExist = userSportService.getUserSportByUserAndSport(user, sport);
+        if(userSportExist!=null){
+            model.addAttribute("message", "Ce sport est dejas dans votre liste !");
+            return "redirect:/users/consultationPreferences";
+        }
+        
+
+        UserSport userSport = new UserSport(user, sport, level);
+        userSportService.createUserSport(userSport);
+        user.addPreference(userSport);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationPreferences";
+    }
+
+     @PostMapping("/updateLevel")
+    public String updateLevel(@RequestParam("userSport") Long userSportId,
+                              @RequestParam("level") Level level,
+                              Model model,
+                              HttpSession session){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+         if(userSportId == null || level == null){
+            return "redirect:/users/consultationPreferences";
+        }
+
+        UserSport userSport = userSportService.getUserSportById(userSportId);
+
+        User user = userService.getUserById(userId);
+        user.deletePreference(userSport);
+
+        userSport.setLevel(level);
+        userSportService.updateUserSport(userSport);
+
+        user.addPreference(userSport);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationPreferences";
+    }
+
+    @PostMapping("/deletePreference")
+    public String deletePreference(@RequestParam("userSport") Long userSportId,
+                                   Model model,
+                                   HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(userSportId == null){
+            return "redirect:/users/consultationPreferences";
+        }
+        UserSport userSport = userSportService.getUserSportById(userSportId);
+
+        userSportService.deleteUserSport(userSport);
+
+        User user = userService.getUserById(userId);
+        user.deletePreference(userSport);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationPreferences";
+    }
+
+
+    @GetMapping("/consultationGoals")
+    public String consultationGoals(Model model,
+                                          HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+
+        model.addAttribute("goals", user.getGoals());
+        return "goals/listGoals";
+    }
+
+    @PostMapping("/addGoal")
+    public String addGoal(@RequestParam("goal") String textGoal,
+                          @RequestParam("targetDistance") Double distance,
+                          Model model,
+                          HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(textGoal == null || distance == null){
+            return "redirect:/users/consultationGoals";
+        }
+
+        User user = userService.getUserById(userId);
+
+        Goal goal = new Goal(distance, textGoal, user);
+        
+        goalService.createGoal(goal);
+        user.addGoal(goal);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationGoals";
+    }
+
+     @PostMapping("/updateGoal")
+    public String updateGoal(@RequestParam("goalId") Long goalId,
+                             @RequestParam("goal") String textGoal,
+                             @RequestParam("targetDistance") Double distance,
+                             Model model,
+                             HttpSession session){
+
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(textGoal == null || distance == null){
+            return "redirect:/users/consultationGoals";
+        }
+
+
+        Goal goal = goalService.getGoalById(goalId);
+
+        User user = userService.getUserById(userId);
+        user.deleteGoal(goal);
+
+        goal.setGoalText(textGoal);
+        goal.setTargetDistance(distance);
+        goalService.updateGoal(goal);
+
+        user.addGoal(goal);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationGoals";
+    }
+
+    @PostMapping("/deleteGoal")
+    public String deleteGoal(@RequestParam("goalId") Long goalId,
+                                   Model model,
+                                   HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "users/formLogin";
+        }
+
+        if(goalId == null){
+            return "redirect:/users/consultationPreferences";
+        }
+        Goal goal = goalService.getGoalById(goalId);
+
+        goalService.deleteGoal(goal);
+
+        User user = userService.getUserById(userId);
+        user.deleteGoal(goal);
+        userService.updateUser(user);
+
+        return "redirect:/users/consultationGoals";
+    }
 }
