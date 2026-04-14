@@ -1,6 +1,7 @@
 package fr.utc.miage.transpitrack.Model.Jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -62,5 +63,30 @@ class ChallengeScoreServiceTest {
 
         assertEquals(0, result.size());
         verify(challengeScoreRepository).findByChallenge(challenge);
+    }
+
+    // ── getScoreByUserAndChallenge ─────────────────────────────────
+
+    @Test
+    void getScoreByUserAndChallengeShouldReturnScoreWhenFound() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        ChallengeScore score = new ChallengeScore(user, challenge, 42.0);
+        when(challengeScoreRepository.findByUserAndChallenge(user, challenge)).thenReturn(score);
+
+        ChallengeScore result = challengeScoreService.getScoreByUserAndChallenge(user, challenge);
+
+        assertEquals(score, result);
+        verify(challengeScoreRepository).findByUserAndChallenge(user, challenge);
+    }
+
+    @Test
+    void getScoreByUserAndChallengeShouldReturnNullWhenNotFound() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        when(challengeScoreRepository.findByUserAndChallenge(user, challenge)).thenReturn(null);
+
+        assertNull(challengeScoreService.getScoreByUserAndChallenge(user, challenge));
+        verify(challengeScoreRepository).findByUserAndChallenge(user, challenge);
     }
 }

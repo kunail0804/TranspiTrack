@@ -147,8 +147,13 @@ public class ChallengeController {
         boolean canAddScore = currentUser.isTheCreatorOfTheChallenge(challenge)
                 || currentUser.isAlreadyJoinChallenge(challenge);
 
+        ChallengeScore userScore = canAddScore
+                ? challengeScoreService.getScoreByUserAndChallenge(currentUser, challenge)
+                : null;
+
         model.addAttribute("challenge", challenge);
         model.addAttribute("canAddScore", canAddScore);
+        model.addAttribute("userScore", userScore);
         model.addAttribute("scores", challengeScoreService.getScoresByChallenge(challenge));
         return "challenge/detailChallenge";
     }
@@ -168,7 +173,13 @@ public class ChallengeController {
                 || currentUser.isAlreadyJoinChallenge(challenge);
 
         if (canAddScore) {
-            challengeScoreService.addScore(new ChallengeScore(currentUser, challenge, score));
+            ChallengeScore existing = challengeScoreService.getScoreByUserAndChallenge(currentUser, challenge);
+            if (existing != null) {
+                existing.setScore(score);
+                challengeScoreService.addScore(existing);
+            } else {
+                challengeScoreService.addScore(new ChallengeScore(currentUser, challenge, score));
+            }
         }
         return "redirect:/challenges/details/" + id;
     }

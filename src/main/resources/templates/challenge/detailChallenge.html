@@ -22,12 +22,22 @@
             <a th:href="@{/challenges/list}" class="btn btn-secondary">Retour à la liste</a>
         </div>
 
-        <div th:if="${canAddScore}">
+        <div th:if="${canAddScore and userScore == null}">
             <h3>Ajouter un score</h3>
             <form th:action="@{/challenges/details/{id}/addScore(id=${challenge.id})}" method="post">
                 <label for="score">Score :</label>
                 <input type="number" id="score" name="score" step="0.01" required />
                 <button type="submit">Valider</button>
+            </form>
+        </div>
+
+        <div th:if="${canAddScore and userScore != null}">
+            <h3>Modifier mon score</h3>
+            <p>Score actuel : <span th:text="${userScore.score}">0</span></p>
+            <form th:action="@{/challenges/details/{id}/addScore(id=${challenge.id})}" method="post">
+                <label for="score-edit">Nouveau score :</label>
+                <input type="number" id="score-edit" name="score" step="0.01" th:value="${userScore.score}" required />
+                <button type="submit">Modifier</button>
             </form>
         </div>
 

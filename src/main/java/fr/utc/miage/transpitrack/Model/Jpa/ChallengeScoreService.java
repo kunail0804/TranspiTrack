@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.ChallengeScore;
+import fr.utc.miage.transpitrack.Model.User;
 
 @Service
 public class ChallengeScoreService {
@@ -20,5 +21,9 @@ public class ChallengeScoreService {
 
     public List<ChallengeScore> getScoresByChallenge(Challenge challenge) {
         return challengeScoreRepository.findByChallenge(challenge);
+    }
+
+    public ChallengeScore getScoreByUserAndChallenge(User user, Challenge challenge) {
+        return challengeScoreRepository.findByUserAndChallenge(user, challenge);
     }
 }

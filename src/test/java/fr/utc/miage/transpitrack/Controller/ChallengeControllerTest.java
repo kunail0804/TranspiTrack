@@ -297,6 +297,39 @@ class ChallengeControllerTest {
     }
 
     @Test
+    void showChallengeDetailsShouldPassExistingUserScoreToModelWhenUserAlreadyHasScore() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        ChallengeScore existing = new ChallengeScore(user, challenge, 42.0);
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
+        when(challengeScoreService.getScoreByUserAndChallenge(user, challenge)).thenReturn(existing);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of(existing));
+
+        challengeController.showChallengeDetails(1L, session, model);
+
+        verify(model).addAttribute("userScore", existing);
+    }
+
+    @Test
+    void showChallengeDetailsShouldPassNullUserScoreToModelWhenUserHasNoScoreYet() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
+        when(challengeScoreService.getScoreByUserAndChallenge(user, challenge)).thenReturn(null);
+        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
+
+        challengeController.showChallengeDetails(1L, session, model);
+
+        verify(model).addAttribute("userScore", null);
+    }
+
+    @Test
     void showChallengeDetailsShouldAddScoresListToModel() {
         User user = new User();
         Challenge challenge = new Challenge();
@@ -349,6 +382,24 @@ class ChallengeControllerTest {
 
         assertEquals("redirect:/challenges/details/1", view);
         verify(challengeScoreService).addScore(any(ChallengeScore.class));
+    }
+
+    @Test
+    void addScoreShouldUpdateExistingScoreAndRedirectWhenUserAlreadyHasOne() {
+        User user = mock(User.class);
+        Challenge challenge = new Challenge();
+        ChallengeScore existing = new ChallengeScore(user, challenge, 30.0);
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+        when(challengeService.getChallengeById(1L)).thenReturn(challenge);
+        when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
+        when(challengeScoreService.getScoreByUserAndChallenge(user, challenge)).thenReturn(existing);
+
+        String view = challengeController.addScore(1L, 75.0, session);
+
+        assertEquals("redirect:/challenges/details/1", view);
+        assertEquals(75.0, existing.getScore());
+        verify(challengeScoreService).addScore(existing);
     }
 
     @Test

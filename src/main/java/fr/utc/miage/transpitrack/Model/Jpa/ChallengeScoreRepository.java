@@ -7,8 +7,10 @@ import org.springframework.stereotype.Repository;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.ChallengeScore;
+import fr.utc.miage.transpitrack.Model.User;
 
 @Repository
 public interface ChallengeScoreRepository extends JpaRepository<ChallengeScore, Long> {
     List<ChallengeScore> findByChallenge(Challenge challenge);
+    ChallengeScore findByUserAndChallenge(User user, Challenge challenge);
 }
