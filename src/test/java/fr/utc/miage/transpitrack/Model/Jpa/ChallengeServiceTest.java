@@ -68,4 +68,26 @@ class ChallengeServiceTest {
         assertThrows(IllegalArgumentException.class, () -> challengeService.getChallengeById(99L));
         verify(challengeRepository).findById(99L);
     }
+
+    @Test
+    void getChallengesByVisibilityShouldReturnMatchingChallenges() {
+        Challenge c1 = new Challenge();
+        Challenge c2 = new Challenge();
+        when(challengeRepository.findChallengesByVisibility("PUBLIC")).thenReturn(List.of(c1, c2));
+
+        List<Challenge> result = challengeService.getChallengesByVisibility("PUBLIC");
+
+        assertEquals(2, result.size());
+        verify(challengeRepository).findChallengesByVisibility("PUBLIC");
+    }
+
+    @Test
+    void getChallengesByVisibilityShouldReturnEmptyListWhenNoMatch() {
+        when(challengeRepository.findChallengesByVisibility("PRIVATE")).thenReturn(List.of());
+
+        List<Challenge> result = challengeService.getChallengesByVisibility("PRIVATE");
+
+        assertEquals(0, result.size());
+        verify(challengeRepository).findChallengesByVisibility("PRIVATE");
+    }
 }

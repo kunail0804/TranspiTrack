@@ -1,10 +1,13 @@
 package fr.utc.miage.transpitrack.Model;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -163,5 +166,53 @@ class UserTest {
         user.deleteGoal(g1);
         assertEquals(1, user.getGoals().size());
         assertEquals(g2, user.getGoals().get(0));
+    }
+
+    @Test
+    void addChallengeShouldAddChallengeToJoinedList() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+
+        user.addChallenge(challenge);
+
+        assertEquals(1, user.getJoinedChallenges().size());
+        assertEquals(challenge, user.getJoinedChallenges().get(0));
+    }
+
+    @Test
+    void isAlreadyJoinChallengeShouldReturnTrueWhenChallengeIsJoined() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        user.addChallenge(challenge);
+
+        assertTrue(user.isAlreadyJoinChallenge(challenge));
+    }
+
+    @Test
+    void isAlreadyJoinChallengeShouldReturnFalseWhenChallengeNotJoined() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+
+        assertFalse(user.isAlreadyJoinChallenge(challenge));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void isTheCreatorOfTheChallengeShouldReturnTrueWhenChallengeIsInCreatedList() throws Exception {
+        User user = new User();
+        Challenge challenge = new Challenge();
+        Field field = User.class.getDeclaredField("createdChallenges");
+        field.setAccessible(true);
+        ((List<Challenge>) field.get(user)).add(challenge);
+
+        assertTrue(user.isTheCreatorOfTheChallenge(challenge));
+    }
+
+    @Test
+    void isTheCreatorOfTheChallengeShouldReturnFalseWhenChallengeNotCreated() {
+        User user = new User();
+        Challenge challenge = new Challenge();
+
+        assertFalse(user.isTheCreatorOfTheChallenge(challenge));
     }
 }
