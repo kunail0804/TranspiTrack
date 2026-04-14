@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Challenges Disponibles - TranspiTrack</title>
+</head>
+<body>
+
+    <h1>Liste des challenges disponibles</h1>
+
+    <a th:href="@{/users/dashboard}">Retour au Dashboard</a>
+    <a th:href="@{/challenges/formCreate}">Créer un nouveau challenge</a>
+
+    <hr>
+
+    <H2>Challenges Public</H2>
+    <div th:if="${#lists.isEmpty(challenges)}">
+        <p>Aucun challenge n'est disponible pour le moment.</p>
+    </div>
+
+    <ul th:if="${not #lists.isEmpty(challenges)}">
+        <li th:each="challenge : ${challenges}">
+            <strong th:text="${challenge.title}">Titre du challenge</strong> 
+            - Durée : <span th:text="${challenge.duration.toDays()}">0</span> jours
+            Sport : <span th:text="${challenge.sport?.name}">Sport</span>
+            - Visibilité : <span th:text="${challenge.visibility}">Privé/Public</span>
+            - Créé par : <span th:text="|${challenge.creator?.firstName} ${challenge.creator?.name}|">Prénom Nom</span>
+            <a th:href="@{/challenges/details/{id}(id=${challenge.id})}" class="btn btn-primary btn-sm">
+                Détails / Voir le challenge</a>
+        </li>
+    </ul>
+
+    <H2>Challenges de mes amis</H2>
+    <div th:if="${#lists.isEmpty(friendsChallenges)}">
+        <p>Aucun challenge n'est disponible pour le moment.</p>
+    </div>
+
+    <ul th:if="${not #lists.isEmpty(friendsChallenges)}">
+        <li th:each="challenge : ${friendsChallenges}">
+            <strong th:text="${challenge.title}">Titre du challenge</strong> 
+            - Durée : <span th:text="${challenge.duration.toDays()}">0</span> jours
+            Sport : <span th:text="${challenge.sport?.name}">Sport</span>
+            - Visibilité : <span th:text="${challenge.visibility}">Privé/Public</span>
+            - Créé par : <span th:text="|${challenge.creator?.firstName} ${challenge.creator?.name}|">Prénom Nom</span>
+        </li>
+    </ul>
+
+</body>
+</html>

@@ -47,10 +47,27 @@
     </li>
 </ul>
 
+<hr>
+
+<h2>Badges obtenus</h2>
+<ul>
+    <li th:each="ub : ${userBadges}">
+        <strong th:text="${ub.badge.title}"></strong>
+        — <span th:text="${ub.badge.description}"></span>
+        <em>(<span th:text="${ub.earnedAt}"></span>)</em>
+    </li>
+    <li th:if="${userBadges == null or #lists.isEmpty(userBadges)}">
+        Aucun badge obtenu pour l'instant.
+    </li>
+</ul>
+
 <h2>Challenges créés</h2>
 <ul>
     <li th:each="challenge : ${user.createdChallenges}">
         <span th:text="${challenge.title}">Titre</span>
+        <a th:href="@{/challenge/details/{id}(id=${challenge.id})}" class="btn btn-info btn-sm">
+            Détails du challenge
+        </a>
     </li>
     <li th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
         Aucun challenge créé.

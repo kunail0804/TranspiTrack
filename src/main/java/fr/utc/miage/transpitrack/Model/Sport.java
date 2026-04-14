@@ -39,7 +39,6 @@ public class Sport {
         this.id = id;
         this.name = name;
         this.description = description;
-        //this.goals = goals;
     }
 
     public Long getId() {

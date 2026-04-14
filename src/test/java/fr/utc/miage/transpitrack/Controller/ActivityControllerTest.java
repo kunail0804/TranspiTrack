@@ -15,6 +15,7 @@ import org.mockito.Mock;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,11 +25,13 @@ import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Commentary;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
+import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
+import fr.utc.miage.transpitrack.Service.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +45,12 @@ class ActivityControllerTest {
 
     @Mock
     private SportService sportService;
+
+    @Mock
+    private BadgeService badgeService;
+
+    @Mock
+    private WeatherService weatherService;
 
     @Mock
     private Model model;
@@ -141,6 +150,16 @@ class ActivityControllerTest {
         String view = activityController.saveActivity(activity, 1L, session);
 
         assertEquals("redirect:/activities/add?error=invalid_distance", view);
+    }
+
+    @Test
+    void listActivitiesShouldReturnListViewWithEmptyList() {
+        when(activityService.getAllActivities()).thenReturn(new java.util.ArrayList<>());
+
+        String view = activityController.listActivities(model);
+
+        assertEquals("activities/list", view);
+        verify(model).addAttribute(eq("activities"), any());
     }
 
     @Test
@@ -424,4 +443,44 @@ class ActivityControllerTest {
         verify(commentaryService, never()).createCommentary(any());
     }
 
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /activities/listActivitiesUser
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void listActivitiesUser_shouldReturnListViewWithActivitiesSortedByDateDesc() {
+        Long userId = 1L;
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        Activity older = new Activity();
+        older.setDate(LocalDate.of(2024, 1, 1));
+        Activity newer = new Activity();
+        newer.setDate(LocalDate.of(2024, 6, 1));
+        
+        when(activityService.getActivitiesByUserId(userId))
+            .thenReturn(Arrays.asList(older, newer));
+
+        String view = activityController.listActivitiesUser(model, session);
+
+        assertEquals("activities/list", view);
+
+        ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
+        verify(model).addAttribute(eq("activities"), captor.capture());
+        List<Activity> sortedActivities = captor.getValue();
+
+        assertEquals(2, sortedActivities.size());
+        assertEquals(newer, sortedActivities.get(0));
+        assertEquals(older, sortedActivities.get(1));
+    }
+
+    @Test
+    void listActivitiesUserShouldReturnFormLoginWhenNotLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.listActivitiesUser(model, session);
+
+        assertEquals("formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
 }

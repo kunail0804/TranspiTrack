@@ -34,7 +34,6 @@ public class User {
     private String password;
     private int age;
     private double height;
-
     private String city;
 
     @Enumerated(EnumType.STRING)
@@ -182,6 +181,13 @@ public class User {
         this.weight = weight;
     }
 
+    public void addGoal(Goal goal){
+        this.goals.add(goal);
+    }
+
+    public void deleteGoal(Goal goal){
+        this.goals.remove(goal);
+    }
     public void addPreference(UserSport userSport){
         this.sportsPreference.add(userSport);
     }
@@ -190,6 +196,16 @@ public class User {
         this.sportsPreference.remove(userSport);
     }
 
-    
+    public void addChallenge(Challenge challenge){
+        this.joinedChallenges.add(challenge);
+    }
+
+    public boolean isAlreadyJoinChallenge(Challenge challenge){
+        return joinedChallenges.contains(challenge);
+    }
+
+    public boolean isTheCreatorOfTheChallenge(Challenge challenge){
+        return createdChallenges.contains(challenge);
+    }
 
 }

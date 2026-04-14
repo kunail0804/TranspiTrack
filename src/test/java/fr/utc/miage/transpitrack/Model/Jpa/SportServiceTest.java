@@ -37,6 +37,16 @@ class SportServiceTest {
     }
 
     @Test
+    void findByNameShouldReturnEmptyListWhenNoMatch() {
+        when(sportRepository.findByName("Inconnu")).thenReturn(List.of());
+
+        List<Sport> result = sportService.findByName("Inconnu");
+
+        assertEquals(0, result.size());
+        verify(sportRepository).findByName("Inconnu");
+    }
+
+    @Test
     void getSportByIdShouldReturnSportWhenFound() {
         Sport sport = new Sport();
         when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
