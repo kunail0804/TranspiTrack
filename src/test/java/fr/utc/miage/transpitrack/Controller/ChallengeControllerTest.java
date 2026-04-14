@@ -14,9 +14,13 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
+import java.util.List;
+
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
@@ -25,6 +29,7 @@ class ChallengeControllerTest {
 
     @Mock private ChallengeService challengeService;
     @Mock private UserService userService;
+    @Mock private SportService sportService;
     @Mock private Model model;
     @Mock private HttpSession session;
 
@@ -51,23 +56,49 @@ class ChallengeControllerTest {
 
     @Test
     void createChallengeShouldRedirectToFormLoginWhenNotLoggedIn() {
-        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", session, model);
-
+        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", 1L, session, model);
         assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void createChallengeShouldCreateAndRedirectToDashboardWhenLoggedIn() {
         User creator = new User();
+        Sport sport = new Sport();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(creator);
-        when(challengeService.createChallenge(any(Challenge.class))).thenReturn(new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator));
+        when(sportService.getSportById(1L)).thenReturn(sport);
+        when(challengeService.createChallenge(any(Challenge.class))).thenReturn(new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), creator, sport));
 
-        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", session, model);
+        String view = challengeController.createChallenge("Run 5km", 7, "PUBLIC", 1L, session, model);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).getUserById(1L);
         verify(challengeService).createChallenge(any(Challenge.class));
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /challenges/list
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void listChallengesShouldRedirectToFormLoginWhenNotLoggedIn() {
+        String view = challengeController.listChallenges(session, model);
+
+        assertEquals("redirect:/users/formLogin", view);
+    }
+
+    @Test
+    void listChallengesShouldReturnListViewWithChallengesWhenLoggedIn() {
+        Challenge c1 = new Challenge();
+        Challenge c2 = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(challengeService.getAllChallenges()).thenReturn(List.of(c1, c2));
+
+        String view = challengeController.listChallenges(session, model);
+
+        assertEquals("challenge/listChallenges", view);
+        verify(challengeService).getAllChallenges();
+        verify(model).addAttribute("challenges", List.of(c1, c2));
     }
 
     @Test
@@ -78,6 +109,7 @@ class ChallengeControllerTest {
                 "Course rapide", 
                 -5, 
                 "Public", 
+                1L,
                 session, 
                 model
         );

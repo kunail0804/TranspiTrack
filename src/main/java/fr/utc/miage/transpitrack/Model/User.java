@@ -16,6 +16,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 
 @Entity
 @Table(name="user")
@@ -26,7 +27,10 @@ public class User {
 
     private String firstName;
     private String name;
+
+    @Email
     private String email;
+    
     private String password;
     private int age;
     private double height;
@@ -185,5 +189,14 @@ public class User {
     public void deleteGoal(Goal goal){
         this.goals.remove(goal);
     }
+    public void addPreference(UserSport userSport){
+        this.sportsPreference.add(userSport);
+    }
+
+    public void deletePreference(UserSport userSport){
+        this.sportsPreference.remove(userSport);
+    }
+
+    
 
 }

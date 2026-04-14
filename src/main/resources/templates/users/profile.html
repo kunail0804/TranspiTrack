@@ -6,7 +6,7 @@
 </head>
 <body> 
 <p th:if="${msg}" th:text="${msg}"></p>
-<a th:href="@{/user/search}">Retour à la recherche</a>
+<a th:if="${!isOwner}" th:href="@{/users/search}">Retour à la recherche</a>
 
 <h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Mon profil</h1>
 
@@ -19,15 +19,19 @@
 <p>Taille: <span th:text="${user.height}">taille de l'utilisateur</span></p>
 <p>Ville: <span th:text="${user.city}">ville de l'utilisateur</span></p>
 
-<p>Sports préférés:</p>
-<ul>
-    <li th:each="us : ${user.sportsPreference}">
-        <span th:text="${us.sport.name}">Sport</span> -
-        <span th:text="${us.level}">Niveau</span>
-    </li>
-</ul>
+<div th:if="${user.sportsPreference != null && !#lists.isEmpty(user.sportsPreference)}">
+    <hr>
+    <h2>Mes sports préférés</h2>
+    <p>Sports préférés:</p>
+    <ul>
+        <li th:each="us : ${user.sportsPreference}">
+            <span th:text="${us.sport.name}">Sport</span> -
+            <span th:text="${us.level}">Niveau</span>
+        </li>
+    </ul>
+</div>
 
-<button th:href="@{/users/formUpdate}">Modifier mon profil</button>
+<button th:href="@{/users/formUpdate}" th:if="${isOwner}">Modifier mon profil</button>
 
 <hr>
 
@@ -43,6 +47,20 @@
     </li>
 </ul>
 
+<hr>
+
+<h2>Badges obtenus</h2>
+<ul>
+    <li th:each="ub : ${userBadges}">
+        <strong th:text="${ub.badge.title}"></strong>
+        — <span th:text="${ub.badge.description}"></span>
+        <em>(<span th:text="${ub.earnedAt}"></span>)</em>
+    </li>
+    <li th:if="${userBadges == null or #lists.isEmpty(userBadges)}">
+        Aucun badge obtenu pour l'instant.
+    </li>
+</ul>
+
 <h2>Challenges créés</h2>
 <ul>
     <li th:each="challenge : ${user.createdChallenges}">
@@ -53,7 +71,37 @@
     </li>
 </ul>
 
+
+
+<div th:if="${isOwner}">
+    <hr>
+    <h2>Amis</h2>
+
+    <ul>
+        <li th:each="friend : ${friends}">
+            <a th:href="@{/users/profile/{id}(id=${friend.id})}" th:text="${friend.firstName + ' ' + friend.name}">
+                Nom de l'ami
+            </a>
+        </li>
+    </ul>
+
+    <p th:if="${friends == null or #lists.isEmpty(friends)}">
+        Vous n'avez pas encore d'amis.
+    </p>
+
+    <div th:if="${pendingFriendships > 0}">
+        <p>
+            Vous avez <span th:text="${pendingFriendships}">0</span> demande(s) d'amis en attente.
+        </p>
+
+        <a th:href="@{/users/friends/invites}">
+            Voir les demandes d'amis
+        </a>
+    </div>
+</div>
+
 <hr>
+
 
 <a th:if="${isOwner}" th:href="@{/users/formUpdate}">
     <button>Modifier mon profil</button>
