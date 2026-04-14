@@ -24,11 +24,19 @@ public class Challenge {
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
-    public Challenge(String title, String visibility, Duration duration, User creator) {
+    @ManyToOne
+    @JoinColumn(name = "sport_id", nullable = false) 
+    private Sport sport;
+
+    public Challenge(String title, String visibility, Duration duration, User creator,Sport sport) {
         this.title = title;
         this.visibility = visibility;
         this.duration = duration;
         this.creator = creator;
+        this.sport = sport;
+    }
+
+    public Challenge() {
     }
 
     public String getTitle() {
@@ -43,7 +51,14 @@ public class Challenge {
         return duration;
     }
 
-    
+    public User getCreator() {
+        return creator;
+    }
+
+    public Sport getSport() {
+        return sport;
+    }
+
 
 }
 
