@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -30,6 +32,9 @@ public class ActivityController {
 
     @Autowired
     private SportService sportService;
+
+    @Autowired
+    private BadgeService badgeService;
 
     @RequestMapping("")
     public String listActivities(Model model) {
@@ -78,6 +83,10 @@ public class ActivityController {
         activity.setUser(userService.getUserById(userId));
 
         activityService.save(activity);
+
+        User user = userService.getUserById(userId);
+        badgeService.checkAndAwardBadges(user, activityService.getActivitiesByUserId(userId));
+
         return "redirect:/users/dashboard";
     }
 }
