@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.User;
 
@@ -22,6 +24,18 @@ class ChallengeServiceTest {
 
     @InjectMocks
     private ChallengeService challengeService;
+
+    @Test
+    void getAllChallengesShouldReturnAllChallenges() {
+        Challenge c1 = new Challenge();
+        Challenge c2 = new Challenge();
+        when(challengeRepository.findAll()).thenReturn(List.of(c1, c2));
+
+        List<Challenge> result = challengeService.getAllChallenges();
+
+        assertEquals(2, result.size());
+        verify(challengeRepository).findAll();
+    }
 
     @Test
     void createChallengeShouldReturnSavedChallenge() {

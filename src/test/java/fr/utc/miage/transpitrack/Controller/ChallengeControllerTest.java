@@ -14,6 +14,8 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
+import java.util.List;
+
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
@@ -72,6 +74,31 @@ class ChallengeControllerTest {
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).getUserById(1L);
         verify(challengeService).createChallenge(any(Challenge.class));
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /challenges/list
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void listChallengesShouldRedirectToFormLoginWhenNotLoggedIn() {
+        String view = challengeController.listChallenges(session, model);
+
+        assertEquals("redirect:/users/formLogin", view);
+    }
+
+    @Test
+    void listChallengesShouldReturnListViewWithChallengesWhenLoggedIn() {
+        Challenge c1 = new Challenge();
+        Challenge c2 = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(challengeService.getAllChallenges()).thenReturn(List.of(c1, c2));
+
+        String view = challengeController.listChallenges(session, model);
+
+        assertEquals("challenge/listChallenges", view);
+        verify(challengeService).getAllChallenges();
+        verify(model).addAttribute("challenges", List.of(c1, c2));
     }
 
     @Test
