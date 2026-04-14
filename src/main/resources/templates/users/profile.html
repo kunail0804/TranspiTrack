@@ -88,14 +88,11 @@
 
 <hr>
 
-
-<a th:if="${isOwner}" th:href="@{/users/formUpdate}">
-    <button>Modifier mon profil</button>
-</a>
 <a th:if="${!isOwner && !requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
     <button>Ajouter en ami</button>
 </a>
 <a th:if="${!isOwner && requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
     <button disabled>Ajouter en ami</button>
+</a>
 </body>
 </html>

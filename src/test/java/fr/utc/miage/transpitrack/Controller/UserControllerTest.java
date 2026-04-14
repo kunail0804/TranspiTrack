@@ -525,7 +525,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/consultationPreferences
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void consultationPreferencesShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.consultationPreferences(model, session);
@@ -551,7 +550,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/addPreference
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void addPreferenceShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.addPreference(1L, Level.BEGINNER, model, session);
@@ -613,7 +611,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/updateLevel
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void updateLevelShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
@@ -627,6 +624,16 @@ class UserControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
 
         String view = userController.updateLevel(null, Level.ADVANCED, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+    }
+
+    @Test
+    void updateLevelShouldRedirectWhenLevelIsNull() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.updateLevel(1L, null, model, session);
 
         assertEquals("redirect:/users/consultationPreferences", view);
     }
@@ -650,7 +657,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/deletePreference
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void deletePreferenceShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.deletePreference(1L, model, session);

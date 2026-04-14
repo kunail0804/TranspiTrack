@@ -12,17 +12,23 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Model.Activity;
+import fr.utc.miage.transpitrack.Model.Commentary;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -46,10 +52,12 @@ class ActivityControllerTest {
     @InjectMocks
     private ActivityController activityController;
 
+    @Mock
+    private CommentaryService commentaryService;
+
     // ──────────────────────────────────────────────────────────────
     // GET /activities
     // ──────────────────────────────────────────────────────────────
-
     @Test
     @SuppressWarnings("unchecked")
     void listActivitiesShouldReturnListViewWithActivitiesSortedByDateDesc() {
@@ -72,7 +80,6 @@ class ActivityControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /activities/add
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void addActivityShouldReturnAddViewWithoutError() {
         String view = activityController.addActivity(null, model, session);
@@ -93,7 +100,6 @@ class ActivityControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /activities/add
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void saveActivityShouldRedirectWithErrorWhenDurationIsZero() {
         Activity activity = new Activity();
@@ -153,4 +159,269 @@ class ActivityControllerTest {
         assertEquals("redirect:/users/dashboard", view);
         verify(activityService).save(activity);
     }
+
+    @Test
+    void getActivityDetailsShouldReturnDetailsViewWhenUserLoggedIn() {
+
+        Long userId = 1L;
+        Long activityId = 10L;
+
+        User currentUser = mock(User.class);
+        Activity activity = mock(Activity.class);
+        User author = mock(User.class);
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(userService.getUserById(userId)).thenReturn(currentUser);
+
+        when(activityService.getActivityById(activityId)).thenReturn(activity);
+        when(activity.getUser()).thenReturn(author);
+
+        when(commentaryService.getCommentariesByActivityId(activityId)).thenReturn(List.of());
+
+        String view = activityController.getActivityDetails(activityId, model, session);
+
+        assertEquals("activities/details", view);
+
+        verify(model).addAttribute("activity", activity);
+        verify(model).addAttribute("user", currentUser);
+        verify(model).addAttribute("author", author);
+    }
+
+    @Test
+    void getActivityDetailsShouldRedirectWhenNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.getActivityDetails(10L, model, session);
+
+        assertEquals("redirect:/users/login?msg=Vous devez etre connecte", view);
+    }
+
+    @Test
+    void getActivityDetailsShouldRedirectWhenSessionUserIsNull() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.getActivityDetails(10L, model, session);
+
+        assertEquals("redirect:/users/login?msg=Vous devez etre connecte", view);
+    }
+
+    @Test
+    void getActivityDetailsShouldRedirectWhenUserNotFound() {
+
+        Long userId = 1L;
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(userService.getUserById(userId)).thenReturn(null);
+
+        String view = activityController.getActivityDetails(10L, model, session);
+
+        assertEquals("redirect:/users/login?msg=Utilisateur introuvable", view);
+    }
+
+    @Test
+    void getActivityDetailsShouldRedirectWhenActivityNotFound() {
+
+        Long userId = 1L;
+
+        User user = mock(User.class);
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(userService.getUserById(userId)).thenReturn(user);
+
+        when(activityService.getActivityById(10L)).thenReturn(null);
+
+        String view = activityController.getActivityDetails(10L, model, session);
+
+        assertEquals("redirect:/activities", view);
+    }
+
+    @Test
+    void addCommentaryShouldSaveAndRedirectWhenValid() {
+
+        Long userId = 1L;
+        Long activityId = 10L;
+
+        User user = mock(User.class);
+        Activity activity = mock(Activity.class);
+        Commentary commentary = new Commentary();
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        when(userService.getUserById(userId)).thenReturn(user);
+        when(activityService.getActivityById(activityId)).thenReturn(activity);
+
+        when(commentaryService.getCommentariesByAuthorIdAndActivityId(userId, activityId))
+                .thenReturn(List.of());
+
+        when(activity.getId()).thenReturn(activityId);
+
+        String view = activityController.addCommentary(commentary, activityId, session);
+
+        assertEquals("redirect:/activities/details/10", view);
+
+        verify(commentaryService).createCommentary(commentary);
+    }
+
+    @Test
+    void addCommentaryShouldRedirectWhenUserNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.addCommentary(new Commentary(), 10L, session);
+
+        assertEquals(
+                "redirect:/users/login?msg=Vous devez etre connecte pour commenter",
+                view
+        );
+    }
+
+    @Test
+    void addCommentaryShouldRedirectWhenAlreadyCommented() {
+
+        Long userId = 1L;
+        Long activityId = 10L;
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        when(commentaryService.getCommentariesByAuthorIdAndActivityId(userId, activityId))
+                .thenReturn(List.of(mock(Commentary.class)));
+
+        String view = activityController.addCommentary(new Commentary(), activityId, session);
+
+        assertEquals(
+                "redirect:/activities/details/10?msg=Vous avez deja commente cette activite",
+                view
+        );
+    }
+
+    @Test
+    void addCommentaryShouldRedirectWhenActivityNotFound() {
+
+        Long userId = 1L;
+        Long activityId = 10L;
+
+        User user = mock(User.class);
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(commentaryService.getCommentariesByAuthorIdAndActivityId(userId, activityId))
+                .thenReturn(List.of());
+
+        when(userService.getUserById(userId)).thenReturn(user);
+        when(activityService.getActivityById(activityId)).thenReturn(null);
+
+        String view = activityController.addCommentary(new Commentary(), activityId, session);
+
+        assertEquals(
+                "redirect:/activities?msg=Activite non trouvee",
+                view
+        );
+    }
+
+    @Test
+    void updateReactionShouldUpdateWhenAuthor() {
+
+        Long userId = 1L;
+        Long commentId = 5L;
+        Long activityId = 10L;
+
+        User user = mock(User.class);
+        Activity activity = mock(Activity.class);
+        Commentary commentary = mock(Commentary.class); // 🔥 FIX ICI
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        when(commentaryService.getCommentaryById(commentId)).thenReturn(commentary);
+
+        when(commentary.getAuthor()).thenReturn(user);
+        when(commentary.getActivity()).thenReturn(activity);
+
+        when(user.getId()).thenReturn(userId);
+        when(activity.getId()).thenReturn(activityId);
+
+        String view = activityController.updateReaction(commentId, ReactionType.LIKE, session);
+
+        assertEquals("redirect:/activities/details/10", view);
+
+        verify(commentaryService).createCommentary(commentary);
+        verify(commentary).setReaction(ReactionType.LIKE);
+    }
+
+    @Test
+    void updateReactionShouldNotAllowIfNotAuthor() {
+
+        Long userId = 1L;
+        Long commentId = 5L;
+
+        User author = mock(User.class);
+        Activity activity = mock(Activity.class);
+        Commentary commentary = mock(Commentary.class);
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        when(commentaryService.getCommentaryById(commentId)).thenReturn(commentary);
+
+        when(commentary.getAuthor()).thenReturn(author);
+        when(commentary.getActivity()).thenReturn(activity);
+
+        when(author.getId()).thenReturn(2L);
+        when(activity.getId()).thenReturn(10L);
+
+        String view = activityController.updateReaction(commentId, ReactionType.LIKE, session);
+
+        assertEquals("redirect:/activities/details/10", view);
+
+        verify(commentaryService, never()).createCommentary(any());
+    }
+
+    @Test
+    void updateReactionShouldRedirectWhenUserNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.updateReaction(5L, ReactionType.LIKE, session);
+
+        assertEquals("redirect:/users/login", view);
+    }
+
+    @Test
+    void updateReactionShouldRedirectWhenCommentNotFound() {
+
+        Long userId = 1L;
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(commentaryService.getCommentaryById(5L)).thenReturn(null);
+
+        String view = activityController.updateReaction(5L, ReactionType.LIKE, session);
+
+        assertEquals("redirect:/activities", view);
+    }
+
+    @Test
+    void updateReactionShouldRejectWhenNotAuthor() {
+
+        Long userId = 1L;
+
+        User author = mock(User.class);
+        Activity activity = mock(Activity.class);
+        Commentary commentary = mock(Commentary.class);
+
+        when(session.getAttribute("userId")).thenReturn(userId);
+
+        when(commentaryService.getCommentaryById(5L)).thenReturn(commentary);
+
+        when(commentary.getAuthor()).thenReturn(author);
+        when(commentary.getActivity()).thenReturn(activity);
+
+        when(author.getId()).thenReturn(2L);
+        when(activity.getId()).thenReturn(10L);
+
+        String view = activityController.updateReaction(5L, ReactionType.LIKE, session);
+
+        assertEquals("redirect:/activities/details/10", view);
+
+        verify(commentaryService, never()).createCommentary(any());
+    }
+
 }
