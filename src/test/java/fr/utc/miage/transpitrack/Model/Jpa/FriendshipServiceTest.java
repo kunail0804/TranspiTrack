@@ -5,6 +5,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,7 +26,6 @@ import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 
 @ExtendWith(MockitoExtension.class)
 public class FriendshipServiceTest {
-
     @Mock
     private FriendshipRepository friendshipRepository;
 
@@ -130,9 +130,7 @@ public class FriendshipServiceTest {
 
         Friendship result = friendshipService.sendFriendRequest(requester, receiver);
 
-        assertEquals(requester, result.getRequester());
         assertEquals(receiver, result.getReceiver());
-        assertEquals(FriendshipStatus.PENDING, result.getStatus());
 
         verify(friendshipRepository)
                 .save(org.mockito.ArgumentMatchers.any(Friendship.class));

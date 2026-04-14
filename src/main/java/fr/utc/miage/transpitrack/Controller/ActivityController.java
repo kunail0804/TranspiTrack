@@ -18,6 +18,7 @@ import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Service.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -32,6 +33,9 @@ public class ActivityController {
 
     @Autowired
     private SportService sportService;
+
+    @Autowired
+    private WeatherService weatherService;
 
     @Autowired
     private BadgeService badgeService;
@@ -82,11 +86,30 @@ public class ActivityController {
         Long userId = (Long) session.getAttribute("userId");
         activity.setUser(userService.getUserById(userId));
 
+        weatherService.assignWeatherToActivity(activity);
+
         activityService.save(activity);
 
         User user = userService.getUserById(userId);
         badgeService.checkAndAwardBadges(user, activityService.getActivitiesByUserId(userId));
 
         return "redirect:/users/dashboard";
+    }
+
+    @GetMapping("/listActivitiesUser")
+    public String listActivitiesUser(Model model,
+                                    HttpSession session){
+        Long userId = (Long) session.getAttribute("userId");
+
+        if(userId==null){
+            model.addAttribute("message", "Il faut êtres connecter !");
+            return "formLogin";
+        }
+
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
+        activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        model.addAttribute("activities", activities);
+
+        return "activities/list";
     }
 }

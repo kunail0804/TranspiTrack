@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Listes de mes objectifs</title>
+</head>
+<body> 
+<p th:text = "${message}"></p>
+<table border="1">
+    <thead>
+    <tr>
+        <th>Description</th>
+        <th>Distance à realiser</th>
+        <th>Modifier</th>
+        <th>Supprimer</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="g : ${goals}">
+        
+        <!-- Objectifs modifiable -->
+        <td>
+            <form th:action="@{/users/updateGoal}" method="post">
+                <input type="hidden" name="goalId" th:value="${g.id}" />
+                <input type="text" th:value="${g.goalText}" placeholder = "Entrez votre objectif" name="goal" id="goalUser" required/>
+        </td>
+
+        <!-- Distance modifiable -->
+        <td>
+                <input type="number" th:value="${g.targetDistance}" step="0.01" placeholder = "Entrez votre la distance" name="targetDistance" id="distanceUser" required/>
+        </td>
+
+        <!-- Modifier -->
+        <td>
+                <button type="submit">Modifier</button>
+            </form>
+        </td>
+
+        <!-- Supprimer -->
+        <td>
+            <form th:action="@{/users/deleteGoal}" method="post">
+                <input type="hidden" name="goalId" th:value="${g.id}" />
+                <button type="submit">Supprimer</button>
+            </form>
+        </td>
+
+    </tr>
+    </tbody>
+</table><br><br><br>
+
+<h3>Ajouter un objectif</h3>
+<form th:action="@{/users/addGoal}" method="post">
+    Description Objectif : <input type="text" placeholder = "Entrez votre objectif" name="goal" id="goalUser" required/><br>
+    Distance à parcourir en Km : <input type="number" step="0.01" placeholder = "Entrez la distance" name="targetDistance" id="distanceUser" required/><br>
+    <button type="submit">Ajouter</button>
+
+</form>
+</body>
+</html>

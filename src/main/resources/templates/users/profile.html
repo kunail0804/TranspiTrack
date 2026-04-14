@@ -114,5 +114,6 @@
 </a>
 <a th:if="${!isOwner && requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
     <button disabled>Ajouter en ami</button>
+</a>
 </body>
 </html>

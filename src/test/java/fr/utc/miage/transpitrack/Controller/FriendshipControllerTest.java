@@ -121,8 +121,7 @@ class FriendshipControllerTest {
     }
 
     @Test
-    void showInvitesShouldRedirectWhenUserNotLoggedIn() {
-
+    void showInvitesShouldRedirectWhenNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
 
         String result = controller.showInvites(null, session, model);

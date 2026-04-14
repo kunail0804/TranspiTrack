@@ -34,7 +34,6 @@ public class User {
     private String password;
     private int age;
     private double height;
-
     private String city;
 
     @Enumerated(EnumType.STRING)
@@ -182,6 +181,13 @@ public class User {
         this.weight = weight;
     }
 
+    public void addGoal(Goal goal){
+        this.goals.add(goal);
+    }
+
+    public void deleteGoal(Goal goal){
+        this.goals.remove(goal);
+    }
     public void addPreference(UserSport userSport){
         this.sportsPreference.add(userSport);
     }
@@ -189,7 +195,4 @@ public class User {
     public void deletePreference(UserSport userSport){
         this.sportsPreference.remove(userSport);
     }
-
-    
-
 }
