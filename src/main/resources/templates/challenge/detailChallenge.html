@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Détails du Challenge</title>
+</head>
+<body>
+    <div>
+        <h1>Détails du Challenge</h1>
+        
+        <div>
+            <h2 th:text="${challenge.title}">Titre du Challenge</h2>
+            
+            <ul>
+                <li><strong>Durée : </strong> <span th:text="${challenge.duration?.toDays()}">0</span> jours</li>
+                <li><strong>Sport : </strong> <span th:text="${challenge.sport?.name}">Nom du sport</span></li>
+                <li><strong>Visibilité : </strong> <span th:text="${challenge.visibility}">Public/Privé</span></li>
+                <li><strong>Créé par : </strong> <span th:text="|${challenge.creator?.firstName} ${challenge.creator?.name}|">Prénom Nom</span></li>
+            </ul>
+
+            <br>
+            <a th:href="@{/challenges/list}" class="btn btn-secondary">Retour à la liste</a>
+        </div>
+    </div>
+</body>
+</html>

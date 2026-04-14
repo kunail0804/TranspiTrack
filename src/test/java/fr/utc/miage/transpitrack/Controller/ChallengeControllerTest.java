@@ -120,4 +120,28 @@ class ChallengeControllerTest {
 
         verify(challengeService, never()).createChallenge(any(Challenge.class));
     }
+
+    // ──────────────────────────────────────────────────────────────
+    // GET /challenges/details/{id}
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void showChallengeDetailsShouldRedirectToFormLoginWhenNotLoggedIn() {
+
+        String view = challengeController.showChallengeDetails(1L, session, model);
+        assertEquals("redirect:/users/formLogin", view);
+        verify(challengeService, never()).getChallengeById(any());
+    }
+
+    @Test
+    void showChallengeDetailsShouldReturnDetailViewWhenLoggedIn() {
+        Challenge mockChallenge = new Challenge();
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(challengeService.getChallengeById(1L)).thenReturn(mockChallenge);
+        String view = challengeController.showChallengeDetails(1L, session, model);
+
+        assertEquals("challenge/detailChallenge", view);
+        verify(challengeService).getChallengeById(1L);
+        verify(model).addAttribute("challenge", mockChallenge);
+    }
 }

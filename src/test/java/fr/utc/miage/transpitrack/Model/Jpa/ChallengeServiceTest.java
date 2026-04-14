@@ -1,8 +1,11 @@
 package fr.utc.miage.transpitrack.Model.Jpa;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -10,8 +13,6 @@ import org.mockito.Mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
 import fr.utc.miage.transpitrack.Model.User;
@@ -47,5 +48,24 @@ class ChallengeServiceTest {
 
         assertEquals(challenge, result);
         verify(challengeRepository).save(challenge);
+    }
+
+    @Test
+    void getChallengeByIdShouldReturnChallengeWhenFound() {
+        Challenge challenge = new Challenge("Run 5km", "PUBLIC", Duration.ofDays(7), new User(), null);
+        when(challengeRepository.findById(1L)).thenReturn(Optional.of(challenge));
+
+        Challenge result = challengeService.getChallengeById(1L);
+
+        assertEquals(challenge, result);
+        verify(challengeRepository).findById(1L);
+    }
+
+    @Test
+    void getChallengeByIdShouldThrowWhenNotFound() {
+        when(challengeRepository.findById(99L)).thenReturn(Optional.empty());
+
+        assertThrows(IllegalArgumentException.class, () -> challengeService.getChallengeById(99L));
+        verify(challengeRepository).findById(99L);
     }
 }

@@ -22,7 +22,8 @@ public class ChallengeService {
     }
 
     public Challenge getChallengeById(Long id) {
-        return challengeRepository.findChallengeById(id);
+        return challengeRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Challenge introuvable avec l'ID : " + id));
     }
 
     public List<Challenge> getChallengesByVisibility(String visibility){

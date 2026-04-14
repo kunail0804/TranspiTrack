@@ -59,7 +59,14 @@ public class Challenge {
         return sport;
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setTitle(String title) { this.title = title; }
+    public void setVisibility(String visibility) { this.visibility = visibility; }
+    public void setDuration(Duration duration) { this.duration = duration; }
+    public void setCreator(User creator) { this.creator = creator; }
 }
 
 

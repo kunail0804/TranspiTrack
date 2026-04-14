@@ -37,4 +37,26 @@ class ChallengeTest {
         assertNull(challenge.getSport());
     }
 
+    @Test
+    void getIdShouldReturnNullWhenNotPersisted() {
+        assertNull(new Challenge().getId());
+    }
+
+    @Test
+    void settersShouldUpdateFields() {
+        Challenge challenge = new Challenge();
+        User user = new User();
+        Duration duration = Duration.ofDays(14);
+
+        challenge.setTitle("Nouveau titre");
+        challenge.setVisibility("PRIVATE");
+        challenge.setDuration(duration);
+        challenge.setCreator(user);
+
+        assertEquals("Nouveau titre", challenge.getTitle());
+        assertEquals("PRIVATE", challenge.getVisibility());
+        assertEquals(duration, challenge.getDuration());
+        assertEquals(user, challenge.getCreator());
+    }
+
 }
