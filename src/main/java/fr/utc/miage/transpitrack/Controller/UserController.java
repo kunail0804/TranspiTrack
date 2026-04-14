@@ -1,6 +1,5 @@
 package fr.utc.miage.transpitrack.Controller;
 
-import fr.utc.miage.transpitrack.Model.Jpa.UserSportRepository;
 import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
 
 import java.util.List;

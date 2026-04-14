@@ -1,0 +1,91 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Détails de l'activité</title>
+  </head>
+  <body>
+    <h1>Détails de l'activité</h1>
+    <p>
+      Fait par
+      <span th:text="${author.firstName} + ' ' + ${author.name}"></span>
+    </p>
+
+    <p><strong>Date:</strong> <span th:text="${activity.date}"></span></p>
+    <p>
+      <strong>Durée:</strong>
+      <span th:text="${activity.duration}"></span> minutes
+    </p>
+    <p>
+      <strong>Distance:</strong> <span th:text="${activity.distance}"></span> km
+    </p>
+    <p>
+      <strong>Évaluation:</strong>
+      <span th:text="${activity.evaluation}"></span>
+    </p>
+    <p>
+      <strong>Sport:</strong> <span th:text="${activity.sport.name}"></span>
+    </p>
+
+    <h2>Commentaires</h2>
+    <ul>
+      <li th:each="commentary : ${commentaries}">
+        <p>
+          <strong>Auteur:</strong>
+          <span
+            th:text="${commentary.author.firstName} + ' ' + ${commentary.author.name}"
+                ></span>
+            </p>
+            <p>
+                <strong>Commentaire:</strong>
+                <span th:text="${commentary.message}"></span>
+
+                <span th:if="${commentary.reaction != null}">
+                    <span th:text="${commentary.reaction.emoji}"></span>
+                </span>
+            </p>
+            <form
+                th:action="@{/activities/comment/{id}/reaction(id=${commentary.id})}"
+                method="post"
+                th:if="${user != null and commentary.author != null and user.id == commentary.author.id}"
+            >
+                <button type="submit" name="reaction" value="LIKE">👍</button>
+                <button type="submit" name="reaction" value="LOVE">❤️</button>
+                <button type="submit" name="reaction" value="WOW">😮</button>
+                <button type="submit" name="reaction" value="DISLIKE">👎</button>
+            </form>
+        </p>
+      </li>
+      <li th:if="${commentaries == null or commentaries.isEmpty()}">
+        Aucun commentaire pour cette activité.
+      </li>
+    </ul>
+
+    <form
+      th:if="${!user.equals(author) and canComment}"
+      th:action="@{/activities/comment/{id}(id=${activity.id})}"
+      method="post"
+      th:object="${commentary}"
+    >
+      <label for="message">Ajouter un commentaire:</label><br />
+      <textarea
+        id="message"
+        name="message"
+        rows="4"
+        cols="50"
+        required
+        th:field="*{message}"
+      ></textarea
+      ><br /><br />
+      <label for="emoji">Ajouter un emoji:</label><br />
+      <select id="emoji" name="emoji" th:field="*{reaction}">
+        <option value="">Aucun</option>
+        <option value="LIKE">👍</option>
+        <option value="LOVE">❤️</option>
+        <option value="WOW">😮</option>
+        <option value="DISLIKE">👎</option>
+      </select>
+      <button type="submit">Ajouter le commentaire</button>
+    </form>
+  </body>
+</html>
