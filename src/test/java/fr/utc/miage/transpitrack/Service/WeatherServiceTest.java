@@ -4,6 +4,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -176,6 +177,64 @@ class WeatherServiceTest {
         activity.setCity("");
         activity.setDate(LocalDate.now());
         weatherService.assignWeatherToActivity(activity);
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
+    }
+
+    // ── WeatherResponse ────────────────────────────────────────────
+
+    @Test
+    void weatherResponseGetWeatherConditionShouldReturnCondition() {
+        WeatherResponse response = new WeatherResponse("Lyon", 18.0, "Nuageux", List.of());
+        assertEquals("Nuageux", response.getWeatherCondition());
+    }
+
+    // ── WeatherService : branches manquantes ───────────────────────
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldThrowWhenCityNotFoundInGeocoding() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        String geoJson = "{\"results\":[]}";
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+
+        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldThrowWhenWeatherDataMissingFields() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
+        String weatherJson = "{}";
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn(weatherJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+
+        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldDoNothingWhenCityNotFoundInGeocoding() throws Exception {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("VilleInconnue");
+        activity.setDate(LocalDate.now());
+
+        String geoJson = "{}";
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+
+        weatherService.assignWeatherToActivity(activity);
+
         assertNull(activity.getTemperature());
         assertNull(activity.getWeatherCondition());
     }

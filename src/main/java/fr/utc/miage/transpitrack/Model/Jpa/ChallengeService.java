@@ -20,4 +20,9 @@ public class ChallengeService {
     public List<Challenge> getAllChallenges() {
         return challengeRepository.findAll();
     }
+
+    public Challenge getChallengeById(Long id) {
+        return challengeRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Challenge introuvable avec l'ID : " + id));
+    }
 }

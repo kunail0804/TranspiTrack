@@ -59,7 +59,9 @@ public class Challenge {
         return sport;
     }
 
-    public Long getId() { return id; }
+    public Long getId() {
+        return id;
+    }
 
     public void setTitle(String title) { this.title = title; }
     public void setVisibility(String visibility) { this.visibility = visibility; }
