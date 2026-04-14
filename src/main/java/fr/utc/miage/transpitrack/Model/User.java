@@ -190,6 +190,16 @@ public class User {
         this.sportsPreference.remove(userSport);
     }
 
-    
+    public void addChallenge(Challenge challenge){
+        this.joinedChallenges.add(challenge);
+    }
+
+    public boolean isAlreadyJoinChallenge(Challenge challenge){
+        return joinedChallenges.contains(challenge);
+    }
+
+    public boolean isTheCreatorOfTheChallenge(Challenge challenge){
+        return createdChallenges.contains(challenge);
+    }
 
 }

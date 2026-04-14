@@ -20,4 +20,12 @@ public class ChallengeService {
     public List<Challenge> getAllChallenges() {
         return challengeRepository.findAll();
     }
+
+    public Challenge getChallengeById(Long id) {
+        return challengeRepository.findChallengeById(id);
+    }
+
+    public List<Challenge> getChallengesByVisibility(String visibility){
+        return challengeRepository.findChallengesByVisibility(visibility);
+    }
 }
