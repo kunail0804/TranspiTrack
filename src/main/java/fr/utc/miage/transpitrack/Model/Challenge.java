@@ -59,6 +59,9 @@ public class Challenge {
         return sport;
     }
 
+    public Long getId() {
+        return id;
+    }
 
 }
 

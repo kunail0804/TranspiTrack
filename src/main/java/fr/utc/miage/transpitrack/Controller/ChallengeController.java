@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,4 +78,14 @@ public class ChallengeController {
 
         return "challenge/listChallenges"; 
     }
+
+    @GetMapping("/details/{id}")
+    public String showChallengeDetails(@PathVariable("id") Long id, HttpSession session, Model model) {
+    if (session.getAttribute("userId") == null) {
+        return "redirect:/users/formLogin";
+    }
+    Challenge challenge = challengeService.getChallengeById(id);
+    model.addAttribute("challenge", challenge);
+    return "challenge/detailChallenge"; 
+}
 }

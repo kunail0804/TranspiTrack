@@ -65,6 +65,9 @@
 <ul>
     <li th:each="challenge : ${user.createdChallenges}">
         <span th:text="${challenge.title}">Titre</span>
+        <a th:href="@{/challenge/details/{id}(id=${challenge.id})}" class="btn btn-info btn-sm">
+            Détails du challenge
+        </a>
     </li>
     <li th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
         Aucun challenge créé.
