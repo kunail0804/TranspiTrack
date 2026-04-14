@@ -692,6 +692,15 @@ class UserControllerTest {
     }
 
     @Test
+    void updateLevelShouldRedirectWhenLevelIsNull() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        String view = userController.updateLevel(1L, null, model, session);
+
+        assertEquals("redirect:/users/consultationPreferences", view);
+    }
+
+    @Test
     void updateLevelShouldUpdateLevelAndRedirectWhenValid() {
         User user = new User();
         UserSport us = new UserSport(user, new Sport(), Level.BEGINNER);

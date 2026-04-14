@@ -25,4 +25,8 @@ public class ChallengeService {
         return challengeRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("Challenge introuvable avec l'ID : " + id));
     }
+
+    public List<Challenge> getChallengesByVisibility(String visibility){
+        return challengeRepository.findChallengesByVisibility(visibility);
+    }
 }

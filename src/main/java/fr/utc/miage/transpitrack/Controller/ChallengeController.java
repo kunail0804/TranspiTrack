@@ -1,6 +1,7 @@
 package fr.utc.miage.transpitrack.Controller;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Challenge;
+import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
+import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +35,9 @@ public class ChallengeController {
 
     @Autowired
     SportService sportService;
+
+    @Autowired
+    FriendshipService friendshipService;
 
     @GetMapping("/formCreate")
     public String formCreateChallenge(HttpSession session, Model model) {
@@ -73,13 +78,58 @@ public class ChallengeController {
         if (userId == null) {
             return "redirect:/users/formLogin";
         }
-        List<Challenge> challenges = challengeService.getAllChallenges();
+
+        List<Friendship> friendships = friendshipService.getMyFriendships(userId);
+        List<User> friends = friendships.stream().map(f -> f.getRequester().getId().equals(userId) ? f.getReceiver() : f.getRequester()).toList();
+        List<Challenge> friendsChallenges = new ArrayList<>();
+        for(User friend : friends){
+            for(Challenge challenge : friend.getCreatedChallenges()){
+                friendsChallenges.add(challenge);
+            }
+        }
+        List<Challenge> challenges = challengeService.getChallengesByVisibility("PUBLIC");
         
         model.addAttribute("challenges", challenges);
+        model.addAttribute("friendsChallenges", friendsChallenges);
 
         return "challenge/listChallenges"; 
     }
 
+    @PostMapping("/joinChallenge")
+    public String getMethodName(@RequestParam("challengeId") Long idChallenge,
+                                Model model,
+                                HttpSession session) {
+         Long userId = (Long) session.getAttribute("userId");
+         if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+
+        if(idChallenge==null){
+            return "redirect:/challenges/list";
+        }
+
+        User user = userService.getUserById(userId);
+
+        Challenge challenge = challengeService.getChallengeById(idChallenge);
+
+        if(user.isAlreadyJoinChallenge(challenge)){
+            model.addAttribute("message", "Vous participer deja a ce challenge !");
+            return"redirect:/challenges/list";
+        }
+
+        if(challenge.getCreator()==user){
+            model.addAttribute("message", "Vous participer deja a ce challenge car vous l'avez créer !");
+            return"redirect:/challenges/list";
+        }
+
+        user.addChallenge(challenge);
+        userService.updateUser(user);
+
+        
+        model.addAttribute("user", user);
+        return "challenge/testSuccessJoin";
+    }
+   
     @GetMapping("/details/{id}")
     public String showChallengeDetails(@PathVariable("id") Long id, HttpSession session, Model model) {
     if (session.getAttribute("userId") == null) {

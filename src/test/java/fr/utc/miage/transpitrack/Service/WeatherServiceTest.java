@@ -1,5 +1,6 @@
 package fr.utc.miage.transpitrack.Service;
 
+import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -232,6 +233,123 @@ class WeatherServiceTest {
         HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
+    }
+
+    // ── branches manquantes supplémentaires ───────────────────────
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldThrowWhenGeoResponseHasNoResultsKey() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn("{}");
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+
+        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldThrowWhenWeatherDataMissingDailyField() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
+        String weatherJson = "{\"current_weather\":{\"temperature\":22.0,\"weathercode\":0}}";
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn(weatherJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+
+        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+    }
+
+    @Test
+    void interpretWeatherCodeShouldReturnNuageuxForNegativeCode() {
+        assertEquals("Nuageux", weatherService.interpretWeatherCode(-1));
+    }
+
+    @Test
+    void interpretWeatherCodeShouldReturnNuageuxForCodeAbove99() {
+        assertEquals("Nuageux", weatherService.interpretWeatherCode(100));
+    }
+
+    @Test
+    void assignWeatherToActivityShouldDoNothingIfCityIsNull() {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity(null);
+        activity.setDate(LocalDate.now());
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
+    }
+
+    @Test
+    void assignWeatherToActivityShouldDoNothingIfDateIsNull() {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("Paris");
+        activity.setDate(null);
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldDoNothingWhenGeoResultsListIsEmpty() throws Exception {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("Inconnue");
+        activity.setDate(LocalDate.now());
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn("{\"results\":[]}");
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldNotUpdateWeatherWhenDailyKeyMissing() throws Exception {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("Lyon");
+        activity.setDate(LocalDate.now());
+
+        String geoJson = "{\"results\":[{\"latitude\":45.74,\"longitude\":4.84,\"name\":\"Lyon\"}]}";
+        String weatherJson = "{\"other\":\"data\"}";
+
+        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn(weatherJson);
+        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertNull(activity.getTemperature());
+        assertNull(activity.getWeatherCondition());
+    }
+
+    @Test
+    void assignWeatherToActivityShouldSuppressExceptionAndNotUpdateWeather() throws Exception {
+        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        activity.setCity("Paris");
+        activity.setDate(LocalDate.now());
+        when(httpClient.send(any(HttpRequest.class), any())).thenThrow(new IOException("connection refused"));
 
         weatherService.assignWeatherToActivity(activity);
 
