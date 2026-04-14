@@ -126,4 +126,42 @@ class UserTest {
         assertEquals(1, user.getSportsPreference().size());
         assertEquals(us2, user.getSportsPreference().get(0));
     }
+
+    @Test
+    void addGoalShouldAddGoalToList() {
+        User user = new User();
+        Goal goal = new Goal(10.0, "Courir 10 km", user);
+        user.addGoal(goal);
+        assertEquals(1, user.getGoals().size());
+        assertEquals(goal, user.getGoals().get(0));
+    }
+
+    @Test
+    void addGoalShouldSupportMultipleEntries() {
+        User user = new User();
+        user.addGoal(new Goal(5.0, "A", user));
+        user.addGoal(new Goal(10.0, "B", user));
+        assertEquals(2, user.getGoals().size());
+    }
+
+    @Test
+    void deleteGoalShouldRemoveGoalFromList() {
+        User user = new User();
+        Goal goal = new Goal(10.0, "Courir", user);
+        user.addGoal(goal);
+        user.deleteGoal(goal);
+        assertEquals(0, user.getGoals().size());
+    }
+
+    @Test
+    void deleteGoalShouldOnlyRemoveTargetEntry() {
+        User user = new User();
+        Goal g1 = new Goal(5.0, "A", user);
+        Goal g2 = new Goal(10.0, "B", user);
+        user.addGoal(g1);
+        user.addGoal(g2);
+        user.deleteGoal(g1);
+        assertEquals(1, user.getGoals().size());
+        assertEquals(g2, user.getGoals().get(0));
+    }
 }
