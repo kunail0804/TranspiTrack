@@ -180,4 +180,38 @@ class BadgeServiceTest {
 
         verify(userBadgeRepository, never()).save(any());
     }
+
+    @Test
+    void checkAndAwardBadgesShouldNotAwardActivityCountBadgeWhenThresholdNotMet() {
+        User user = new User();
+
+        Activity a = new Activity();
+        a.setDistance(1.0);
+        a.setDuration(10);
+
+        Badge badge = new Badge("Régulier", "5 activités", 5.0, BadgeType.ACTIVITY_COUNT);
+        when(badgeRepository.findAll()).thenReturn(List.of(badge));
+        when(userBadgeRepository.existsByUserAndBadge(user, badge)).thenReturn(false);
+
+        badgeService.checkAndAwardBadges(user, List.of(a));
+
+        verify(userBadgeRepository, never()).save(any());
+    }
+
+    @Test
+    void checkAndAwardBadgesShouldNotAwardDurationBadgeWhenThresholdNotMet() {
+        User user = new User();
+
+        Activity a = new Activity();
+        a.setDistance(1.0);
+        a.setDuration(10);
+
+        Badge badge = new Badge("Endurant", "5h", 300.0, BadgeType.DURATION);
+        when(badgeRepository.findAll()).thenReturn(List.of(badge));
+        when(userBadgeRepository.existsByUserAndBadge(user, badge)).thenReturn(false);
+
+        badgeService.checkAndAwardBadges(user, List.of(a));
+
+        verify(userBadgeRepository, never()).save(any());
+    }
 }

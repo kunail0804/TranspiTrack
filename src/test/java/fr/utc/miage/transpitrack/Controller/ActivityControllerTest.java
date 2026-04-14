@@ -202,4 +202,14 @@ class ActivityControllerTest {
         assertEquals(newer, sortedActivities.get(0));
         assertEquals(older, sortedActivities.get(1));
     }
+
+    @Test
+    void listActivitiesUserShouldReturnFormLoginWhenNotLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.listActivitiesUser(model, session);
+
+        assertEquals("formLogin", view);
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
+    }
 }
