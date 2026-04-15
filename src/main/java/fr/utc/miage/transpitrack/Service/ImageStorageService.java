@@ -1,7 +1,6 @@
 package fr.utc.miage.transpitrack.Service;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,7 +8,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,14 +27,6 @@ public class ImageStorageService {
     public void init() throws IOException {
         uploadPath = Paths.get(uploadDir);
         Files.createDirectories(uploadPath);
-
-        Path placeholderDest = uploadPath.resolve(PLACEHOLDER_FILENAME);
-        if (!Files.exists(placeholderDest)) {
-            ClassPathResource placeholder = new ClassPathResource("images/users/" + PLACEHOLDER_FILENAME);
-            try (InputStream is = placeholder.getInputStream()) {
-                Files.copy(is, placeholderDest, StandardCopyOption.REPLACE_EXISTING);
-            }
-        }
     }
 
     /**
