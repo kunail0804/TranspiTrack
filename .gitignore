@@ -34,3 +34,7 @@ build/
 .vscode/
 
 db/transpitrack.db
+
+### Uploads ###
+uploads/images/users/*
+!uploads/images/users/placeholder.png
