@@ -92,7 +92,7 @@ class UserControllerTest {
         String view = userController.formCreate(model, session);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Bienvenue");
+        verify(model).addAttribute("message", "");
     }
 
     @Test
@@ -101,7 +101,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "email-invalide", "secret",
                 25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formCreate", view);
+        assertEquals("redirect:/users/formCreate", view);
         verify(model).addAttribute("message", "Email invalide");
     }
 
@@ -111,7 +111,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formCreate", view);
+        assertEquals("redirect:/users/formCreate", view);
         verify(model).addAttribute("message", "Age ne peut pas être négatif");
     }
 
@@ -121,7 +121,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, -1.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formCreate", view);
+        assertEquals("redirect:/users/formCreate", view);
         verify(model).addAttribute("message", "Taille ne peut pas être négatif");
     }
 
@@ -131,7 +131,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, 165.0, "FEMALE", -1.0, "Paris", null, model, session);
 
-        assertEquals("users/formCreate", view);
+        assertEquals("redirect:/users/formCreate", view);
         verify(model).addAttribute("message", "Poids ne peut pas être négatif");
     }
 
@@ -143,7 +143,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formCreate", view);
+        assertEquals("redirect:/users/formCreate", view);
         verify(model).addAttribute("message", "email dejas existant");
     }
 
@@ -225,7 +225,7 @@ class UserControllerTest {
     void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.formUpdate(model, session);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
@@ -247,7 +247,6 @@ class UserControllerTest {
         String view = userController.formUpdate(model, session);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Modification du compte réussie");
         verify(model).addAttribute("user", user);
     }
 
@@ -269,7 +268,7 @@ class UserControllerTest {
                 25, 165.0, "FEMALE", 60.0, "Paris", null, model, session
         );
 
-        assertEquals("users/formUpdate", view);
+        assertEquals("redirect:/users/formUpdate", view);
         verify(model).addAttribute("message", "Email invalide");
 
     }
@@ -280,7 +279,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formUpdate", view);
+        assertEquals("redirect:/users/formUpdate", view);
         verify(model).addAttribute("message", "Age ne peut pas être négatif");
     }
 
@@ -290,7 +289,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, -1.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formUpdate", view);
+        assertEquals("redirect:/users/formUpdate", view);
         verify(model).addAttribute("message", "Taille ne peut pas être négatif");
     }
 
@@ -300,7 +299,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "alice@example.com", "secret",
                 25, 165.0, "FEMALE", -1.0, "Paris", null, model, session);
 
-        assertEquals("users/formUpdate", view);
+        assertEquals("redirect:/users/formUpdate", view);
         verify(model).addAttribute("message", "Poids ne peut pas être négatif");
     }
 
@@ -324,7 +323,7 @@ class UserControllerTest {
                 "Alice", "Dupont", "newemail@example.com", "secret",
                 25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
-        assertEquals("users/formUpdate", view);
+        assertEquals("redirect:/users/formUpdate", view);
         verify(model).addAttribute("message", "email déja existant");
     }
 
@@ -512,14 +511,13 @@ class UserControllerTest {
         String view = userController.formLogin(model, session);
 
         assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
     }
 
     @Test
     void loginUserShouldReturnFormLoginWhenEmailNotFound() {
         String view = userController.loginUser("unknown@example.com", "secret", model, session);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
         verify(model).addAttribute("message", "email ou mots de passe incorrect");
     }
 
@@ -540,7 +538,7 @@ class UserControllerTest {
 
         String view = userController.loginUser("alice@example.com", "wrong", model, session);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
         verify(model).addAttribute("message", "email ou mots de passe incorrect");
     }
 
@@ -573,7 +571,7 @@ class UserControllerTest {
     void logoutShouldInvalidateSessionAndReturnFormLogin() {
         String view = userController.logoutPage(session);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
         verify(session).invalidate();
     }
 
@@ -581,8 +579,8 @@ class UserControllerTest {
     void profilePageShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.profilePage(session, model);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -592,7 +590,7 @@ class UserControllerTest {
 
         String view = userController.profilePage(session, model);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
@@ -728,8 +726,8 @@ class UserControllerTest {
     void consultationPreferencesShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.consultationPreferences(model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -750,8 +748,8 @@ class UserControllerTest {
     void addPreferenceShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.addPreference(1L, Level.BEGINNER, model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -808,8 +806,8 @@ class UserControllerTest {
     void updateLevelShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -851,8 +849,8 @@ class UserControllerTest {
     void deletePreferenceShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.deletePreference(1L, model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -883,8 +881,8 @@ class UserControllerTest {
     void consultationGoalsShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.consultationGoals(model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -903,8 +901,8 @@ class UserControllerTest {
     void addGoalShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.addGoal("Courir", 10.0, model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -942,8 +940,8 @@ class UserControllerTest {
     void updateGoalShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.updateGoal(1L, "Courir", 10.0, model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
@@ -985,8 +983,8 @@ class UserControllerTest {
     void deleteGoalShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.deleteGoal(1L, model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
+        verify(model).addAttribute("message", "Il faut être connecte !");
     }
 
     @Test
