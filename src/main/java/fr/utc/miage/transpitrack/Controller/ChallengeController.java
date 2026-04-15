@@ -19,8 +19,8 @@ import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeScoreService;
 import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import jakarta.servlet.http.HttpSession;
@@ -150,11 +150,12 @@ public class ChallengeController {
         ChallengeScore userScore = canAddScore
                 ? challengeScoreService.getScoreByUserAndChallenge(currentUser, challenge)
                 : null;
+        List<ChallengeScore> classementTrie = challengeScoreService.getClassementParChallenge(id);
 
         model.addAttribute("challenge", challenge);
         model.addAttribute("canAddScore", canAddScore);
         model.addAttribute("userScore", userScore);
-        model.addAttribute("scores", challengeScoreService.getScoresByChallenge(challenge));
+        model.addAttribute("listeScores", classementTrie);
         return "challenge/detailChallenge";
     }
 

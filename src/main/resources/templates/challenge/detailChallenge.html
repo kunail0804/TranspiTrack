@@ -42,15 +42,26 @@
         </div>
 
         <div>
-            <h3>Scores enregistrés</h3>
-            <ul th:if="${scores != null and !scores.isEmpty()}">
-                <li th:each="s : ${scores}">
-                    <span th:text="|${s.user.firstName} ${s.user.name}|">Prénom Nom</span>
-                    :
-                    <span th:text="${s.score}">0</span>
-                </li>
-            </ul>
-            <p th:if="${scores == null or scores.isEmpty()}">Aucun score pour l'instant.</p>
+            <h3>Classement du Challenge</h3>
+            
+            <table border="1" th:if="${listeScores != null and !listeScores.isEmpty()}">
+                <thead>
+                    <tr>
+                        <th>Rang</th>
+                        <th>Participant</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="score, iter : ${listeScores}">
+                        <td th:text="${iter.count}">1</td>
+                        <td th:text="|${score.user.firstName} ${score.user.name}|">Prénom Nom</td>
+                        <td th:text="${score.score}">0</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p th:if="${listeScores == null or listeScores.isEmpty()}">Aucun participant classé pour le moment.</p>
         </div>
     </div>
 </body>

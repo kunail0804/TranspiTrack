@@ -80,6 +80,31 @@ class ChallengeScoreServiceTest {
         verify(challengeScoreRepository).findByUserAndChallenge(user, challenge);
     }
 
+    // ── getClassementParChallenge ──────────────────────────────────
+
+    @Test
+    void getClassementParChallengeShouldReturnScoresOrderedByScoreDesc() {
+        ChallengeScore s1 = new ChallengeScore(new User(), new Challenge(), 90.0);
+        ChallengeScore s2 = new ChallengeScore(new User(), new Challenge(), 50.0);
+        when(challengeScoreRepository.findByChallengeIdOrderByScoreDesc(1L)).thenReturn(List.of(s1, s2));
+
+        List<ChallengeScore> result = challengeScoreService.getClassementParChallenge(1L);
+
+        assertEquals(2, result.size());
+        assertEquals(90.0, result.get(0).getScore());
+        verify(challengeScoreRepository).findByChallengeIdOrderByScoreDesc(1L);
+    }
+
+    @Test
+    void getClassementParChallengeShouldReturnEmptyListWhenNoScores() {
+        when(challengeScoreRepository.findByChallengeIdOrderByScoreDesc(99L)).thenReturn(List.of());
+
+        List<ChallengeScore> result = challengeScoreService.getClassementParChallenge(99L);
+
+        assertEquals(0, result.size());
+        verify(challengeScoreRepository).findByChallengeIdOrderByScoreDesc(99L);
+    }
+
     @Test
     void getScoreByUserAndChallengeShouldReturnNullWhenNotFound() {
         User user = new User();
