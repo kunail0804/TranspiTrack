@@ -29,10 +29,6 @@ public class ImageStorageService {
         Files.createDirectories(uploadPath);
     }
 
-    /**
-     * Saves the uploaded file and returns the generated filename.
-     * Returns null if the file is empty.
-     */
     public String store(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
@@ -51,10 +47,6 @@ public class ImageStorageService {
         return filename;
     }
 
-    /**
-     * Deletes the file with the given filename from the upload directory.
-     * Does nothing if filename is null, blank, or the placeholder.
-     */
     public void delete(String filename) {
         if (filename == null || filename.isBlank() || filename.equals(PLACEHOLDER_FILENAME)) {
             return;
@@ -63,7 +55,7 @@ public class ImageStorageService {
             Path target = uploadPath.resolve(filename);
             Files.deleteIfExists(target);
         } catch (IOException e) {
-            // log silently — file may already be gone
+            // log silently
         }
     }
 
