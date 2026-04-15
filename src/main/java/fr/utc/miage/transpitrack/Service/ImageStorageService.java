@@ -33,17 +33,13 @@ public class ImageStorageService {
         if (file == null || file.isEmpty()) {
             return null;
         }
-
         String originalFilename = file.getOriginalFilename();
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
-
         String filename = UUID.randomUUID() + extension;
-        Path destination = uploadPath.resolve(filename);
-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-
+        Files.copy(file.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
         return filename;
     }
 
@@ -52,8 +48,7 @@ public class ImageStorageService {
             return;
         }
         try {
-            Path target = uploadPath.resolve(filename);
-            Files.deleteIfExists(target);
+            Files.deleteIfExists(uploadPath.resolve(filename));
         } catch (IOException e) {
             // log silently
         }
