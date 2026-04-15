@@ -16,14 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
+import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +42,7 @@ class WeatherServiceTest {
     private User testUser;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
         testUser = new User();
         testUser.setCity("Paris");
@@ -307,7 +309,7 @@ class WeatherServiceTest {
         HttpResponse<String> geoResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-        .thenReturn(geoResp);
+                .thenReturn(geoResp);
 
         Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
         assertTrue(e.getMessage().contains("Ville introuvable"));
@@ -454,6 +456,7 @@ class WeatherServiceTest {
         assertNull(activity.getWeatherCondition());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void assignWeatherToActivityShouldSuppressExceptionAndNotUpdateWeather() throws Exception {
         fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
@@ -465,5 +468,43 @@ class WeatherServiceTest {
 
         assertNull(activity.getTemperature());
         assertNull(activity.getWeatherCondition());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getWeatherForUserShouldRestoreInterruptFlagWhenInterruptedExceptionOccurs() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        Thread testThread = new Thread(() -> {
+            try {
+                weatherService.getWeatherForUser(1L);
+            } catch (RuntimeException ignored) {
+                // expected wrapping
+            }
+        });
+
+        testThread.start();
+        testThread.join();
+
+        // The key assertion: interrupt flag must be set
+        assertTrue(testThread.isInterrupted());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldInterruptThreadWhenInterruptedExceptionOccurs() throws Exception {
+        Activity activity = new Activity();
+        activity.setCity("Paris");
+        activity.setDate(LocalDate.now());
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertTrue(Thread.currentThread().isInterrupted());
     }
 }
