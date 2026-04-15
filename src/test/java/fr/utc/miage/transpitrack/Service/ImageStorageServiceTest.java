@@ -5,7 +5,10 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -19,6 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -179,6 +183,16 @@ class ImageStorageServiceTest {
         service.delete("nonexistent.png");
 
         assertTrue(Files.isDirectory(tempDir));
+    }
+
+    @Test
+    void deleteShouldSilentlyHandleIOExceptionFromFileSystem() {
+        try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
+            mockedFiles.when(() -> Files.deleteIfExists(any(Path.class)))
+                       .thenThrow(new IOException("disk error"));
+
+            assertDoesNotThrow(() -> service.delete("someFile.png"));
+        }
     }
 
     // ──────────────────────────────────────────────────────────────

@@ -1,10 +1,13 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.springframework.web.multipart.MultipartFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -374,6 +377,79 @@ class UserControllerTest {
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
+    }
+
+    @Test
+    void createUserShouldReturnFormCreateWhenImageUploadFails() throws IOException {
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(null);
+        when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
+
+        String view = userController.createUser(
+                "Alice", "Dupont", "alice@example.com", "secret",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+
+        assertEquals("users/formCreate", view);
+        verify(model).addAttribute("message", "Erreur lors de l'upload de l'image");
+    }
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenImageUploadFails() throws IOException {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
+
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+
+        assertEquals("users/formUpdate", view);
+        verify(model).addAttribute("message", "Erreur lors de l'upload de l'image");
+    }
+
+    @Test
+    void updateUserShouldReplaceOldImageWhenNewImageProvided() throws IOException {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        actualUser.setProfileImage("old.jpg");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(imageStorageService.store(any(MultipartFile.class))).thenReturn("new.jpg");
+
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(imageStorageService).delete("old.jpg");
+        verify(userService).updateUser(actualUser);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /users/deleteProfileImage
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void deleteProfileImageShouldRedirectToLoginWhenNotLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = userController.deleteProfileImage(session);
+
+        assertEquals("redirect:/users/formLogin", view);
+    }
+
+    @Test
+    void deleteProfileImageShouldDeleteImageAndRedirectToFormUpdate() {
+        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        user.setProfileImage("myimage.jpg");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        String view = userController.deleteProfileImage(session);
+
+        assertEquals("redirect:/users/formUpdate", view);
+        verify(imageStorageService).delete("myimage.jpg");
+        verify(userService).updateUser(user);
+        assertNull(user.getProfileImage());
     }
 
     // ──────────────────────────────────────────────────────────────
