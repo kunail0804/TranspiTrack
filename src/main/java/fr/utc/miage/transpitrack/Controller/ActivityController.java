@@ -47,6 +47,8 @@ public class ActivityController {
     @Autowired
     private BadgeService badgeService;
 
+    private final String redirectDetails = "redirect:/activities/details/";
+
     @RequestMapping("")
     public String listActivities(Model model) {
         List<Activity> activities = activityService.getAllActivities();
@@ -152,7 +154,7 @@ public class ActivityController {
 
         Commentary existingCommentary = commentaryService.getCommentariesByAuthorIdAndActivityId(userId, id).stream().findFirst().orElse(null);
         if (existingCommentary != null) {
-            return "redirect:/activities/details/" + id + "?msg=Vous avez deja commente cette activite";
+            return redirectDetails + id + "?msg=Vous avez deja commente cette activite";
         }
 
         User user = userService.getUserById(userId);
@@ -165,7 +167,7 @@ public class ActivityController {
         commentary.setActivity(activity);
 
         commentaryService.createCommentary(commentary);
-        return "redirect:/activities/details/" + activity.getId();
+        return redirectDetails + activity.getId();
     }
 
     @PostMapping("/comment/{commentId}/reaction")
@@ -187,13 +189,13 @@ public class ActivityController {
 
         // sécurité : seul l'auteur peut modifier
         if (!commentary.getAuthor().getId().equals(userId)) {
-            return "redirect:/activities/details/" + commentary.getActivity().getId();
+            return redirectDetails + commentary.getActivity().getId();
         }
 
         commentary.setReaction(reaction);
         commentaryService.createCommentary(commentary);
 
-        return "redirect:/activities/details/" + commentary.getActivity().getId();
+        return redirectDetails + commentary.getActivity().getId();
     }
 
     @GetMapping("/listActivitiesUser")
