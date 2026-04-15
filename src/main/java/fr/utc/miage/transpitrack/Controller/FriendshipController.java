@@ -27,10 +27,12 @@ public class FriendshipController {
     @Autowired
     private UserService userService;
 
+    private final String redirectProfile = "redirect:/users/profile/";
+
     @GetMapping("/addFriend/{id}")
     public String addFriend(@PathVariable(value="id") Long friendId, HttpSession session, Model model) {
 
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
 
         if (userId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte pour ajouter un ami";
@@ -43,26 +45,26 @@ public class FriendshipController {
         }
 
         if (friendId == null) {
-            return "redirect:/users/profile/" + friendId + "?msg=ID de l'ami est requis";
+            return redirectProfile + friendId + "?msg=ID de l'ami est requis";
         }
 
         if(Objects.equals(friendId, userId)) {
-            return "redirect:/users/profile/" + friendId + "?msg=Vous ne pouvez pas vous ajouter en tant qu'ami";
+            return redirectProfile + friendId + "?msg=Vous ne pouvez pas vous ajouter en tant qu'ami";
         }
 
         User friend = userService.getUserById(friendId);
         Friendship createdFriendship = friendshipService.sendFriendRequest(user, friend);
 
         if (createdFriendship == null) {
-            return "redirect:/users/profile/" + friendId + "?msg=Erreur lors de la creation de la demande d'amitie";
+            return redirectProfile + friendId + "?msg=Erreur lors de la creation de la demande d'amitie";
         }
 
-        return "redirect:/users/profile/" + friendId + "?msg=Demande d'amitie envoyee avec succes";
+        return redirectProfile + friendId + "?msg=Demande d'amitie envoyee avec succes";
     }
 
     @GetMapping("/invites")
     public String showInvites(@RequestParam(required=false) String msg, HttpSession session, Model model){
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
 
         if (userId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte pour voir vos invitations";
@@ -75,7 +77,7 @@ public class FriendshipController {
 
     @PostMapping("/accept/{id}")
     public String acceptInvite(@PathVariable(value="id") Long friendshipId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
 
         if (userId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte pour accepter une invitation";
@@ -94,7 +96,7 @@ public class FriendshipController {
 
     @PostMapping("/reject/{id}")
     public String refuseInvite(@PathVariable(value="id") Long friendshipId, HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
 
         if (userId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte pour refuser une invitation";
@@ -109,6 +111,10 @@ public class FriendshipController {
         friendshipService.rejectFriendRequest(friendship);
 
         return "redirect:/users/friends/invites?msg=Invitation refusee";
+    }
+
+    public Long getUserId(HttpSession session){
+        return (Long) session.getAttribute("userId");
     }
 
 }

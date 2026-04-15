@@ -82,14 +82,14 @@ class UserControllerTest {
     void formCreateShouldReturnDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.formCreate(null, model, session);
+        String view = userController.formCreate(model, session);
 
         assertEquals("users/dashboard", view);
     }
 
     @Test
     void formCreateShouldReturnFormCreateWhenNotLoggedIn() {
-        String view = userController.formCreate("Bienvenue", model, session);
+        String view = userController.formCreate(model, session);
 
         assertEquals("users/formCreate", view);
         verify(model).addAttribute("message", "Bienvenue");
@@ -223,7 +223,7 @@ class UserControllerTest {
 
     @Test
     void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.formUpdate(null, model, session);
+        String view = userController.formUpdate(model, session);
 
         assertEquals("users/formLogin", view);
     }
@@ -244,10 +244,10 @@ class UserControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
 
-        String view = userController.formUpdate("hello", model, session);
+        String view = userController.formUpdate(model, session);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "hello");
+        verify(model).addAttribute("message", "Modification du compte réussie");
         verify(model).addAttribute("user", user);
     }
 
@@ -502,17 +502,17 @@ class UserControllerTest {
     void formLoginShouldReturnDashboardWhenAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.formLogin(null, model, session);
+        String view = userController.formLogin(model, session);
 
         assertEquals("users/dashboard", view);
     }
 
     @Test
     void formLoginShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.formLogin("Connectez-vous", model, session);
+        String view = userController.formLogin(model, session);
 
         assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Connectez-vous");
+        verify(model).addAttribute("message", "Il faut êtres connecter !");
     }
 
     @Test
