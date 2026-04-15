@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <!--
+    Fragment : notifications
+    ─────────────────────────────────────────────────────────
+    Utilisation dans un template :
+
+      <div th:replace="~{fragments/notifications :: notif-styles}"></div>    ← dans <head>
+      <div th:replace="~{fragments/notifications :: notif-container}"></div>  ← avant </body>
+
+    Attributs Spring MVC attendus dans le Model :
+      successMessage  (String) → notification verte
+      errorMessage    (String) → notification rouge
+
+    Exemple dans un controller :
+      model.addAttribute("successMessage", "Activité enregistrée avec succès.");
+      model.addAttribute("errorMessage",   "Impossible de sauvegarder l'activité.");
+  -->
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FRAGMENT : styles CSS inline
+       Insérer dans <head> de chaque template
+  ═══════════════════════════════════════════════════════ -->
+  <th:block th:fragment="notif-styles">
+    <style>
+      #tt-notif-container {
+        position: fixed;
+        top: 24px;
+        right: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        z-index: 3000;
+        pointer-events: none;
+      }
+
+      .tt-notif {
+        pointer-events: all;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        width: 340px;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 10px 36px rgba(0,0,0,.14);
+        padding: 16px 16px 0;
+        overflow: hidden;
+        position: relative;
+        opacity: 0;
+        transform: translateX(32px);
+        transition: opacity .3s ease, transform .35s cubic-bezier(.34,1.56,.64,1);
+        font-family: 'Poppins', system-ui, sans-serif;
+      }
+      .tt-notif.tt-notif-visible {
+        opacity: 1;
+        transform: translateX(0);
+      }
+      .tt-notif.tt-notif-hiding {
+        opacity: 0;
+        transform: translateX(40px);
+        transition: opacity .3s ease, transform .25s ease;
+      }
+
+      .tt-notif::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 0; bottom: 0;
+        width: 4px;
+        border-radius: 4px 0 0 4px;
+      }
+      .tt-notif-success::before { background: #00C896; }
+      .tt-notif-error::before   { background: #EF4444; }
+
+      .tt-notif-icon {
+        font-size: 1.3rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+        padding-left: 8px;
+      }
+
+      .tt-notif-content {
+        flex: 1;
+        padding-bottom: 14px;
+      }
+      .tt-notif-title {
+        font-weight: 700;
+        font-size: .92rem;
+        margin-bottom: 3px;
+      }
+      .tt-notif-success .tt-notif-title { color: #00A87E; }
+      .tt-notif-error   .tt-notif-title { color: #EF4444; }
+
+      .tt-notif-msg {
+        font-size: .82rem;
+        color: #6B7280;
+        line-height: 1.5;
+      }
+
+      .tt-notif-close {
+        flex-shrink: 0;
+        width: 26px; height: 26px;
+        border: none;
+        background: #F0F2F5;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer;
+        color: #6B7280;
+        font-size: .85rem;
+        transition: background .2s ease, color .2s ease;
+        line-height: 1;
+        padding: 0;
+      }
+      .tt-notif-close:hover { background: #FEF2F2; color: #EF4444; }
+
+      .tt-notif-bar-wrap {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        height: 4px;
+        background: #E5E7EB;
+      }
+      .tt-notif-bar {
+        height: 100%;
+        width: 0%;
+        border-radius: 0 2px 2px 0;
+        transition: none;
+      }
+      .tt-notif-success .tt-notif-bar { background: #00C896; }
+      .tt-notif-error   .tt-notif-bar { background: #EF4444; }
+    </style>
+  </th:block>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FRAGMENT : container + HTML des notifs + JS
+       Insérer juste avant </body> de chaque template
+  ═══════════════════════════════════════════════════════ -->
+  <th:block th:fragment="notif-container">
+
+    <!-- Conteneur des notifications -->
+    <div id="tt-notif-container"></div>
+
+    <script th:inline="javascript">
+      /*<![CDATA[*/
+
+      /* ── Classe Notif ──────────────────────────────────── */
+      class Notif {
+        constructor(el, duration = 5000) {
+          this.el       = el;
+          this.bar      = el.querySelector('.tt-notif-bar');
+          this.duration = duration;
+          this.elapsed  = 0;
+          this.startTs  = null;
+          this.raf      = null;
+
+          el.addEventListener('mouseenter', () => this._pause());
+          el.addEventListener('mouseleave', () => this._resume());
+          el.querySelector('.tt-notif-close')
+            ?.addEventListener('click', () => this.dismiss());
+
+          requestAnimationFrame(() => {
+            el.classList.add('tt-notif-visible');
+            this._resume();
+          });
+        }
+
+        _pause() {
+          cancelAnimationFrame(this.raf);
+          this.raf     = null;
+          this.startTs = null;
+        }
+
+        _resume() {
+          if (this.raf) return;
+          this.startTs = performance.now();
+          this._tick();
+        }
+
+        _tick() {
+          this.raf = requestAnimationFrame(now => {
+            const delta  = now - this.startTs;
+            this.startTs = now;
+            this.elapsed = Math.min(this.elapsed + delta, this.duration);
+            this.bar.style.width = (this.elapsed / this.duration * 100) + '%';
+
+            if (this.elapsed < this.duration) {
+              this._tick();
+            } else {
+              this.dismiss();
+            }
+          });
+        }
+
+        dismiss() {
+          cancelAnimationFrame(this.raf);
+          this.el.classList.remove('tt-notif-visible');
+          this.el.classList.add('tt-notif-hiding');
+          setTimeout(() => this.el.remove(), 350);
+        }
+      }
+
+      /* ── Factory ───────────────────────────────────────── */
+      function createNotif(type, title, message = '', duration = 5000) {
+        const icons     = { success: '✅', error: '❌' };
+        const container = document.getElementById('tt-notif-container');
+
+        const el = document.createElement('div');
+        el.className = `tt-notif tt-notif-${type}`;
+        el.innerHTML = `
+          <div class="tt-notif-icon">${icons[type] ?? 'ℹ️'}</div>
+          <div class="tt-notif-content">
+            <div class="tt-notif-title">${title}</div>
+            ${message ? `<div class="tt-notif-msg">${message}</div>` : ''}
+          </div>
+          <button class="tt-notif-close" aria-label="Fermer">✕</button>
+          <div class="tt-notif-bar-wrap">
+            <div class="tt-notif-bar"></div>
+          </div>
+        `;
+
+        container.appendChild(el);
+        el._notif = new Notif(el, duration);
+      }
+
+      /* ── Déclenchement automatique depuis le Model ─────── */
+      /*
+         Spring MVC injecte successMessage / errorMessage via Model.
+         Thymeleaf les lit et appelle createNotif() au chargement.
+      */
+      (function () {
+        const successMsg = /*[[${successMessage}]]*/ null;
+        const errorMsg   = /*[[${errorMessage}]]*/ null;
+
+        if (successMsg) createNotif('success', 'Succès', successMsg);
+        if (errorMsg)   createNotif('error',   'Erreur', errorMsg);
+      })();
+
+      /*]]>*/
+    </script>
+  </th:block>
+
+</body>
+</html>

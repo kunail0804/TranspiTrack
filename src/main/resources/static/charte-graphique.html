@@ -1,0 +1,2372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TranspiTrack — Charte Graphique</title>
+
+  <!-- Bootstrap 5 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <!-- Google Fonts : Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       VARIABLES & RESET
+    ═══════════════════════════════════════════════════════════ */
+    :root {
+      --primary:        #FF6B35;
+      --primary-dark:   #E05520;
+      --primary-light:  #FF9068;
+      --primary-bg:     #FFF1EC;
+
+      --secondary:      #1A2236;
+      --secondary-light:#2D3A50;
+
+      --accent:         #00C896;
+      --accent-dark:    #00A87E;
+      --accent-bg:      #E6FBF5;
+
+      --danger:         #EF4444;
+      --danger-bg:      #FEF2F2;
+      --warning:        #F59E0B;
+      --warning-bg:     #FFFBEB;
+      --info:           #3B82F6;
+      --info-bg:        #EFF6FF;
+      --success:        #00C896;
+      --success-bg:     #E6FBF5;
+
+      --bg:             #F0F2F5;
+      --card:           #FFFFFF;
+      --text:           #1A2236;
+      --text-muted:     #6B7280;
+      --text-light:     #9CA3AF;
+      --border:         #E5E7EB;
+
+      --radius-sm:      6px;
+      --radius-md:      12px;
+      --radius-lg:      20px;
+      --radius-xl:      28px;
+
+      --shadow-sm:      0 1px 4px rgba(0,0,0,.07);
+      --shadow-md:      0 4px 18px rgba(0,0,0,.10);
+      --shadow-lg:      0 10px 36px rgba(0,0,0,.14);
+
+      --transition:     .2s ease;
+      --font:           'Poppins', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════════════════════════ */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ────────────────────────────────────────────── */
+    .sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: var(--secondary);
+      color: #fff;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 28px 0 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 20px 24px;
+      border-bottom: 1px solid rgba(255,255,255,.1);
+      margin-bottom: 12px;
+    }
+    .sidebar-logo-icon {
+      width: 38px; height: 38px;
+      background: var(--primary);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+    }
+    .sidebar-logo-text { font-weight: 700; font-size: 1.05rem; }
+    .sidebar-logo-sub  { font-size: .7rem; color: var(--text-light); }
+
+    .sidebar-section-label {
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.35);
+      padding: 12px 20px 4px;
+    }
+
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      font-size: .88rem;
+      font-weight: 500;
+      border-radius: 0;
+      transition: background var(--transition), color var(--transition);
+    }
+    .sidebar a:hover, .sidebar a.active {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+    .sidebar a i { font-size: 1rem; width: 18px; text-align: center; }
+
+    /* ── Main content ───────────────────────────────────────── */
+    .main {
+      flex: 1;
+      padding: 40px 48px;
+      max-width: calc(100% - 240px);
+    }
+
+    .page-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+    }
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-header p {
+      color: var(--text-muted);
+      font-size: .95rem;
+      margin-top: 6px;
+    }
+
+    /* ── Section ────────────────────────────────────────────── */
+    .section {
+      margin-bottom: 64px;
+    }
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(to right, var(--border), transparent);
+    }
+    .section-title .badge-section {
+      background: var(--primary-bg);
+      color: var(--primary);
+      font-size: .7rem;
+      font-weight: 600;
+      padding: 2px 10px;
+      border-radius: 99px;
+    }
+
+    .subsection-title {
+      font-size: .8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      margin-top: 28px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       COULEURS
+    ═══════════════════════════════════════════════════════════ */
+    .color-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .color-swatch {
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      width: 130px;
+    }
+    .color-swatch-block {
+      height: 80px;
+    }
+    .color-swatch-info {
+      background: var(--card);
+      padding: 10px 12px;
+    }
+    .color-swatch-name { font-weight: 600; font-size: .8rem; }
+    .color-swatch-hex  { font-size: .75rem; color: var(--text-muted); font-family: monospace; }
+
+    /* ═══════════════════════════════════════════════════════════
+       TYPOGRAPHIE
+    ═══════════════════════════════════════════════════════════ */
+    .typo-specimen { background: var(--card); border-radius: var(--radius-md); padding: 28px 32px; box-shadow: var(--shadow-sm); }
+
+    .tt-h1 { font-size: 2.25rem; font-weight: 800; line-height: 1.2; }
+    .tt-h2 { font-size: 1.75rem; font-weight: 700; line-height: 1.3; }
+    .tt-h3 { font-size: 1.375rem; font-weight: 600; line-height: 1.4; }
+    .tt-h4 { font-size: 1.1rem;   font-weight: 600; line-height: 1.4; }
+    .tt-body    { font-size: 1rem;    font-weight: 400; }
+    .tt-small   { font-size: .875rem; font-weight: 400; color: var(--text-muted); }
+    .tt-caption { font-size: .75rem;  font-weight: 500; text-transform: uppercase; letter-spacing: .1em; color: var(--text-light); }
+    .tt-label   { font-size: .8rem;   font-weight: 600; color: var(--text-muted); }
+
+    .typo-row {
+      display: flex;
+      align-items: baseline;
+      gap: 24px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .typo-row:last-child { border-bottom: none; }
+    .typo-meta { min-width: 120px; font-size: .72rem; color: var(--text-light); font-family: monospace; }
+
+    /* ═══════════════════════════════════════════════════════════
+       BOUTONS
+    ═══════════════════════════════════════════════════════════ */
+    .btn-tt {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font);
+      font-weight: 600;
+      font-size: .88rem;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      padding: 9px 20px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background var(--transition), color var(--transition),
+                  border-color var(--transition), box-shadow var(--transition),
+                  transform var(--transition);
+      white-space: nowrap;
+      user-select: none;
+    }
+    .btn-tt:active { transform: scale(.97); }
+
+    /* Solid */
+    .btn-primary    { background: var(--primary);  color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 14px rgba(255,107,53,.35); }
+
+    .btn-secondary  { background: var(--secondary); color: #fff; }
+    .btn-secondary:hover { background: var(--secondary-light); }
+
+    .btn-accent     { background: var(--accent);   color: #fff; }
+    .btn-accent:hover { background: var(--accent-dark); box-shadow: 0 4px 14px rgba(0,200,150,.3); }
+
+    .btn-danger     { background: var(--danger);   color: #fff; }
+    .btn-danger:hover { background: #dc2626; box-shadow: 0 4px 14px rgba(239,68,68,.3); }
+
+    .btn-warning    { background: var(--warning);  color: #fff; }
+    .btn-warning:hover { background: #d97706; }
+
+    /* Outline */
+    .btn-outline-primary { background: transparent; color: var(--primary); border-color: var(--primary); }
+    .btn-outline-primary:hover { background: var(--primary-bg); }
+
+    .btn-outline-secondary { background: transparent; color: var(--secondary); border-color: var(--secondary); }
+    .btn-outline-secondary:hover { background: var(--bg); }
+
+    .btn-outline-accent { background: transparent; color: var(--accent); border-color: var(--accent); }
+    .btn-outline-accent:hover { background: var(--accent-bg); }
+
+    /* Ghost */
+    .btn-ghost { background: transparent; color: var(--text-muted); border-color: transparent; }
+    .btn-ghost:hover { background: var(--bg); color: var(--text); }
+
+    /* Sizes */
+    .btn-sm { padding: 6px 14px; font-size: .8rem; border-radius: var(--radius-sm); }
+    .btn-lg { padding: 13px 28px; font-size: 1rem; border-radius: var(--radius-lg); }
+
+    /* Disabled */
+    .btn-tt:disabled, .btn-tt.disabled {
+      opacity: .45;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Icon only */
+    .btn-icon {
+      width: 40px; height: 40px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-md);
+    }
+    .btn-icon.btn-sm { width: 32px; height: 32px; border-radius: var(--radius-sm); }
+
+    /* Loading spinner inside button */
+    .btn-loading .spinner-border { width: 14px; height: 14px; border-width: 2px; }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       FORMULAIRES
+    ═══════════════════════════════════════════════════════════ */
+    .form-card {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-group { margin-bottom: 20px; }
+
+    .form-label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 6px;
+    }
+    .form-label .required { color: var(--primary); margin-left: 2px; }
+
+    .form-control, .form-select {
+      display: block;
+      width: 100%;
+      padding: 10px 14px;
+      font-family: var(--font);
+      font-size: .9rem;
+      color: var(--text);
+      background: var(--bg);
+      border: 2px solid var(--border);
+      border-radius: var(--radius-md);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--primary);
+      background: var(--card);
+      box-shadow: 0 0 0 3px rgba(255,107,53,.15);
+    }
+    .form-control::placeholder { color: var(--text-light); }
+
+    .form-control.is-valid   { border-color: var(--accent); }
+    .form-control.is-valid:focus { box-shadow: 0 0 0 3px rgba(0,200,150,.15); }
+    .form-control.is-invalid { border-color: var(--danger); }
+    .form-control.is-invalid:focus { box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+
+    .form-feedback {
+      font-size: .78rem;
+      margin-top: 5px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .form-feedback.valid   { color: var(--accent); }
+    .form-feedback.invalid { color: var(--danger); }
+    .form-hint { font-size: .78rem; color: var(--text-light); margin-top: 5px; }
+
+    /* Checkbox / Radio custom */
+    .form-check-tt {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+    .form-check-tt input[type="checkbox"],
+    .form-check-tt input[type="radio"] {
+      width: 18px; height: 18px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+    .form-check-tt span { font-size: .9rem; font-weight: 500; }
+
+    /* Input with icon */
+    .input-icon-wrap { position: relative; }
+    .input-icon-wrap .form-control { padding-left: 40px; }
+    .input-icon-wrap .input-icon {
+      position: absolute;
+      left: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+
+    /* Toggle switch */
+    .tt-switch { display: flex; align-items: center; gap: 12px; }
+    .tt-switch input[type="checkbox"] { display: none; }
+    .tt-switch-track {
+      width: 44px; height: 24px;
+      background: var(--border);
+      border-radius: 99px;
+      position: relative;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .tt-switch-track::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      background: #fff;
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform var(--transition);
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .tt-switch input:checked + .tt-switch-track { background: var(--primary); }
+    .tt-switch input:checked + .tt-switch-track::after { transform: translateX(20px); }
+
+    /* Range slider */
+    .form-range-tt {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 99px;
+      background: var(--border);
+      outline: none;
+    }
+    .form-range-tt::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(255,107,53,.4);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       CARDS
+    ═══════════════════════════════════════════════════════════ */
+    .card-tt {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .card-tt:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Stat card */
+    .stat-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .stat-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .stat-card-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+    .stat-card-label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; color: var(--text-muted); }
+    .stat-card-value { font-size: 2rem; font-weight: 800; line-height: 1; }
+    .stat-card-delta {
+      font-size: .78rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .stat-card-delta.up   { color: var(--accent); }
+    .stat-card-delta.down { color: var(--danger); }
+
+    /* Activity card */
+    .activity-card {
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .activity-card-sport {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+    .activity-card-info { flex: 1; }
+    .activity-card-title { font-weight: 700; font-size: .95rem; }
+    .activity-card-meta  { font-size: .8rem; color: var(--text-muted); display: flex; gap: 12px; margin-top: 3px; }
+    .activity-card-meta span { display: flex; align-items: center; gap: 4px; }
+    .activity-card-value { text-align: right; flex-shrink: 0; }
+    .activity-card-distance { font-weight: 800; font-size: 1.1rem; color: var(--primary); }
+    .activity-card-unit { font-size: .72rem; color: var(--text-muted); font-weight: 500; }
+
+    /* Challenge card */
+    .challenge-card { overflow: hidden; }
+    .challenge-card-header {
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+      padding: 20px;
+      color: #fff;
+      position: relative;
+    }
+    .challenge-card-header::before {
+      content: '🏆';
+      position: absolute;
+      right: 16px; top: 12px;
+      font-size: 2.5rem;
+      opacity: .15;
+    }
+    .challenge-card-body { padding: 16px 20px 20px; }
+    .challenge-card-title { font-weight: 700; font-size: 1rem; margin-bottom: 2px; }
+    .challenge-card-sub   { font-size: .78rem; opacity: .7; }
+    .challenge-card-stats { display: flex; gap: 20px; margin: 12px 0; }
+    .challenge-card-stat  { text-align: center; }
+    .challenge-card-stat .value { font-weight: 700; font-size: 1.1rem; color: var(--primary); }
+    .challenge-card-stat .label { font-size: .7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .07em; }
+
+    /* User card */
+    .user-card {
+      padding: 24px;
+      text-align: center;
+    }
+    .user-card-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1.4rem;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
+    .user-card-name  { font-weight: 700; font-size: 1.05rem; }
+    .user-card-role  { font-size: .8rem; color: var(--text-muted); margin-top: 2px; }
+    .user-card-stats { display: flex; justify-content: center; gap: 24px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+    .user-card-stat  .value { font-weight: 700; font-size: 1.05rem; }
+    .user-card-stat  .label { font-size: .72rem; color: var(--text-muted); }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .cards-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       TABLE
+    ═══════════════════════════════════════════════════════════ */
+    .table-tt {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .table-tt thead th {
+      background: var(--bg);
+      padding: 14px 18px;
+      font-size: .75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-muted);
+      text-align: left;
+      border-bottom: 2px solid var(--border);
+    }
+    .table-tt tbody td {
+      padding: 14px 18px;
+      font-size: .88rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .table-tt tbody tr:last-child td { border-bottom: none; }
+    .table-tt tbody tr { transition: background var(--transition); }
+    .table-tt tbody tr:hover { background: var(--bg); }
+
+    .table-sport-icon {
+      width: 32px; height: 32px;
+      border-radius: var(--radius-sm);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       BADGES / TAGS
+    ═══════════════════════════════════════════════════════════ */
+    .badge-tt {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .03em;
+    }
+    .badge-primary   { background: var(--primary-bg); color: var(--primary); }
+    .badge-accent    { background: var(--accent-bg);  color: var(--accent-dark); }
+    .badge-secondary { background: #EEF0F5;           color: var(--secondary); }
+    .badge-danger    { background: var(--danger-bg);  color: var(--danger); }
+    .badge-warning   { background: var(--warning-bg); color: #B45309; }
+    .badge-info      { background: var(--info-bg);    color: var(--info); }
+
+    /* Level dots */
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+    .level-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .level-dot.filled.beginner   { background: var(--accent); }
+    .level-dot.filled.inter      { background: var(--warning); }
+    .level-dot.filled.advanced   { background: var(--primary); }
+    .level-dot.filled.expert     { background: var(--danger); }
+
+    .badges-row { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       ALERTES
+    ═══════════════════════════════════════════════════════════ */
+    .alert-tt {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      border-left: 4px solid;
+      margin-bottom: 12px;
+    }
+    .alert-tt-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+    .alert-tt-content .title { font-weight: 700; font-size: .9rem; margin-bottom: 2px; }
+    .alert-tt-content .desc  { font-size: .83rem; opacity: .85; }
+    .alert-tt-close { margin-left: auto; cursor: pointer; opacity: .5; font-size: 1rem; transition: opacity var(--transition); }
+    .alert-tt-close:hover { opacity: 1; }
+
+    .alert-success { background: var(--success-bg); border-color: var(--accent); color: var(--accent-dark); }
+    .alert-danger  { background: var(--danger-bg);  border-color: var(--danger); color: var(--danger); }
+    .alert-warning { background: var(--warning-bg); border-color: var(--warning); color: #92400E; }
+    .alert-info    { background: var(--info-bg);    border-color: var(--info);   color: #1D4ED8; }
+
+    /* ═══════════════════════════════════════════════════════════
+       TABS
+    ═══════════════════════════════════════════════════════════ */
+    .tabs-tt {
+      display: flex;
+      gap: 4px;
+      padding: 4px;
+      background: var(--bg);
+      border-radius: var(--radius-lg);
+      width: fit-content;
+      margin-bottom: 20px;
+    }
+    .tab-btn-tt {
+      padding: 8px 18px;
+      border: none;
+      background: transparent;
+      border-radius: var(--radius-md);
+      font-family: var(--font);
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+    }
+    .tab-btn-tt.active {
+      background: var(--card);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-panel-tt { display: none; }
+    .tab-panel-tt.active { display: block; }
+
+    .tab-demo-content {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ═══════════════════════════════════════════════════════════
+       PROGRESS BARS
+    ═══════════════════════════════════════════════════════════ */
+    .progress-tt {
+      height: 10px;
+      background: var(--bg);
+      border-radius: 99px;
+      overflow: hidden;
+      margin: 6px 0 14px;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .8s cubic-bezier(.4,0,.2,1);
+    }
+    .progress-fill-primary  { background: linear-gradient(to right, var(--primary), var(--primary-light)); }
+    .progress-fill-accent   { background: linear-gradient(to right, var(--accent-dark), var(--accent)); }
+    .progress-fill-warning  { background: linear-gradient(to right, #D97706, var(--warning)); }
+    .progress-fill-danger   { background: linear-gradient(to right, #DC2626, var(--danger)); }
+    .progress-fill-striped  {
+      background: repeating-linear-gradient(
+        45deg, var(--primary), var(--primary) 10px,
+        var(--primary-dark) 10px, var(--primary-dark) 20px
+      );
+      background-size: 28px 28px;
+      animation: progress-stripe .8s linear infinite;
+    }
+    @keyframes progress-stripe {
+      from { background-position: 0 0; }
+      to   { background-position: 28px 0; }
+    }
+
+    .progress-label { display: flex; justify-content: space-between; align-items: center; }
+    .progress-label .name  { font-size: .8rem; font-weight: 600; color: var(--text); }
+    .progress-label .value { font-size: .78rem; font-weight: 700; color: var(--text-muted); }
+
+    /* Progress circle */
+    .progress-circle-wrap { display: flex; gap: 28px; flex-wrap: wrap; }
+    .progress-circle { text-align: center; }
+    .progress-circle svg { transform: rotate(-90deg); }
+    .progress-circle-track { fill: none; stroke: var(--bg); stroke-width: 8; }
+    .progress-circle-fill  { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(.4,0,.2,1); }
+    .progress-circle-label { font-size: .85rem; font-weight: 700; margin-top: 6px; }
+    .progress-circle-sub   { font-size: .7rem; color: var(--text-muted); }
+
+    /* ═══════════════════════════════════════════════════════════
+       MODAL
+    ═══════════════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10,15,30,.55);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-box {
+      background: var(--card);
+      border-radius: var(--radius-xl);
+      width: 480px;
+      max-width: 90vw;
+      box-shadow: var(--shadow-lg);
+      transform: scale(.92) translateY(20px);
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+    }
+    .modal-overlay.open .modal-box { transform: scale(1) translateY(0); }
+    .modal-header {
+      padding: 24px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title { font-weight: 700; font-size: 1.1rem; }
+    .modal-close {
+      width: 32px; height: 32px;
+      border: none; background: var(--bg); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 1rem;
+      transition: background var(--transition), color var(--transition);
+    }
+    .modal-close:hover { background: var(--danger-bg); color: var(--danger); }
+    .modal-body   { padding: 20px 28px; color: var(--text-muted); font-size: .9rem; line-height: 1.7; }
+    .modal-footer { padding: 0 28px 24px; display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ═══════════════════════════════════════════════════════════
+       TOAST
+    ═══════════════════════════════════════════════════════════ */
+    .toast-container {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      z-index: 2000;
+    }
+    .toast-tt {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      background: var(--secondary);
+      color: #fff;
+      box-shadow: var(--shadow-lg);
+      min-width: 280px;
+      max-width: 360px;
+      font-size: .88rem;
+      font-weight: 500;
+      animation: toastIn .35s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    .toast-tt.hiding { animation: toastOut .25s ease forwards; }
+    .toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .toast-close { margin-left: auto; cursor: pointer; opacity: .55; transition: opacity var(--transition); }
+    .toast-close:hover { opacity: 1; }
+
+    .toast-success { background: var(--accent-dark); }
+    .toast-danger  { background: var(--danger); }
+    .toast-warning { background: var(--warning); }
+    .toast-info    { background: var(--info); }
+
+    @keyframes toastIn  { from { transform: translateX(120%); opacity: 0; } to  { transform: translateX(0); opacity: 1; } }
+    @keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+
+    /* ═══════════════════════════════════════════════════════════
+       AVATARS
+    ═══════════════════════════════════════════════════════════ */
+    .avatar {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem;
+      color: #fff;
+      flex-shrink: 0;
+      position: relative;
+    }
+    .avatar.sm { width: 32px; height: 32px; font-size: .75rem; }
+    .avatar.lg { width: 64px; height: 64px; font-size: 1.3rem; }
+    .avatar.xl { width: 80px; height: 80px; font-size: 1.6rem; }
+
+    .avatar-status {
+      position: absolute;
+      bottom: 1px; right: 1px;
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      border: 2px solid var(--card);
+    }
+    .status-online  { background: var(--accent); }
+    .status-offline { background: var(--text-light); }
+    .status-busy    { background: var(--danger); }
+
+    .avatar-group { display: flex; }
+    .avatar-group .avatar { margin-left: -12px; border: 2px solid var(--card); }
+    .avatar-group .avatar:first-child { margin-left: 0; }
+
+    .avatars-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+
+    /* ═══════════════════════════════════════════════════════════
+       SPINNER / LOADING
+    ═══════════════════════════════════════════════════════════ */
+    .spinner-tt {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      display: inline-block;
+    }
+    .spinner-tt.sm { width: 20px; height: 20px; border-width: 2px; }
+    .spinner-tt.lg { width: 52px; height: 52px; border-width: 4px; }
+    .spinner-dots {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .spinner-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: dots .9s ease-in-out infinite;
+    }
+    .spinner-dots span:nth-child(2) { animation-delay: .15s; }
+    .spinner-dots span:nth-child(3) { animation-delay: .30s; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes dots { 0%,80%,100% { transform: scale(.6); opacity:.4; } 40% { transform: scale(1); opacity:1; } }
+
+    /* ═══════════════════════════════════════════════════════════
+       NAVBAR (aperçu)
+    ═══════════════════════════════════════════════════════════ */
+    .navbar-demo {
+      background: var(--secondary);
+      border-radius: var(--radius-md);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      height: 60px;
+      gap: 8px;
+      box-shadow: var(--shadow-md);
+    }
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1rem;
+      text-decoration: none;
+      margin-right: 20px;
+    }
+    .navbar-brand-icon {
+      width: 30px; height: 30px;
+      background: var(--primary);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-link-tt {
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      font-size: .85rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-link-tt:hover { background: rgba(255,255,255,.08); color: #fff; }
+    .nav-link-tt.active { color: #fff; background: rgba(255,107,53,.25); }
+    .navbar-end { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+
+    /* ═══════════════════════════════════════════════════════════
+       ANIMATIONS SHOWCASE
+    ═══════════════════════════════════════════════════════════ */
+    .anim-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .anim-box {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      width: 160px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+    .anim-box .demo-el {
+      width: 48px; height: 48px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.3rem;
+    }
+
+    /* Les animations déclenchées au hover */
+    .anim-box:hover .anim-pulse    { animation: pulse .6s ease; }
+    .anim-box:hover .anim-bounce   { animation: bounce .6s ease; }
+    .anim-box:hover .anim-shake    { animation: shake .5s ease; }
+    .anim-box:hover .anim-flip     { animation: flip .6s ease; }
+    .anim-box:hover .anim-swing    { animation: swing .6s ease; }
+    .anim-box:hover .anim-glow     { animation: glow .8s ease; }
+
+    @keyframes pulse  { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 40%{transform:translateY(-16px)} 70%{transform:translateY(-8px)} }
+    @keyframes shake  { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-6px)} 40%,80%{transform:translateX(6px)} }
+    @keyframes flip   { 0%{transform:rotateY(0)} 50%{transform:rotateY(90deg)} 100%{transform:rotateY(0)} }
+    @keyframes swing  { 0%{transform:rotate(0)} 25%{transform:rotate(15deg)} 75%{transform:rotate(-10deg)} 100%{transform:rotate(0)} }
+    @keyframes glow   { 0%,100%{box-shadow:0 0 0 0 rgba(255,107,53,0)} 50%{box-shadow:0 0 0 12px rgba(255,107,53,.3)} }
+
+    /* Entrée page (appliquée aux sections) */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .section { animation: fadeUp .5s ease backwards; }
+    .section:nth-child(1)  { animation-delay: .05s; }
+    .section:nth-child(2)  { animation-delay: .1s;  }
+    .section:nth-child(3)  { animation-delay: .15s; }
+    .section:nth-child(4)  { animation-delay: .2s;  }
+
+    /* Skeleton loader */
+    .skeleton {
+      background: linear-gradient(90deg, var(--border) 25%, #f3f4f6 50%, var(--border) 75%);
+      background-size: 200% 100%;
+      animation: skeleton-shine 1.4s linear infinite;
+      border-radius: var(--radius-sm);
+    }
+    @keyframes skeleton-shine { from{background-position:200% 0} to{background-position:-200% 0} }
+
+    .skeleton-card {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      width: 220px;
+    }
+    .skeleton-avatar { width: 48px; height: 48px; border-radius: 50%; margin-bottom: 12px; }
+    .skeleton-line   { height: 10px; margin-bottom: 8px; }
+    .skeleton-line.short { width: 60%; }
+
+    /* ═══════════════════════════════════════════════════════════
+       NOTIFICATIONS
+    ═══════════════════════════════════════════════════════════ */
+    #tt-notif-container {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 3000;
+      pointer-events: none;
+    }
+
+    .tt-notif {
+      pointer-events: all;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      width: 340px;
+      background: var(--card);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      padding: 16px 16px 0;
+      overflow: hidden;
+      position: relative;
+      opacity: 0;
+      transform: translateX(32px);
+      transition: opacity .3s ease, transform .35s cubic-bezier(.34,1.56,.64,1);
+    }
+    .tt-notif.tt-notif-visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .tt-notif.tt-notif-hiding {
+      opacity: 0;
+      transform: translateX(40px);
+      transition: opacity .3s ease, transform .25s ease;
+    }
+
+    /* Bandeau coloré à gauche */
+    .tt-notif::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 4px 0 0 4px;
+    }
+    .tt-notif-success::before { background: var(--accent); }
+    .tt-notif-error::before   { background: var(--danger); }
+
+    .tt-notif-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+      padding-left: 8px;
+    }
+
+    .tt-notif-content {
+      flex: 1;
+      padding-bottom: 14px;
+    }
+    .tt-notif-title {
+      font-weight: 700;
+      font-size: .92rem;
+      margin-bottom: 3px;
+    }
+    .tt-notif-success .tt-notif-title { color: var(--accent-dark); }
+    .tt-notif-error   .tt-notif-title { color: var(--danger); }
+
+    .tt-notif-msg {
+      font-size: .82rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .tt-notif-close {
+      flex-shrink: 0;
+      width: 26px; height: 26px;
+      border: none;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: .85rem;
+      transition: background var(--transition), color var(--transition);
+    }
+    .tt-notif-close:hover { background: var(--danger-bg); color: var(--danger); }
+
+    /* Barre de progression */
+    .tt-notif-bar-wrap {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--border);
+    }
+    .tt-notif-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 0 2px 2px 0;
+    }
+    .tt-notif-success .tt-notif-bar { background: var(--accent); }
+    .tt-notif-error   .tt-notif-bar { background: var(--danger); }
+
+    /* ═══════════════════════════════════════════════════════════
+       DIVERS
+    ═══════════════════════════════════════════════════════════ */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0;
+    }
+    .divider.primary {
+      height: 2px;
+      background: linear-gradient(to right, var(--primary), transparent);
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 99px;
+      padding: 5px 12px 5px 7px;
+      font-size: .8rem;
+      font-weight: 500;
+    }
+    .chip .chip-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .65rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state-title { font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
+    .empty-state-desc  { color: var(--text-muted); font-size: .88rem; }
+
+    /* ═══════════════════════════════════════════════════════════
+       UTILITIES
+    ═══════════════════════════════════════════════════════════ */
+    .text-primary  { color: var(--primary) !important; }
+    .text-accent   { color: var(--accent)  !important; }
+    .text-muted-tt { color: var(--text-muted) !important; }
+    .fw-700        { font-weight: 700; }
+    .fw-800        { font-weight: 800; }
+    .gap-8  { gap: 8px; }
+    .gap-12 { gap: 12px; }
+    .gap-16 { gap: 16px; }
+    .d-flex { display: flex; }
+    .ai-center { align-items: center; }
+    .flex-wrap { flex-wrap: wrap; }
+
+  </style>
+</head>
+<body>
+
+<div class="layout">
+
+  <!-- ════════════════════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════════════════ -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏃</div>
+      <div>
+        <div class="sidebar-logo-text">TranspiTrack</div>
+        <div class="sidebar-logo-sub">Charte Graphique</div>
+      </div>
+    </div>
+
+    <span class="sidebar-section-label">Fondations</span>
+    <a href="#couleurs"><i class="bi bi-palette"></i> Couleurs</a>
+    <a href="#typo"><i class="bi bi-type"></i> Typographie</a>
+
+    <span class="sidebar-section-label">Composants</span>
+    <a href="#boutons"><i class="bi bi-hand-index"></i> Boutons</a>
+    <a href="#formulaires"><i class="bi bi-input-cursor-text"></i> Formulaires</a>
+    <a href="#cards"><i class="bi bi-grid-1x2"></i> Cards</a>
+    <a href="#table"><i class="bi bi-table"></i> Tables</a>
+    <a href="#badges"><i class="bi bi-tag"></i> Badges & Tags</a>
+    <a href="#alertes"><i class="bi bi-exclamation-triangle"></i> Alertes</a>
+    <a href="#navigation"><i class="bi bi-layout-text-sidebar"></i> Navigation</a>
+    <a href="#progress"><i class="bi bi-bar-chart-line"></i> Progress</a>
+    <a href="#modal"><i class="bi bi-window"></i> Modal</a>
+    <a href="#toast"><i class="bi bi-bell"></i> Toasts</a>
+
+    <span class="sidebar-section-label">Extra</span>
+    <a href="#avatars"><i class="bi bi-person-circle"></i> Avatars</a>
+    <a href="#loading"><i class="bi bi-arrow-clockwise"></i> Loading</a>
+    <a href="#animations"><i class="bi bi-stars"></i> Animations</a>
+    <a href="#notifications"><i class="bi bi-bell-fill"></i> Notifications</a>
+    <a href="#divers"><i class="bi bi-grid"></i> Divers</a>
+  </nav>
+
+  <!-- ════════════════════════════════════════════════════════
+       MAIN
+  ════════════════════════════════════════════════════════ -->
+  <main class="main">
+
+    <div class="page-header">
+      <h1>Charte Graphique TranspiTrack</h1>
+      <p>Tous les éléments UI du projet — couleurs, typographie, composants, animations.</p>
+    </div>
+
+    <!-- ── 1. COULEURS ───────────────────────────────────── -->
+    <section class="section" id="couleurs">
+      <h2 class="section-title">Couleurs <span class="badge-section">Palette</span></h2>
+
+      <p class="subsection-title">Couleurs primaires</p>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--primary)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Primary</div>
+            <div class="color-swatch-hex">#FF6B35</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--primary-dark)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Primary Dark</div>
+            <div class="color-swatch-hex">#E05520</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--primary-light)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Primary Light</div>
+            <div class="color-swatch-hex">#FF9068</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--primary-bg); border:1px solid var(--border)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Primary BG</div>
+            <div class="color-swatch-hex">#FFF1EC</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="subsection-title">Couleurs secondaires</p>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--secondary)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Secondary</div>
+            <div class="color-swatch-hex">#1A2236</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--secondary-light)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Sec. Light</div>
+            <div class="color-swatch-hex">#2D3A50</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--accent)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Accent</div>
+            <div class="color-swatch-hex">#00C896</div>
+          </div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--accent-dark)"></div>
+          <div class="color-swatch-info">
+            <div class="color-swatch-name">Accent Dark</div>
+            <div class="color-swatch-hex">#00A87E</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="subsection-title">Couleurs sémantiques</p>
+      <div class="color-grid">
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--danger)"></div>
+          <div class="color-swatch-info"><div class="color-swatch-name">Danger</div><div class="color-swatch-hex">#EF4444</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--warning)"></div>
+          <div class="color-swatch-info"><div class="color-swatch-name">Warning</div><div class="color-swatch-hex">#F59E0B</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--info)"></div>
+          <div class="color-swatch-info"><div class="color-swatch-name">Info</div><div class="color-swatch-hex">#3B82F6</div></div>
+        </div>
+        <div class="color-swatch">
+          <div class="color-swatch-block" style="background:var(--bg); border:1px solid var(--border)"></div>
+          <div class="color-swatch-info"><div class="color-swatch-name">Background</div><div class="color-swatch-hex">#F0F2F5</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2. TYPOGRAPHIE ────────────────────────────────── -->
+    <section class="section" id="typo">
+      <h2 class="section-title">Typographie <span class="badge-section">Poppins</span></h2>
+      <div class="typo-specimen">
+        <div class="typo-row">
+          <span class="typo-meta">h1 / 800 / 2.25rem</span>
+          <span class="tt-h1">Tableau de bord</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">h2 / 700 / 1.75rem</span>
+          <span class="tt-h2">Mes activités</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">h3 / 600 / 1.375rem</span>
+          <span class="tt-h3">Statistiques de la semaine</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">h4 / 600 / 1.1rem</span>
+          <span class="tt-h4">Challenge du mois</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">body / 400 / 1rem</span>
+          <span class="tt-body">Vous avez couru 42 km cette semaine. Continuez comme ça !</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">small / 400 / .875rem</span>
+          <span class="tt-small">Activité enregistrée le 12 avril 2026</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">caption / 500 / .75rem</span>
+          <span class="tt-caption">Distance parcourue</span>
+        </div>
+        <div class="typo-row">
+          <span class="typo-meta">label / 600 / .8rem</span>
+          <span class="tt-label">Durée de l'activité</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3. BOUTONS ────────────────────────────────────── -->
+    <section class="section" id="boutons">
+      <h2 class="section-title">Boutons</h2>
+
+      <p class="subsection-title">Variants solid</p>
+      <div class="btn-row">
+        <button class="btn-tt btn-primary"><i class="bi bi-plus-lg"></i> Ajouter activité</button>
+        <button class="btn-tt btn-secondary"><i class="bi bi-person"></i> Mon profil</button>
+        <button class="btn-tt btn-accent"><i class="bi bi-check-lg"></i> Valider</button>
+        <button class="btn-tt btn-danger"><i class="bi bi-trash"></i> Supprimer</button>
+        <button class="btn-tt btn-warning"><i class="bi bi-exclamation-triangle"></i> Attention</button>
+      </div>
+
+      <p class="subsection-title">Variants outline</p>
+      <div class="btn-row">
+        <button class="btn-tt btn-outline-primary"><i class="bi bi-pencil"></i> Modifier</button>
+        <button class="btn-tt btn-outline-secondary"><i class="bi bi-arrow-left"></i> Retour</button>
+        <button class="btn-tt btn-outline-accent"><i class="bi bi-trophy"></i> Rejoindre</button>
+        <button class="btn-tt btn-ghost"><i class="bi bi-three-dots"></i> Plus</button>
+      </div>
+
+      <p class="subsection-title">Tailles</p>
+      <div class="btn-row" style="align-items:center;">
+        <button class="btn-tt btn-primary btn-sm">Petit</button>
+        <button class="btn-tt btn-primary">Normal</button>
+        <button class="btn-tt btn-primary btn-lg">Grand</button>
+      </div>
+
+      <p class="subsection-title">États</p>
+      <div class="btn-row">
+        <button class="btn-tt btn-primary" disabled>Désactivé</button>
+        <button class="btn-tt btn-primary btn-loading d-flex ai-center gap-8">
+          <span class="spinner-border spinner-border-sm" role="status"></span> Chargement
+        </button>
+      </div>
+
+      <p class="subsection-title">Icônes seules</p>
+      <div class="btn-row">
+        <button class="btn-tt btn-primary btn-icon"><i class="bi bi-plus-lg"></i></button>
+        <button class="btn-tt btn-outline-primary btn-icon"><i class="bi bi-pencil"></i></button>
+        <button class="btn-tt btn-danger btn-icon"><i class="bi bi-trash"></i></button>
+        <button class="btn-tt btn-ghost btn-icon"><i class="bi bi-share"></i></button>
+        <button class="btn-tt btn-secondary btn-icon btn-sm"><i class="bi bi-heart"></i></button>
+      </div>
+    </section>
+
+    <!-- ── 4. FORMULAIRES ────────────────────────────────── -->
+    <section class="section" id="formulaires">
+      <h2 class="section-title">Formulaires</h2>
+
+      <div class="form-card">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+          <!-- Texte simple -->
+          <div class="form-group">
+            <label class="form-label">Prénom <span class="required">*</span></label>
+            <input type="text" class="form-control" placeholder="ex: Jean" />
+          </div>
+
+          <!-- Avec icône -->
+          <div class="form-group">
+            <label class="form-label">Ville <span class="required">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="bi bi-geo-alt input-icon"></i>
+              <input type="text" class="form-control" placeholder="ex: Paris" />
+            </div>
+          </div>
+
+          <!-- Date -->
+          <div class="form-group">
+            <label class="form-label">Date de l'activité <span class="required">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="bi bi-calendar3 input-icon"></i>
+              <input type="date" class="form-control" />
+            </div>
+          </div>
+
+          <!-- Nombre -->
+          <div class="form-group">
+            <label class="form-label">Distance (km) <span class="required">*</span></label>
+            <div class="input-icon-wrap">
+              <i class="bi bi-speedometer2 input-icon"></i>
+              <input type="number" class="form-control" step="0.01" placeholder="0.00" />
+            </div>
+            <span class="form-hint">Entrez la distance en kilomètres</span>
+          </div>
+
+          <!-- Select -->
+          <div class="form-group">
+            <label class="form-label">Sport <span class="required">*</span></label>
+            <select class="form-select">
+              <option value="">— Choisir un sport —</option>
+              <option>🏃 Course à pied</option>
+              <option>🚴 Cyclisme</option>
+              <option>🏊 Natation</option>
+              <option>💪 Musculation</option>
+            </select>
+          </div>
+
+          <!-- Textarea -->
+          <div class="form-group">
+            <label class="form-label">Évaluation</label>
+            <textarea class="form-control" rows="3" placeholder="Comment s'est passée cette activité ?"></textarea>
+          </div>
+
+          <!-- Validation OK -->
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control is-valid" value="jean@example.com" />
+            <div class="form-feedback valid"><i class="bi bi-check-circle-fill"></i> Email valide</div>
+          </div>
+
+          <!-- Validation KO -->
+          <div class="form-group">
+            <label class="form-label">Mot de passe</label>
+            <input type="password" class="form-control is-invalid" value="abc" />
+            <div class="form-feedback invalid"><i class="bi bi-x-circle-fill"></i> Minimum 8 caractères requis</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <p class="subsection-title" style="margin-top:0">Cases à cocher / radios</p>
+        <div style="display:flex; gap:32px; flex-wrap:wrap;">
+          <div>
+            <label class="form-check-tt"><input type="checkbox" checked/><span>Course à pied</span></label>
+            <label class="form-check-tt"><input type="checkbox" /><span>Cyclisme</span></label>
+            <label class="form-check-tt"><input type="checkbox" /><span>Natation</span></label>
+          </div>
+          <div>
+            <label class="form-check-tt"><input type="radio" name="genre" checked/><span>Homme</span></label>
+            <label class="form-check-tt"><input type="radio" name="genre" /><span>Femme</span></label>
+            <label class="form-check-tt"><input type="radio" name="genre" /><span>Autre</span></label>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <p class="subsection-title" style="margin-top:0">Switch & Slider</p>
+        <div style="display:flex; gap:32px; flex-wrap:wrap; align-items:center;">
+          <label class="tt-switch">
+            <input type="checkbox" id="sw1" checked onchange="document.getElementById('sw1-lbl').textContent = this.checked ? 'Challenge public' : 'Challenge privé'" />
+            <div class="tt-switch-track"></div>
+            <span id="sw1-lbl" class="fw-700" style="font-size:.88rem">Challenge public</span>
+          </label>
+
+          <label class="tt-switch">
+            <input type="checkbox" id="sw2" />
+            <div class="tt-switch-track"></div>
+            <span style="font-size:.88rem">Notifications activées</span>
+          </label>
+        </div>
+
+        <div style="margin-top:20px; max-width:400px;">
+          <label class="form-label">Intensité de l'activité</label>
+          <input type="range" class="form-range-tt" min="0" max="100" value="65"
+                 oninput="this.nextElementSibling.textContent = this.value + ' %'" />
+          <span style="font-size:.85rem; font-weight:700; color:var(--primary);">65 %</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5. CARDS ──────────────────────────────────────── -->
+    <section class="section" id="cards">
+      <h2 class="section-title">Cards</h2>
+
+      <p class="subsection-title">Stat cards</p>
+      <div class="cards-grid">
+        <div class="card-tt stat-card">
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-card-label">Distance totale</div>
+              <div class="stat-card-value">142 <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">km</small></div>
+            </div>
+            <div class="stat-card-icon" style="background:var(--primary-bg); color:var(--primary)">🏃</div>
+          </div>
+          <div class="stat-card-delta up"><i class="bi bi-arrow-up-short"></i>+12 km ce mois</div>
+        </div>
+
+        <div class="card-tt stat-card">
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-card-label">Calories brûlées</div>
+              <div class="stat-card-value">8 420 <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">kcal</small></div>
+            </div>
+            <div class="stat-card-icon" style="background:#FFF7ED; color:#F97316">🔥</div>
+          </div>
+          <div class="stat-card-delta up"><i class="bi bi-arrow-up-short"></i>+340 kcal / sem.</div>
+        </div>
+
+        <div class="card-tt stat-card">
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-card-label">Durée totale</div>
+              <div class="stat-card-value">36 <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">h</small></div>
+            </div>
+            <div class="stat-card-icon" style="background:var(--info-bg); color:var(--info)">⏱️</div>
+          </div>
+          <div class="stat-card-delta down"><i class="bi bi-arrow-down-short"></i>-2h vs semaine dernière</div>
+        </div>
+
+        <div class="card-tt stat-card">
+          <div class="stat-card-header">
+            <div>
+              <div class="stat-card-label">Activités</div>
+              <div class="stat-card-value">28</div>
+            </div>
+            <div class="stat-card-icon" style="background:var(--accent-bg); color:var(--accent-dark)">📊</div>
+          </div>
+          <div class="stat-card-delta up"><i class="bi bi-arrow-up-short"></i>+3 activités ce mois</div>
+        </div>
+      </div>
+
+      <p class="subsection-title">Activity cards</p>
+      <div style="display:flex; flex-direction:column; gap:10px; max-width:600px;">
+        <div class="card-tt activity-card">
+          <div class="activity-card-sport" style="background:var(--primary-bg)">🏃</div>
+          <div class="activity-card-info">
+            <div class="activity-card-title">Course à pied</div>
+            <div class="activity-card-meta">
+              <span><i class="bi bi-calendar3"></i> 14 avr. 2026</span>
+              <span><i class="bi bi-clock"></i> 45 min</span>
+              <span><i class="bi bi-geo-alt"></i> Paris</span>
+            </div>
+          </div>
+          <div class="activity-card-value">
+            <div class="activity-card-distance">8.3</div>
+            <div class="activity-card-unit">km</div>
+          </div>
+        </div>
+
+        <div class="card-tt activity-card">
+          <div class="activity-card-sport" style="background:#EFF6FF">🚴</div>
+          <div class="activity-card-info">
+            <div class="activity-card-title">Cyclisme</div>
+            <div class="activity-card-meta">
+              <span><i class="bi bi-calendar3"></i> 12 avr. 2026</span>
+              <span><i class="bi bi-clock"></i> 80 min</span>
+              <span><i class="bi bi-geo-alt"></i> Lyon</span>
+            </div>
+          </div>
+          <div class="activity-card-value">
+            <div class="activity-card-distance">32.0</div>
+            <div class="activity-card-unit">km</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="subsection-title">Challenge & User cards</p>
+      <div class="cards-grid-2">
+        <div class="card-tt challenge-card">
+          <div class="challenge-card-header">
+            <div class="challenge-card-title">Challenge Marathon Mai</div>
+            <div class="challenge-card-sub">Créé par Thomas D. — Course à pied</div>
+          </div>
+          <div class="challenge-card-body">
+            <div class="challenge-card-stats">
+              <div class="challenge-card-stat">
+                <div class="value">30</div><div class="label">jours</div>
+              </div>
+              <div class="challenge-card-stat">
+                <div class="value">12</div><div class="label">participants</div>
+              </div>
+              <div class="challenge-card-stat">
+                <div class="value">200</div><div class="label">km objectif</div>
+              </div>
+            </div>
+            <div class="badges-row">
+              <span class="badge-tt badge-primary">🏃 Course</span>
+              <span class="badge-tt badge-accent">Public</span>
+            </div>
+            <div style="margin-top:14px;">
+              <button class="btn-tt btn-primary btn-sm" style="width:100%">
+                <i class="bi bi-trophy"></i> Rejoindre le challenge
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card-tt user-card">
+          <div class="user-card-avatar">TD</div>
+          <div class="user-card-name">Thomas Dupont</div>
+          <div class="user-card-role">🏃 Coureur passionné · Paris</div>
+          <div class="user-card-stats">
+            <div class="user-card-stat"><div class="value">142</div><div class="label">km</div></div>
+            <div class="user-card-stat"><div class="value">28</div><div class="label">activités</div></div>
+            <div class="user-card-stat"><div class="value">5</div><div class="label">amis</div></div>
+          </div>
+          <div style="margin-top:14px;">
+            <button class="btn-tt btn-outline-primary btn-sm" style="width:100%">
+              <i class="bi bi-person-plus"></i> Ajouter en ami
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6. TABLE ──────────────────────────────────────── -->
+    <section class="section" id="table">
+      <h2 class="section-title">Tables</h2>
+      <table class="table-tt">
+        <thead>
+          <tr>
+            <th>Sport</th>
+            <th>Distance (km)</th>
+            <th>Durée (min)</th>
+            <th>Sessions</th>
+            <th>Calories (kcal)</th>
+            <th>Niveau</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="d-flex ai-center">
+                <span class="table-sport-icon" style="background:var(--primary-bg)">🏃</span>
+                Course à pied
+              </div>
+            </td>
+            <td class="fw-700">87.3</td>
+            <td>520</td>
+            <td>12</td>
+            <td>6 840</td>
+            <td>
+              <div class="level-badge">
+                <div class="level-dot filled advanced"></div>
+                <div class="level-dot filled advanced"></div>
+                <div class="level-dot filled advanced"></div>
+                <div class="level-dot"></div>
+                Avancé
+              </div>
+            </td>
+            <td><button class="btn-tt btn-ghost btn-icon btn-sm"><i class="bi bi-three-dots-vertical"></i></button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="d-flex ai-center">
+                <span class="table-sport-icon" style="background:#EFF6FF">🚴</span>
+                Cyclisme
+              </div>
+            </td>
+            <td class="fw-700">320.0</td>
+            <td>960</td>
+            <td>8</td>
+            <td>9 600</td>
+            <td>
+              <div class="level-badge">
+                <div class="level-dot filled inter"></div>
+                <div class="level-dot filled inter"></div>
+                <div class="level-dot"></div>
+                <div class="level-dot"></div>
+                Intermédiaire
+              </div>
+            </td>
+            <td><button class="btn-tt btn-ghost btn-icon btn-sm"><i class="bi bi-three-dots-vertical"></i></button></td>
+          </tr>
+          <tr>
+            <td>
+              <div class="d-flex ai-center">
+                <span class="table-sport-icon" style="background:var(--accent-bg)">🏊</span>
+                Natation
+              </div>
+            </td>
+            <td class="fw-700">12.4</td>
+            <td>180</td>
+            <td>4</td>
+            <td>1 920</td>
+            <td>
+              <div class="level-badge">
+                <div class="level-dot filled beginner"></div>
+                <div class="level-dot"></div>
+                <div class="level-dot"></div>
+                <div class="level-dot"></div>
+                Débutant
+              </div>
+            </td>
+            <td><button class="btn-tt btn-ghost btn-icon btn-sm"><i class="bi bi-three-dots-vertical"></i></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ── 7. BADGES ─────────────────────────────────────── -->
+    <section class="section" id="badges">
+      <h2 class="section-title">Badges & Tags</h2>
+
+      <p class="subsection-title">Couleurs</p>
+      <div class="badges-row">
+        <span class="badge-tt badge-primary">🏃 Course</span>
+        <span class="badge-tt badge-accent"><i class="bi bi-check"></i> Validé</span>
+        <span class="badge-tt badge-secondary">🚴 Cyclisme</span>
+        <span class="badge-tt badge-danger"><i class="bi bi-x"></i> Expiré</span>
+        <span class="badge-tt badge-warning">⚠️ En attente</span>
+        <span class="badge-tt badge-info"><i class="bi bi-eye"></i> Public</span>
+      </div>
+
+      <p class="subsection-title">Sports</p>
+      <div class="badges-row">
+        <span class="badge-tt badge-primary">🏃 Course à pied</span>
+        <span class="badge-tt badge-secondary">🚴 Cyclisme</span>
+        <span class="badge-tt badge-info">🏊 Natation</span>
+        <span class="badge-tt badge-accent">💪 Musculation</span>
+        <span class="badge-tt badge-warning">🏋️ CrossFit</span>
+        <span class="badge-tt badge-danger">⛷️ Ski</span>
+      </div>
+
+      <p class="subsection-title">Niveaux</p>
+      <div class="badges-row" style="align-items:center;">
+        <div class="level-badge" style="background:var(--accent-bg);padding:4px 10px;border-radius:99px;">
+          <div class="level-dot filled beginner"></div><div class="level-dot"></div><div class="level-dot"></div><div class="level-dot"></div>
+          Débutant
+        </div>
+        <div class="level-badge" style="background:var(--warning-bg);padding:4px 10px;border-radius:99px;">
+          <div class="level-dot filled inter"></div><div class="level-dot filled inter"></div><div class="level-dot"></div><div class="level-dot"></div>
+          Intermédiaire
+        </div>
+        <div class="level-badge" style="background:var(--primary-bg);padding:4px 10px;border-radius:99px;">
+          <div class="level-dot filled advanced"></div><div class="level-dot filled advanced"></div><div class="level-dot filled advanced"></div><div class="level-dot"></div>
+          Avancé
+        </div>
+        <div class="level-badge" style="background:var(--danger-bg);padding:4px 10px;border-radius:99px;">
+          <div class="level-dot filled expert"></div><div class="level-dot filled expert"></div><div class="level-dot filled expert"></div><div class="level-dot filled expert"></div>
+          Expert
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 8. ALERTES ────────────────────────────────────── -->
+    <section class="section" id="alertes">
+      <h2 class="section-title">Alertes</h2>
+      <div style="max-width:600px;">
+        <div class="alert-tt alert-success">
+          <i class="bi bi-check-circle-fill alert-tt-icon"></i>
+          <div class="alert-tt-content">
+            <div class="title">Activité enregistrée !</div>
+            <div class="desc">Votre course à pied de 8.3 km a bien été ajoutée.</div>
+          </div>
+          <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+        </div>
+        <div class="alert-tt alert-danger">
+          <i class="bi bi-x-circle-fill alert-tt-icon"></i>
+          <div class="alert-tt-content">
+            <div class="title">Erreur de connexion</div>
+            <div class="desc">Email ou mot de passe incorrect. Veuillez réessayer.</div>
+          </div>
+          <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+        </div>
+        <div class="alert-tt alert-warning">
+          <i class="bi bi-exclamation-triangle-fill alert-tt-icon"></i>
+          <div class="alert-tt-content">
+            <div class="title">Objectif presque atteint</div>
+            <div class="desc">Il vous reste 12 km pour terminer votre challenge mensuel.</div>
+          </div>
+          <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+        </div>
+        <div class="alert-tt alert-info">
+          <i class="bi bi-info-circle-fill alert-tt-icon"></i>
+          <div class="alert-tt-content">
+            <div class="title">Nouveau challenge disponible</div>
+            <div class="desc">Thomas D. a créé un challenge de cyclisme. Rejoignez-le !</div>
+          </div>
+          <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 9. NAVIGATION ─────────────────────────────────── -->
+    <section class="section" id="navigation">
+      <h2 class="section-title">Navigation</h2>
+
+      <p class="subsection-title">Navbar</p>
+      <div class="navbar-demo">
+        <a href="#" class="navbar-brand">
+          <div class="navbar-brand-icon">🏃</div>
+          TranspiTrack
+        </a>
+        <a href="#" class="nav-link-tt active">Dashboard</a>
+        <a href="#" class="nav-link-tt">Activités</a>
+        <a href="#" class="nav-link-tt">Challenges</a>
+        <a href="#" class="nav-link-tt">Classement</a>
+        <div class="navbar-end">
+          <button class="btn-tt btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Activité</button>
+          <div class="avatar" style="background:linear-gradient(135deg,var(--primary),var(--primary-light));width:36px;height:36px;font-size:.8rem;">TD</div>
+        </div>
+      </div>
+
+      <p class="subsection-title">Tabs</p>
+      <div class="tabs-tt" role="tablist">
+        <button class="tab-btn-tt active" onclick="switchTab(event,'tab-general')">Général</button>
+        <button class="tab-btn-tt"        onclick="switchTab(event,'tab-activites')">Activités</button>
+        <button class="tab-btn-tt"        onclick="switchTab(event,'tab-challenges')">Challenges</button>
+      </div>
+      <div class="tab-demo-content">
+        <div class="tab-panel-tt active" id="tab-general">
+          <p>📊 Contenu de l'onglet <strong>Général</strong> — stats globales, graphiques.</p>
+        </div>
+        <div class="tab-panel-tt" id="tab-activites">
+          <p>🏃 Contenu de l'onglet <strong>Activités</strong> — liste de toutes vos activités.</p>
+        </div>
+        <div class="tab-panel-tt" id="tab-challenges">
+          <p>🏆 Contenu de l'onglet <strong>Challenges</strong> — challenges en cours et passés.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 10. PROGRESS ──────────────────────────────────── -->
+    <section class="section" id="progress">
+      <h2 class="section-title">Progress & Objectifs</h2>
+
+      <div style="max-width:520px;">
+        <div class="progress-label"><span class="name">Course à pied</span><span class="value">87 / 100 km</span></div>
+        <div class="progress-tt"><div class="progress-fill progress-fill-primary" style="width:87%"></div></div>
+
+        <div class="progress-label"><span class="name">Cyclisme</span><span class="value">320 / 500 km</span></div>
+        <div class="progress-tt" style="height:14px;"><div class="progress-fill progress-fill-accent" style="width:64%"></div></div>
+
+        <div class="progress-label"><span class="name">Calories hebdo</span><span class="value">2 100 / 3 500 kcal</span></div>
+        <div class="progress-tt"><div class="progress-fill progress-fill-warning" style="width:60%"></div></div>
+
+        <div class="progress-label"><span class="name">Challenge Marathon (en cours)</span><span class="value">43%</span></div>
+        <div class="progress-tt"><div class="progress-fill progress-fill-striped" style="width:43%"></div></div>
+      </div>
+
+      <p class="subsection-title">Barres circulaires</p>
+      <div class="progress-circle-wrap">
+        <div class="progress-circle">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle class="progress-circle-track" cx="45" cy="45" r="37"/>
+            <circle class="progress-circle-fill" cx="45" cy="45" r="37"
+              stroke="var(--primary)"
+              stroke-dasharray="232.5"
+              stroke-dashoffset="30"/>
+          </svg>
+          <div class="progress-circle-label" style="color:var(--primary)">87%</div>
+          <div class="progress-circle-sub">Course</div>
+        </div>
+        <div class="progress-circle">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle class="progress-circle-track" cx="45" cy="45" r="37"/>
+            <circle class="progress-circle-fill" cx="45" cy="45" r="37"
+              stroke="var(--accent)"
+              stroke-dasharray="232.5"
+              stroke-dashoffset="84"/>
+          </svg>
+          <div class="progress-circle-label" style="color:var(--accent)">64%</div>
+          <div class="progress-circle-sub">Vélo</div>
+        </div>
+        <div class="progress-circle">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle class="progress-circle-track" cx="45" cy="45" r="37"/>
+            <circle class="progress-circle-fill" cx="45" cy="45" r="37"
+              stroke="var(--warning)"
+              stroke-dasharray="232.5"
+              stroke-dashoffset="93"/>
+          </svg>
+          <div class="progress-circle-label" style="color:var(--warning)">60%</div>
+          <div class="progress-circle-sub">Calories</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 11. MODAL ─────────────────────────────────────── -->
+    <section class="section" id="modal">
+      <h2 class="section-title">Modal</h2>
+      <div class="btn-row">
+        <button class="btn-tt btn-primary" onclick="document.getElementById('modal-demo').classList.add('open')">
+          <i class="bi bi-window"></i> Ouvrir la modale
+        </button>
+        <button class="btn-tt btn-danger btn-outline-primary" onclick="document.getElementById('modal-danger').classList.add('open')"
+          style="background:transparent;color:var(--danger);border-color:var(--danger);">
+          <i class="bi bi-trash"></i> Modale de suppression
+        </button>
+      </div>
+    </section>
+
+    <!-- ── 12. TOAST ─────────────────────────────────────── -->
+    <section class="section" id="toast">
+      <h2 class="section-title">Toasts / Notifications</h2>
+      <div class="btn-row">
+        <button class="btn-tt btn-accent"   onclick="showToast('success','✅','Activité ajoutée !','8.3 km enregistrés.')">Success</button>
+        <button class="btn-tt btn-danger"   onclick="showToast('danger','❌','Erreur','Impossible de sauvegarder.')">Danger</button>
+        <button class="btn-tt btn-warning"  onclick="showToast('warning','⚠️','Attention','Votre session expire bientôt.')">Warning</button>
+        <button class="btn-tt btn-outline-secondary" onclick="showToast('info','ℹ️','Info','Nouveau challenge disponible.')">Info</button>
+      </div>
+    </section>
+
+    <!-- ── 13. AVATARS ───────────────────────────────────── -->
+    <section class="section" id="avatars">
+      <h2 class="section-title">Avatars</h2>
+
+      <p class="subsection-title">Tailles & couleurs</p>
+      <div class="avatars-row">
+        <div class="avatar sm" style="background:linear-gradient(135deg,var(--primary),var(--primary-light))">JD</div>
+        <div class="avatar"    style="background:linear-gradient(135deg,var(--accent-dark),var(--accent))">TD</div>
+        <div class="avatar lg" style="background:linear-gradient(135deg,var(--info),#60A5FA)">ML</div>
+        <div class="avatar xl" style="background:linear-gradient(135deg,var(--secondary),var(--secondary-light))">AB</div>
+      </div>
+
+      <p class="subsection-title">Avec statut</p>
+      <div class="avatars-row">
+        <div style="display:inline-block;position:relative;">
+          <div class="avatar" style="background:linear-gradient(135deg,var(--primary),var(--primary-light))">JD</div>
+          <div class="avatar-status status-online"></div>
+        </div>
+        <div style="display:inline-block;position:relative;">
+          <div class="avatar" style="background:linear-gradient(135deg,var(--secondary),var(--secondary-light))">PL</div>
+          <div class="avatar-status status-offline"></div>
+        </div>
+        <div style="display:inline-block;position:relative;">
+          <div class="avatar" style="background:linear-gradient(135deg,var(--warning),#FCD34D)">SA</div>
+          <div class="avatar-status status-busy"></div>
+        </div>
+      </div>
+
+      <p class="subsection-title">Groupe d'avatars</p>
+      <div class="avatar-group">
+        <div class="avatar sm" style="background:linear-gradient(135deg,var(--primary),var(--primary-light))">JD</div>
+        <div class="avatar sm" style="background:linear-gradient(135deg,var(--accent-dark),var(--accent))">TD</div>
+        <div class="avatar sm" style="background:linear-gradient(135deg,var(--info),#60A5FA)">ML</div>
+        <div class="avatar sm" style="background:var(--secondary);font-size:.65rem">+8</div>
+      </div>
+
+      <p class="subsection-title">Chips utilisateurs</p>
+      <div class="badges-row">
+        <div class="chip">
+          <div class="chip-avatar" style="background:var(--primary)">JD</div>
+          Jean Dupont
+          <i class="bi bi-x" style="cursor:pointer;color:var(--text-muted);"></i>
+        </div>
+        <div class="chip">
+          <div class="chip-avatar" style="background:var(--accent-dark)">AM</div>
+          Alice Martin
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 14. LOADING ───────────────────────────────────── -->
+    <section class="section" id="loading">
+      <h2 class="section-title">Loading States</h2>
+
+      <p class="subsection-title">Spinners</p>
+      <div class="d-flex ai-center gap-16" style="flex-wrap:wrap;">
+        <div class="spinner-tt sm"></div>
+        <div class="spinner-tt"></div>
+        <div class="spinner-tt lg"></div>
+        <div class="spinner-tt" style="border-top-color:var(--accent)"></div>
+        <div class="spinner-tt" style="border-top-color:var(--secondary)"></div>
+      </div>
+
+      <p class="subsection-title">Dots</p>
+      <div class="spinner-dots">
+        <span></span><span></span><span></span>
+      </div>
+
+      <p class="subsection-title">Skeleton</p>
+      <div class="d-flex gap-12" style="flex-wrap:wrap;">
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-avatar"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton skeleton-avatar"></div>
+          <div class="skeleton skeleton-line"></div>
+          <div class="skeleton skeleton-line short"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 15. ANIMATIONS ────────────────────────────────── -->
+    <section class="section" id="animations">
+      <h2 class="section-title">Animations <span class="badge-section">Hover pour preview</span></h2>
+      <div class="anim-grid">
+        <div class="anim-box">
+          <div class="demo-el anim-pulse">💥</div>
+          Pulse
+        </div>
+        <div class="anim-box">
+          <div class="demo-el anim-bounce">🏀</div>
+          Bounce
+        </div>
+        <div class="anim-box">
+          <div class="demo-el anim-shake">🔔</div>
+          Shake
+        </div>
+        <div class="anim-box">
+          <div class="demo-el anim-flip">🔄</div>
+          Flip
+        </div>
+        <div class="anim-box">
+          <div class="demo-el anim-swing">⚡</div>
+          Swing
+        </div>
+        <div class="anim-box">
+          <div class="demo-el anim-glow">✨</div>
+          Glow
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 16. NOTIFICATIONS ────────────────────────────── -->
+    <section class="section" id="notifications">
+      <h2 class="section-title">Notifications <span class="badge-section">Thymeleaf ready</span></h2>
+
+      <p style="color:var(--text-muted);font-size:.88rem;margin-bottom:20px;">
+        Les notifications apparaissent en haut à droite. La barre de progression se remplit puis la notification disparaît.
+        <strong>Passez la souris dessus</strong> pour mettre la barre en pause.
+      </p>
+
+      <div class="btn-row">
+        <button class="btn-tt btn-accent" onclick="createNotif('success','Activité enregistrée !','Votre course à pied de 8.3 km a bien été ajoutée.')">
+          <i class="bi bi-check-circle"></i> Notif succès
+        </button>
+        <button class="btn-tt btn-danger" onclick="createNotif('error','Erreur de connexion','Email ou mot de passe incorrect. Veuillez réessayer.')">
+          <i class="bi bi-x-circle"></i> Notif erreur
+        </button>
+        <button class="btn-tt btn-outline-secondary" onclick="createNotif('success','Challenge rejoint !','Vous participez au challenge Marathon Mai.')">
+          <i class="bi bi-trophy"></i> Autre succès
+        </button>
+        <button class="btn-tt btn-outline-secondary" onclick="createNotif('error','Suppression impossible','Vous n\'êtes pas l\'auteur de cette activité.')">
+          <i class="bi bi-slash-circle"></i> Autre erreur
+        </button>
+      </div>
+
+      <p class="subsection-title">Aperçu statique</p>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:340px;">
+        <!-- Exemple succès statique -->
+        <div style="position:relative;display:flex;align-items:flex-start;gap:14px;background:var(--card);border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:16px 16px 20px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent);border-radius:4px 0 0 4px;"></div>
+          <span style="font-size:1.3rem;padding-left:8px;">✅</span>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:.92rem;color:var(--accent-dark);">Activité enregistrée !</div>
+            <div style="font-size:.82rem;color:var(--text-muted);margin-top:3px;">Course à pied · 8.3 km · Paris</div>
+          </div>
+          <div style="width:26px;height:26px;border:none;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:.85rem;">✕</div>
+          <!-- Barre figée à 60% -->
+          <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--border);">
+            <div style="width:60%;height:100%;background:var(--accent);border-radius:0 2px 2px 0;"></div>
+          </div>
+        </div>
+        <!-- Exemple erreur statique -->
+        <div style="position:relative;display:flex;align-items:flex-start;gap:14px;background:var(--card);border-radius:var(--radius-md);box-shadow:var(--shadow-md);padding:16px 16px 20px;overflow:hidden;">
+          <div style="position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--danger);border-radius:4px 0 0 4px;"></div>
+          <span style="font-size:1.3rem;padding-left:8px;">❌</span>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:.92rem;color:var(--danger);">Erreur de connexion</div>
+            <div style="font-size:.82rem;color:var(--text-muted);margin-top:3px;">Email ou mot de passe incorrect.</div>
+          </div>
+          <div style="width:26px;height:26px;border:none;background:var(--bg);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:.85rem;">✕</div>
+          <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:var(--border);">
+            <div style="width:30%;height:100%;background:var(--danger);border-radius:0 2px 2px 0;"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 17. DIVERS ────────────────────────────────────── -->
+    <section class="section" id="divers">
+      <h2 class="section-title">Divers</h2>
+
+      <p class="subsection-title">Séparateurs</p>
+      <div class="divider"></div>
+      <div class="divider primary"></div>
+
+      <p class="subsection-title">État vide</p>
+      <div class="empty-state" style="max-width:400px;">
+        <div class="empty-state-icon">🏃</div>
+        <div class="empty-state-title">Aucune activité pour l'instant</div>
+        <div class="empty-state-desc">Ajoutez votre première activité pour commencer à tracker vos performances.</div>
+        <div style="margin-top:20px;">
+          <button class="btn-tt btn-primary"><i class="bi bi-plus-lg"></i> Ajouter une activité</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     MODALES
+════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-demo" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Ajouter une activité</span>
+      <button class="modal-close" onclick="document.getElementById('modal-demo').classList.remove('open')">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Sport</label>
+        <select class="form-select">
+          <option>🏃 Course à pied</option>
+          <option>🚴 Cyclisme</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Distance (km)</label>
+        <input type="number" class="form-control" placeholder="0.00" step="0.01"/>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-tt btn-ghost" onclick="document.getElementById('modal-demo').classList.remove('open')">Annuler</button>
+      <button class="btn-tt btn-primary"><i class="bi bi-check-lg"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-danger" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" style="color:var(--danger)"><i class="bi bi-exclamation-triangle"></i> Supprimer l'activité ?</span>
+      <button class="modal-close" onclick="document.getElementById('modal-danger').classList.remove('open')">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body">
+      Cette action est <strong>irréversible</strong>. L'activité « Course à pied — 8.3 km » sera définitivement supprimée.
+    </div>
+    <div class="modal-footer">
+      <button class="btn-tt btn-ghost" onclick="document.getElementById('modal-danger').classList.remove('open')">Annuler</button>
+      <button class="btn-tt btn-danger"><i class="bi bi-trash"></i> Supprimer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER (ancien système) -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- NOTIFICATION CONTAINER -->
+<div id="tt-notif-container"></div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  /* ── Tabs ───────────────────────────────────────────── */
+  function switchTab(e, panelId) {
+    const parent = e.target.closest('.tabs-tt');
+    parent.querySelectorAll('.tab-btn-tt').forEach(b => b.classList.remove('active'));
+    e.target.classList.add('active');
+    const wrap = parent.nextElementSibling;
+    wrap.querySelectorAll('.tab-panel-tt').forEach(p => p.classList.remove('active'));
+    wrap.querySelector('#' + panelId).classList.add('active');
+  }
+
+  /* ── Toast ──────────────────────────────────────────── */
+  function showToast(type, icon, title, msg) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast-tt toast-${type}`;
+    toast.innerHTML = `
+      <span class="toast-icon">${icon}</span>
+      <div><strong>${title}</strong>${msg ? '<br><span style="opacity:.8;font-size:.82rem">'+msg+'</span>' : ''}</div>
+      <span class="toast-close" onclick="dismissToast(this.parentElement)"><i class="bi bi-x-lg"></i></span>
+    `;
+    container.appendChild(toast);
+    setTimeout(() => dismissToast(toast), 4000);
+  }
+
+  function dismissToast(el) {
+    el.classList.add('hiding');
+    setTimeout(() => el.remove(), 280);
+  }
+
+  /* ── Sidebar active link ────────────────────────────── */
+  const sections = document.querySelectorAll('section[id]');
+  const sideLinks = document.querySelectorAll('.sidebar a');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sideLinks.forEach(a => a.classList.remove('active'));
+        const match = document.querySelector(`.sidebar a[href="#${entry.target.id}"]`);
+        if (match) match.classList.add('active');
+      }
+    });
+  }, { threshold: 0.4 });
+
+  sections.forEach(s => observer.observe(s));
+
+  /* ── Notifications ──────────────────────────────────── */
+  class Notif {
+    /**
+     * @param {HTMLElement} el       - L'élément DOM de la notification
+     * @param {number}      duration - Durée d'affichage en ms (défaut 5000)
+     */
+    constructor(el, duration = 5000) {
+      this.el       = el;
+      this.bar      = el.querySelector('.tt-notif-bar');
+      this.duration = duration;
+      this.elapsed  = 0;       // ms déjà écoulés
+      this.startTs  = null;    // timestamp du début du tick courant
+      this.raf      = null;
+
+      el.addEventListener('mouseenter', () => this._pause());
+      el.addEventListener('mouseleave', () => this._resume());
+      el.querySelector('.tt-notif-close')
+        ?.addEventListener('click', () => this.dismiss());
+
+      // Lancer après le prochain frame pour que la transition CSS soit active
+      requestAnimationFrame(() => {
+        el.classList.add('tt-notif-visible');
+        this._resume();
+      });
+    }
+
+    _pause() {
+      cancelAnimationFrame(this.raf);
+      this.raf     = null;
+      this.startTs = null;
+    }
+
+    _resume() {
+      if (this.raf) return;          // déjà en cours
+      this.startTs = performance.now();
+      this._tick();
+    }
+
+    _tick() {
+      this.raf = requestAnimationFrame(now => {
+        const delta  = now - this.startTs;
+        this.startTs = now;
+        this.elapsed = Math.min(this.elapsed + delta, this.duration);
+
+        const pct = (this.elapsed / this.duration) * 100;
+        this.bar.style.width = pct + '%';
+
+        if (this.elapsed < this.duration) {
+          this._tick();
+        } else {
+          this.dismiss();
+        }
+      });
+    }
+
+    dismiss() {
+      cancelAnimationFrame(this.raf);
+      this.el.classList.remove('tt-notif-visible');
+      this.el.classList.add('tt-notif-hiding');
+      setTimeout(() => this.el.remove(), 350);
+    }
+  }
+
+  /**
+   * Crée et affiche une notification.
+   * @param {'success'|'error'} type
+   * @param {string} title
+   * @param {string} [message]
+   * @param {number} [duration=5000] ms avant disparition
+   */
+  function createNotif(type, title, message = '', duration = 5000) {
+    const icons = { success: '✅', error: '❌' };
+    const container = document.getElementById('tt-notif-container');
+
+    const el = document.createElement('div');
+    el.className = `tt-notif tt-notif-${type}`;
+    el.innerHTML = `
+      <div class="tt-notif-icon">${icons[type] ?? 'ℹ️'}</div>
+      <div class="tt-notif-content">
+        <div class="tt-notif-title">${title}</div>
+        ${message ? `<div class="tt-notif-msg">${message}</div>` : ''}
+      </div>
+      <button class="tt-notif-close" aria-label="Fermer">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="tt-notif-bar-wrap">
+        <div class="tt-notif-bar"></div>
+      </div>
+    `;
+
+    container.appendChild(el);
+    el._notif = new Notif(el, duration);
+  }
+</script>
+</body>
+</html>

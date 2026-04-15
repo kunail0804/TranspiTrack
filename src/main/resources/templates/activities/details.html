@@ -1,91 +1,144 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <head>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
     <meta charset="UTF-8" />
-    <title>Détails de l'activité</title>
-  </head>
-  <body>
-    <h1>Détails de l'activité</h1>
-    <p>
-      Fait par
-      <span th:text="${author.firstName} + ' ' + ${author.name}"></span>
-    </p>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TranspiTrack — Détails de l'activité</title>
 
-    <p><strong>Date:</strong> <span th:text="${activity.date}"></span></p>
-    <p>
-      <strong>Durée:</strong>
-      <span th:text="${activity.duration}"></span> minutes
-    </p>
-    <p>
-      <strong>Distance:</strong> <span th:text="${activity.distance}"></span> km
-    </p>
-    <p>
-      <strong>Évaluation:</strong>
-      <span th:text="${activity.evaluation}"></span>
-    </p>
-    <p>
-      <strong>Sport:</strong> <span th:text="${activity.sport.name}"></span>
-    </p>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
+</head>
+<body>
 
-    <h2>Commentaires</h2>
-    <ul>
-      <li th:each="commentary : ${commentaries}">
-        <p>
-          <strong>Auteur:</strong>
-          <span
-            th:text="${commentary.author.firstName} + ' ' + ${commentary.author.name}"
-                ></span>
-            </p>
-            <p>
-                <strong>Commentaire:</strong>
-                <span th:text="${commentary.message}"></span>
+<div class="layout">
 
-                <span th:if="${commentary.reaction != null}">
-                    <span th:text="${commentary.reaction.emoji}"></span>
-                </span>
-            </p>
-            <form
-                th:action="@{/activities/comment/{id}/reaction(id=${commentary.id})}"
-                method="post"
-                th:if="${user != null and commentary.author != null and user.id == commentary.author.id}"
-            >
-                <button type="submit" name="reaction" value="LIKE">👍</button>
-                <button type="submit" name="reaction" value="LOVE">❤️</button>
-                <button type="submit" name="reaction" value="WOW">😮</button>
-                <button type="submit" name="reaction" value="DISLIKE">👎</button>
-            </form>
-        </p>
-      </li>
-      <li th:if="${commentaries == null or commentaries.isEmpty()}">
-        Aucun commentaire pour cette activité.
-      </li>
-    </ul>
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div>
+                <div class="sidebar-logo-text">TranspiTrack</div>
+            </div>
+        </div>
 
-    <form
-      th:if="${!user.equals(author) and canComment}"
-      th:action="@{/activities/comment/{id}(id=${activity.id})}"
-      method="post"
-      th:object="${commentary}"
-    >
-      <label for="message">Ajouter un commentaire:</label><br />
-      <textarea
-        id="message"
-        name="message"
-        rows="4"
-        cols="50"
-        required
-        th:field="*{message}"
-      ></textarea
-      ><br /><br />
-      <label for="emoji">Ajouter un emoji:</label><br />
-      <select id="emoji" name="emoji" th:field="*{reaction}">
-        <option value="">Aucun</option>
-        <option value="LIKE">👍</option>
-        <option value="LOVE">❤️</option>
-        <option value="WOW">😮</option>
-        <option value="DISLIKE">👎</option>
-      </select>
-      <button type="submit">Ajouter le commentaire</button>
-    </form>
-  </body>
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}" class="active"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/activities/add}"><i class="bi bi-plus-circle"></i> Nouvelle Activité</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
+    </nav>
+
+    <main class="main">
+
+        <div class="page-header d-flex" style="justify-content: space-between; align-items: flex-start;">
+            <div>
+                <h1>Détails de l'activité</h1>
+                <p>
+                    Réalisée par <strong class="text-primary" th:text="${author.firstName} + ' ' + ${author.name}">Nom Prénom</strong>
+                    le <span th:text="${activity.date}">Date</span>
+                </p>
+            </div>
+            <span class="badge-tt badge-primary" style="font-size: 1rem; padding: 8px 16px;">
+                <i class="bi bi-trophy"></i> <span th:text="${activity.sport.name}">Sport</span>
+            </span>
+        </div>
+
+        <section class="section">
+            <div class="cards-grid">
+                <div class="card-tt stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-label">Distance</div>
+                            <div class="stat-card-value"><span th:text="${activity.distance}">0</span> <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">km</small></div>
+                        </div>
+                        <div class="stat-card-icon" style="background:var(--primary-bg); color:var(--primary)"><i class="bi bi-speedometer2"></i></div>
+                    </div>
+                </div>
+
+                <div class="card-tt stat-card">
+                    <div class="stat-card-header">
+                        <div>
+                            <div class="stat-card-label">Durée</div>
+                            <div class="stat-card-value"><span th:text="${activity.duration}">0</span> <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">min</small></div>
+                        </div>
+                        <div class="stat-card-icon" style="background:var(--info-bg); color:var(--info)"><i class="bi bi-clock"></i></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-tt mt-4 p-4" th:if="${activity.evaluation != null and !activity.evaluation.isEmpty()}">
+                <h4 class="tt-label mb-2"><i class="bi bi-chat-left-quote text-primary"></i> Évaluation de la séance</h4>
+                <p class="tt-body mb-0" th:text="${activity.evaluation}">Super séance, un peu difficile sur la fin.</p>
+            </div>
+        </section>
+
+        <div class="divider"></div>
+
+        <section class="section">
+            <h2 class="section-title"><i class="bi bi-chat-dots"></i> Commentaires</h2>
+
+            <div class="d-flex flex-column gap-16 mb-4">
+                <div class="card-tt p-3" th:each="commentary : ${commentaries}">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="fw-700" th:text="${commentary.author.firstName} + ' ' + ${commentary.author.name}">Auteur</div>
+                        <span class="badge-tt badge-secondary" th:if="${commentary.reaction != null}" th:text="${commentary.reaction.emoji}">👍</span>
+                    </div>
+                    <p class="tt-body text-muted-tt mb-3" th:text="${commentary.message}">Message du commentaire.</p>
+
+                    <form th:action="@{/activities/comment/{id}/reaction(id=${commentary.id})}" method="post" 
+                          th:if="${user != null and commentary.author != null and user.id == commentary.author.id}"
+                          class="d-flex gap-8">
+                        <button type="submit" name="reaction" value="LIKE" class="btn-tt btn-outline-secondary btn-sm">👍</button>
+                        <button type="submit" name="reaction" value="LOVE" class="btn-tt btn-outline-secondary btn-sm">❤️</button>
+                        <button type="submit" name="reaction" value="WOW" class="btn-tt btn-outline-secondary btn-sm">😮</button>
+                        <button type="submit" name="reaction" value="DISLIKE" class="btn-tt btn-outline-secondary btn-sm">👎</button>
+                    </form>
+                </div>
+
+                <div class="empty-state" th:if="${commentaries == null or commentaries.isEmpty()}">
+                    <div class="empty-state-icon">💬</div>
+                    <div class="empty-state-title">Aucun commentaire</div>
+                    <div class="empty-state-desc">Soyez le premier à réagir à cette activité !</div>
+                </div>
+            </div>
+
+            <div class="form-card" th:if="${!user.equals(author) and canComment}">
+                <h4 class="tt-label mb-3">Laisser un commentaire</h4>
+                <form th:action="@{/activities/comment/{id}(id=${activity.id})}" method="post" th:object="${commentary}">
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="message">Votre message <span class="required">*</span></label>
+                        <textarea id="message" class="form-control" rows="3" required th:field="*{message}" placeholder="Super perf !"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="emoji">Ajouter un emoji</label>
+                        <select id="emoji" class="form-select" th:field="*{reaction}">
+                            <option value="">— Aucun —</option>
+                            <option value="LIKE">👍 J'aime</option>
+                            <option value="LOVE">❤️ J'adore</option>
+                            <option value="WOW">😮 Wouah</option>
+                            <option value="DISLIKE">👎 Bof</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn-tt btn-primary">
+                            <i class="bi bi-send"></i> Publier
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
+
+</body>
 </html>

@@ -29,41 +29,28 @@ public class ImageStorageService {
         Files.createDirectories(uploadPath);
     }
 
-    /**
-     * Saves the uploaded file and returns the generated filename.
-     * Returns null if the file is empty.
-     */
     public String store(MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
         }
-
         String originalFilename = file.getOriginalFilename();
         String extension = "";
         if (originalFilename != null && originalFilename.contains(".")) {
             extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         }
-
         String filename = UUID.randomUUID() + extension;
-        Path destination = uploadPath.resolve(filename);
-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-
+        Files.copy(file.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
         return filename;
     }
 
-    /**
-     * Deletes the file with the given filename from the upload directory.
-     * Does nothing if filename is null, blank, or the placeholder.
-     */
     public void delete(String filename) {
         if (filename == null || filename.isBlank() || filename.equals(PLACEHOLDER_FILENAME)) {
             return;
         }
         try {
-            Path target = uploadPath.resolve(filename);
-            Files.deleteIfExists(target);
+            Files.deleteIfExists(uploadPath.resolve(filename));
         } catch (IOException e) {
-            // log silently — file may already be gone
+            // log silently
         }
     }
 

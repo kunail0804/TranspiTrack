@@ -2,67 +2,126 @@
 <html lang="fr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Détails du Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspiTrack — Détails du Challenge</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-    <div>
-        <h1>Détails du Challenge</h1>
+
+<div class="layout">
+
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div><div class="sidebar-logo-text">TranspiTrack</div></div>
+        </div>
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
         
-        <div>
-            <h2 th:text="${challenge.title}">Titre du Challenge</h2>
-            
-            <ul>
-                <li><strong>Durée : </strong> <span th:text="${challenge.duration?.toDays()}">0</span> jours</li>
-                <li><strong>Sport : </strong> <span th:text="${challenge.sport?.name}">Nom du sport</span></li>
-                <li><strong>Visibilité : </strong> <span th:text="${challenge.visibility}">Public/Privé</span></li>
-                <li><strong>Créé par : </strong> <span th:text="|${challenge.creator?.firstName} ${challenge.creator?.name}|">Prénom Nom</span></li>
-            </ul>
+        <span class="sidebar-section-label mt-3">Challenges</span>
+        <a th:href="@{/challenges/list}" class="active"><i class="bi bi-compass"></i> Explorer</a>
+        <a th:href="@{/challenges/formCreate}"><i class="bi bi-plus-circle"></i> Créer</a>
+    </nav>
 
-            <br>
-            <a th:href="@{/challenges/list}" class="btn btn-secondary">Retour à la liste</a>
+    <main class="main">
+        <div class="page-header d-flex align-items-center justify-content-between">
+            <div>
+                <h1 th:text="${challenge.title}">Titre du Challenge</h1>
+                <p>Créé par <span class="fw-700 text-primary" th:text="|${challenge.creator?.firstName} ${challenge.creator?.name}|">Prénom Nom</span></p>
+            </div>
+            <a th:href="@{/challenges/list}" class="btn-tt btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Retour à la liste
+            </a>
         </div>
 
-        <div th:if="${canAddScore and userScore == null}">
-            <h3>Ajouter un score</h3>
-            <form th:action="@{/challenges/details/{id}/addScore(id=${challenge.id})}" method="post">
-                <label for="score">Score :</label>
-                <input type="number" id="score" name="score" step="0.01" required />
-                <button type="submit">Valider</button>
-            </form>
-        </div>
+        <section class="section">
+            <div class="cards-grid mb-5">
+                <div class="card-tt stat-card p-3">
+                    <div class="stat-card-label">Durée restante</div>
+                    <div class="stat-card-value"><span th:text="${challenge.duration?.toDays()}">0</span> <small style="font-size:1rem;color:var(--text-muted)">jours</small></div>
+                </div>
+                <div class="card-tt stat-card p-3">
+                    <div class="stat-card-label">Sport</div>
+                    <div class="stat-card-value" style="font-size: 1.5rem;" th:text="${challenge.sport?.name}">Sport</div>
+                </div>
+                <div class="card-tt stat-card p-3">
+                    <div class="stat-card-label">Visibilité</div>
+                    <div class="stat-card-value" style="font-size: 1.5rem;" th:text="${challenge.visibility}">Statut</div>
+                </div>
+            </div>
 
-        <div th:if="${canAddScore and userScore != null}">
-            <h3>Modifier mon score</h3>
-            <p>Score actuel : <span th:text="${userScore.score}">0</span></p>
-            <form th:action="@{/challenges/details/{id}/addScore(id=${challenge.id})}" method="post">
-                <label for="score-edit">Nouveau score :</label>
-                <input type="number" id="score-edit" name="score" step="0.01" th:value="${userScore.score}" required />
-                <button type="submit">Modifier</button>
-            </form>
-        </div>
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 32px;">
+                
+                <div>
+                    <div class="form-card p-4" th:if="${canAddScore and userScore == null}">
+                        <h4 class="tt-label mb-3"><i class="bi bi-plus-circle text-accent"></i> Participer au challenge</h4>
+                        <form th:action="@{/challenges/details/{id}/addScore(id=${challenge.id})}" method="post">
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="score">Entrez votre score</label>
+                                <input type="number" id="score" name="score" class="form-control" step="0.01" required placeholder="Votre perf..." />
+                            </div>
+                            <button type="submit" class="btn-tt btn-accent w-100 justify-content-center">Valider mon score</button>
+                        </form>
+                    </div>
 
-        <div>
-            <h3>Classement du Challenge</h3>
-            
-            <table border="1" th:if="${listeScores != null and !listeScores.isEmpty()}">
-                <thead>
-                    <tr>
-                        <th>Rang</th>
-                        <th>Participant</th>
-                        <th>Score</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="score, iter : ${listeScores}">
-                        <td th:text="${iter.count}">1</td>
-                        <td th:text="|${score.user.firstName} ${score.user.name}|">Prénom Nom</td>
-                        <td th:text="${score.score}">0</td>
-                    </tr>
-                </tbody>
-            </table>
+                    <div class="form-card p-4" th:if="${canAddScore and userScore != null}">
+                        <h4 class="tt-label mb-3"><i class="bi bi-pencil text-primary"></i> Modifier mon score</h4>
+                        <div class="mb-3 d-flex align-items-center gap-12">
+                            <span class="text-muted-tt" style="font-size: 0.9rem;">Score actuel :</span>
+                            <span class="badge-tt badge-primary" style="font-size: 1rem;" th:text="${userScore.score}">0</span>
+                        </div>
+                        <form th:action="@{/challenges/details/{id}/addScore(id=${challenge.id})}" method="post">
+                            <div class="form-group mb-3">
+                                <label class="form-label" for="score-edit">Nouveau score</label>
+                                <input type="number" id="score-edit" name="score" class="form-control" step="0.01" th:value="${userScore.score}" required />
+                            </div>
+                            <button type="submit" class="btn-tt btn-outline-primary w-100 justify-content-center">Mettre à jour</button>
+                        </form>
+                    </div>
+                </div>
 
-            <p th:if="${listeScores == null or listeScores.isEmpty()}">Aucun participant classé pour le moment.</p>
-        </div>
-    </div>
+                <div>
+                    <h3 class="section-title"><i class="bi bi-bar-chart-steps"></i> Classement</h3>
+                    
+                    <table class="table-tt" th:if="${listeScores != null and !listeScores.isEmpty()}">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">Rang</th>
+                                <th>Participant</th>
+                                <th style="text-align: right;">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="score, iter : ${listeScores}">
+                                <td style="text-align: center;">
+                                    <span class="badge-tt" 
+                                          th:classappend="${iter.count == 1 ? 'badge-warning' : (iter.count == 2 ? 'badge-secondary' : (iter.count == 3 ? 'badge-danger' : ''))}"
+                                          th:text="${iter.count}">1</span>
+                                </td>
+                                <td class="fw-700" th:text="|${score.user.firstName} ${score.user.name}|">Prénom Nom</td>
+                                <td class="fw-800 text-primary" style="text-align: right;" th:text="${score.score}">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="empty-state p-4" th:if="${listeScores == null or listeScores.isEmpty()}">
+                        <div class="empty-state-icon">🏁</div>
+                        <div class="empty-state-title">Soyez le premier !</div>
+                        <div class="empty-state-desc">Aucun participant n'a encore enregistré de score.</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

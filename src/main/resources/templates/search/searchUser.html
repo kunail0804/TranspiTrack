@@ -2,41 +2,111 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Rechercher un utilisateur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspiTrack — Rechercher un utilisateur</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-    <h1>Rechercher un utilisateur</h1>
 
-    <form action="/users/search" method="GET">
-        <input type="text" name="query" th:value="${query}" placeholder="Prénom ou nom..." />
-        <button type="submit">Rechercher</button>
-    </form>
+<div class="layout">
 
-    <div th:if="${query != null}">
-        <p th:if="${users.isEmpty()}">Aucun utilisateur trouvé pour "<span th:text="${query}"></span>".</p>
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div>
+                <div class="sidebar-logo-text">TranspiTrack</div>
+            </div>
+        </div>
 
-        <table border="1" th:unless="${users.isEmpty()}">
-            <thead>
-                <tr>
-                    <th>Prénom</th>
-                    <th>Nom</th>
-                    <th>Ville</th>
-                    <th>Âge</th>
-                    <th>Profil</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="user : ${users}">
-                    <td th:text="${user.firstName}"></td>
-                    <td th:text="${user.name}"></td>
-                    <td th:text="${user.city}"></td>
-                    <td th:text="${user.age}"></td>
-                    <td>
-                        <a th:href="@{/users/profile/{id}(id=${user.id})}">Voir le profil</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
+        
+        <span class="sidebar-section-label mt-3">Réseau</span>
+        <a th:href="@{/users/profile}"><i class="bi bi-person"></i> Mon Profil</a>
+        <a th:href="@{/users/search}" class="active"><i class="bi bi-search"></i> Rechercher</a>
+    </nav>
+
+    <main class="main">
+
+        <div class="page-header">
+            <h1>Rechercher un utilisateur</h1>
+            <p>Trouvez vos amis ou d'autres sportifs pour partager vos performances et vous lancer des défis.</p>
+        </div>
+
+        <section class="section">
+            
+            <div class="form-card mb-5" style="max-width: 600px; padding: 24px;">
+                <form action="/users/search" method="GET" class="d-flex gap-12 m-0">
+                    <div class="input-icon-wrap flex-fill">
+                        <i class="bi bi-search input-icon"></i>
+                        <input type="text" name="query" th:value="${query}" class="form-control" placeholder="Prénom ou nom..." required />
+                    </div>
+                    <button type="submit" class="btn-tt btn-primary">
+                        Rechercher
+                    </button>
+                </form>
+            </div>
+
+            <div th:if="${query != null}">
+                
+                <h3 class="section-title mb-4">Résultats de recherche</h3>
+
+                <div class="empty-state" th:if="${users.isEmpty()}" style="max-width: 600px;">
+                    <div class="empty-state-icon">🕵️‍♂️</div>
+                    <div class="empty-state-title">Aucun résultat</div>
+                    <div class="empty-state-desc">Nous n'avons trouvé personne correspondant à la recherche "<span th:text="${query}"></span>". Essayez avec d'autres termes.</div>
+                </div>
+
+                <table class="table-tt" th:unless="${users.isEmpty()}">
+                    <thead>
+                        <tr>
+                            <th>Sportif</th>
+                            <th>Ville</th>
+                            <th>Âge</th>
+                            <th style="width: 130px; text-align: center;">Profil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user : ${users}">
+                            <td>
+                                <div class="d-flex align-items-center gap-12">
+                                    <div class="avatar sm" style="background:var(--secondary-light)">
+                                        <i class="bi bi-person-fill"></i>
+                                    </div>
+                                    <span class="fw-700" th:text="${user.firstName} + ' ' + ${user.name}">Prénom Nom</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${user.city != null and !user.city.isEmpty()}">
+                                    <i class="bi bi-geo-alt text-muted-tt me-1"></i><span th:text="${user.city}">Ville</span>
+                                </span>
+                                <span th:if="${user.city == null or user.city.isEmpty()}" class="text-muted-tt" style="font-size: 0.85rem;">Non renseignée</span>
+                            </td>
+                            <td>
+                                <span th:text="${user.age}">0</span> ans
+                            </td>
+                            <td style="text-align: center;">
+                                <a th:href="@{/users/profile/{id}(id=${user.id})}" class="btn-tt btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye"></i> Voir profil
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
