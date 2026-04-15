@@ -10,9 +10,8 @@ class SportTest {
 
     @Test
     void constructorShouldSetFields() {
-        Sport sport = new Sport(1L, "Running", "Endurance sport", List.of());
+        Sport sport = new Sport("Running", "Endurance sport");
 
-        assertEquals(1L, sport.getId());
         assertEquals("Running", sport.getName());
         assertEquals("Endurance sport", sport.getDescription());
     }

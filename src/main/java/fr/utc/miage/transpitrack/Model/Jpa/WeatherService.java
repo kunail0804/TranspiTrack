@@ -1,5 +1,6 @@
-package fr.utc.miage.transpitrack.Service;
+package fr.utc.miage.transpitrack.Model.Jpa;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -16,8 +17,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Model.Jpa.UserRepository;
 import fr.utc.miage.transpitrack.Model.User;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class WeatherService {
@@ -29,6 +32,8 @@ public class WeatherService {
     private HttpClient httpClient;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    private final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
     public WeatherResponse getWeatherForUser(Long userId) {
         try {
@@ -86,7 +91,7 @@ public class WeatherService {
 
             return new WeatherResponse(resolvedCityName, currentTemp, condition, forecast);
 
-        } catch (Exception e) {
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Erreur météo : " + e.getMessage(), e);
         }
     }
@@ -138,8 +143,8 @@ public class WeatherService {
                 activity.setTemperature(temp);
                 activity.setWeatherCondition(interpretWeatherCode(code));
             }
-        } catch (Exception e) {
-            System.err.println("Impossible de récupérer la météo pour l'activité : " + e.getMessage());
+        } catch (IOException | InterruptedException e) {
+            logger.error("Erreur lors de l'attribution de la météo à l'activité : " + e.getMessage(), e);
         }
     }
 }

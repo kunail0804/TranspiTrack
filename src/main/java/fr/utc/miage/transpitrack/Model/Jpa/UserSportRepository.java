@@ -16,6 +16,4 @@ public interface UserSportRepository extends JpaRepository<UserSport, Long> {
 
     @Query("SELECT u FROM UserSport u WHERE u.user = :user AND u.sport = :sport")
     UserSport findByUserAndSport(User user, Sport sport);
-
-    //List<UserSport> findAllUserSport();
 }

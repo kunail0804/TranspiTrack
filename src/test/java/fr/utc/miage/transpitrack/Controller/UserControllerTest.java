@@ -78,9 +78,6 @@ class UserControllerTest {
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/formCreate
-    // ──────────────────────────────────────────────────────────────
     @Test
     void formCreateShouldReturnDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -98,9 +95,6 @@ class UserControllerTest {
         verify(model).addAttribute("message", "Bienvenue");
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/createUser
-    // ──────────────────────────────────────────────────────────────
     @Test
     void createUserShouldReturnFormCreateWhenEmailFormatInvalid() {
         String view = userController.createUser(
@@ -155,7 +149,17 @@ class UserControllerTest {
 
     @Test
     void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() throws Exception {
-        User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User savedUser = new User();
+        savedUser.setFirstName("Alice");
+        savedUser.setName("Dupont");
+        savedUser.setEmail("alice@example.com");
+        savedUser.setPassword("secret");
+        savedUser.setAge(25);
+        savedUser.setHeight(165.0);
+        savedUser.setGender(Gender.FEMALE);
+        savedUser.setWeight(60.0);
+        savedUser.setCity("Paris");
+
         Field idField = User.class.getDeclaredField("id");
         idField.setAccessible(true);
         idField.set(savedUser, 1L);
@@ -171,9 +175,6 @@ class UserControllerTest {
         verify(model).addAttribute("message", "Création compte réussie");
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/search
-    // ──────────────────────────────────────────────────────────────
     @Test
     void searchUserShouldRedirectToLoginWhenNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
@@ -187,6 +188,7 @@ class UserControllerTest {
     void searchUserShouldReturnResultsWhenQueryMatches() {
         when(session.getAttribute("userId")).thenReturn(1L);
         User user = new User();
+        user.setFirstName("Jean");
         when(userService.searchUsers("Jean")).thenReturn(List.of(user));
 
         String view = userController.searchUser("Jean", model, session);
@@ -219,9 +221,6 @@ class UserControllerTest {
         verify(model).addAttribute("query", "   ");
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/formUpdate
-    // ──────────────────────────────────────────────────────────────
     @Test
     void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.formUpdate(null, model, session);
@@ -231,7 +230,17 @@ class UserControllerTest {
 
     @Test
     void formUpdateShouldReturnFormUpdateWithUserWhenLoggedIn() {
-        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User user = new User();
+        user.setFirstName("Alice");
+        user.setName("Dupont");
+        user.setEmail("alice@example.com");
+        user.setPassword("secret");
+        user.setAge(25);
+        user.setHeight(165.0);
+        user.setGender(Gender.FEMALE);
+        user.setWeight(60.0);
+        user.setCity("Paris");
+
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
 
@@ -242,9 +251,6 @@ class UserControllerTest {
         verify(model).addAttribute("user", user);
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/updateUser
-    // ──────────────────────────────────────────────────────────────
     @Test
     void updateUserShouldReturnFormUpdateWhenEmailFormatInvalid() {
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -300,7 +306,16 @@ class UserControllerTest {
 
     @Test
     void updateUserShouldReturnFormUpdateWhenNewEmailAlreadyTaken() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
         when(userService.getUserByEmail("newemail@example.com")).thenReturn(new User());
@@ -315,7 +330,16 @@ class UserControllerTest {
 
     @Test
     void updateUserShouldUpdateAndReturnDashboardWhenEmailChangedAndFree() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
         when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
@@ -331,7 +355,16 @@ class UserControllerTest {
 
     @Test
     void updateUserShouldEncodePasswordWhenEmailChangedAndPasswordNotBlank() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
         when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
@@ -346,7 +379,17 @@ class UserControllerTest {
 
     @Test
     void updateUserShouldUpdateAndReturnDashboardWhenEmailUnchanged() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
+
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
 
@@ -360,7 +403,17 @@ class UserControllerTest {
     }
     @Test
     void updateUserShouldEncodePasswordWhenEmailUnchangedAndPasswordNotBlank() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
+
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
 
@@ -372,9 +425,6 @@ class UserControllerTest {
         verify(userService).updateUser(actualUser);
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/formLogin
-    // ──────────────────────────────────────────────────────────────
     @Test
     void formLoginShouldReturnDashboardWhenAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -392,9 +442,6 @@ class UserControllerTest {
         verify(model).addAttribute("message", "Connectez-vous");
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/loginUser
-    // ──────────────────────────────────────────────────────────────
     @Test
     void loginUserShouldReturnFormLoginWhenEmailNotFound() {
         String view = userController.loginUser("unknown@example.com", "secret", model, session);
@@ -405,7 +452,17 @@ class UserControllerTest {
 
     @Test
     void loginUserShouldReturnFormLoginWhenPasswordInvalid() {
-        User userLogin = new User("Alice", "Dupont", "alice@example.com", encoder.encode("correct"), 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User userLogin = new User();
+        userLogin.setFirstName("Alice");
+        userLogin.setName("Dupont");
+        userLogin.setEmail("alice@example.com");
+        userLogin.setPassword(encoder.encode("correct"));
+        userLogin.setAge(25);
+        userLogin.setHeight(165.0);
+        userLogin.setGender(Gender.FEMALE);
+        userLogin.setWeight(60.0);
+        userLogin.setCity("Paris");
+
         when(userService.getUserByEmail("alice@example.com")).thenReturn(userLogin);
 
         String view = userController.loginUser("alice@example.com", "wrong", model, session);
@@ -416,7 +473,17 @@ class UserControllerTest {
 
     @Test
     void loginUserShouldReturnDashboardWhenCredentialsValid() throws Exception {
-        User userLogin = new User("Alice", "Dupont", "alice@example.com", encoder.encode("secret"), 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User userLogin = new User();
+        userLogin.setFirstName("Alice");
+        userLogin.setName("Dupont");
+        userLogin.setEmail("alice@example.com");
+        userLogin.setPassword(encoder.encode("secret"));
+        userLogin.setAge(25);
+        userLogin.setHeight(165.0);
+        userLogin.setGender(Gender.FEMALE);
+        userLogin.setWeight(60.0);
+        userLogin.setCity("Paris");
+
         Field idField = User.class.getDeclaredField("id");
         idField.setAccessible(true);
         idField.set(userLogin, 1L);
@@ -429,9 +496,6 @@ class UserControllerTest {
         verify(model).addAttribute("message", "Connexion compte réussie");
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/logout
-    // ──────────────────────────────────────────────────────────────
     @Test
     void logoutShouldInvalidateSessionAndReturnFormLogin() {
         String view = userController.logoutPage(session);
@@ -440,9 +504,6 @@ class UserControllerTest {
         verify(session).invalidate();
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/profile
-    // ──────────────────────────────────────────────────────────────
     @Test
     void profilePageShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.profilePage(session, model);
@@ -463,7 +524,18 @@ class UserControllerTest {
 
     @Test
     void profilePageShouldReturnProfileWithUserAndActivitiesSortedByDateDesc() {
-        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User user = new User();
+        user.setFirstName("Alice");
+        user.setName("Dupont");
+        user.setEmail("alice@example.com");
+        user.setPassword("secret");
+        user.setAge(25);
+        user.setHeight(165.0);
+        user.setGender(Gender.FEMALE);
+        user.setWeight(60.0);
+        user.setCity("Paris");
+
+
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
 
@@ -526,9 +598,6 @@ class UserControllerTest {
         verify(model).addAttribute("friends", List.of(friendUser));
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/profile/{id}
-    // ──────────────────────────────────────────────────────────────
     @Test
     void viewProfileShouldRedirectToFormLoginWhenNotLoggedIn() {
         String view = userController.viewProfile(2L, null, model, session);
@@ -582,9 +651,6 @@ class UserControllerTest {
         verify(model).addAttribute(eq("requestSent"), anyBoolean());
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/consultationPreferences
-    // ──────────────────────────────────────────────────────────────
     @Test
     void consultationPreferencesShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.consultationPreferences(model, session);
@@ -607,9 +673,6 @@ class UserControllerTest {
         verify(model).addAttribute(eq("sports"), any());
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/addPreference
-    // ──────────────────────────────────────────────────────────────
     @Test
     void addPreferenceShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.addPreference(1L, Level.BEGINNER, model, session);
@@ -668,9 +731,6 @@ class UserControllerTest {
         verify(userService).updateUser(user);
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/updateLevel
-    // ──────────────────────────────────────────────────────────────
     @Test
     void updateLevelShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
@@ -714,9 +774,6 @@ class UserControllerTest {
         assertEquals(Level.ADVANCED, us.getLevel());
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/deletePreference
-    // ──────────────────────────────────────────────────────────────
     @Test
     void deletePreferenceShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.deletePreference(1L, model, session);
@@ -749,10 +806,6 @@ class UserControllerTest {
         verify(userService).updateUser(user);
     }
 
-    // ──────────────────────────────────────────────────────────────
-    // GET /users/consultationGoals
-    // ──────────────────────────────────────────────────────────────
-
     @Test
     void consultationGoalsShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.consultationGoals(model, session);
@@ -772,10 +825,6 @@ class UserControllerTest {
         assertEquals("goals/listGoals", view);
         verify(model).addAttribute("goals", user.getGoals());
     }
-
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/addGoal
-    // ──────────────────────────────────────────────────────────────
 
     @Test
     void addGoalShouldReturnFormLoginWhenNotLoggedIn() {
@@ -815,10 +864,6 @@ class UserControllerTest {
         verify(goalService).createGoal(any(Goal.class));
         verify(userService).updateUser(user);
     }
-
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/updateGoal
-    // ──────────────────────────────────────────────────────────────
 
     @Test
     void updateGoalShouldReturnFormLoginWhenNotLoggedIn() {
@@ -862,10 +907,6 @@ class UserControllerTest {
         assertEquals("Courir 10 km", goal.getGoalText());
         assertEquals(10.0, goal.getTargetDistance(), 0.001);
     }
-
-    // ──────────────────────────────────────────────────────────────
-    // POST /users/deleteGoal
-    // ──────────────────────────────────────────────────────────────
 
     @Test
     void deleteGoalShouldReturnFormLoginWhenNotLoggedIn() {
