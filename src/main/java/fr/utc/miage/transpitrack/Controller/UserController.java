@@ -1,8 +1,5 @@
 package fr.utc.miage.transpitrack.Controller;
 
-import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
-import fr.utc.miage.transpitrack.Service.ImageStorageService;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -18,21 +15,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Enum.Level;
-import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Goal;
-
+import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-
-import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.Jpa.GoalService;
+import fr.utc.miage.transpitrack.Model.Jpa.ImageStorageService;
+import fr.utc.miage.transpitrack.Model.Jpa.SportService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
+import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.UserSport;
 import jakarta.servlet.http.HttpSession;
 
@@ -65,7 +61,7 @@ public class UserController {
     ImageStorageService imageStorageService;
 
     private String message = "";
-    private String needConnexion = "Il faut être connecte !";
+    private final String needConnexion = "Il faut être connecte !";
 
     private final String redirectFormLogin = "redirect:/users/formLogin";
     private final String redirectFormUpdate = "redirect:/users/formUpdate";
@@ -593,5 +589,18 @@ public class UserController {
     private String redirectWithMessage(String message, String redirectUrl, Model model) {
         model.addAttribute("message", message);
         return redirectUrl;
+    }
+
+    @PostMapping("/deleteProfileImage")
+    public String deleteProfileImage(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+        imageStorageService.delete(user.getProfileImage());
+        user.setProfileImage(null);
+        userService.updateUser(user);
+        return "redirect:/users/formUpdate";
     }
 }
