@@ -41,6 +41,8 @@ public class User {
 
     private double weight;
 
+    private String profileImage;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserSport> sportsPreference = new ArrayList<>();
 
@@ -179,6 +181,14 @@ public class User {
 
     public void setWeight(double weight) {
         this.weight = weight;
+    }
+
+    public String getProfileImage() {
+        return profileImage;
+    }
+
+    public void setProfileImage(String profileImage) {
+        this.profileImage = profileImage;
     }
 
     public void addGoal(Goal goal){

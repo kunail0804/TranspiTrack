@@ -9,13 +9,13 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
-    
+
     <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background: var(--bg); padding: 40px 20px;">
 
     <div class="card-tt p-4 p-md-5" style="width: 100%; max-width: 680px;">
-        
+
         <div class="text-center mb-4">
             <div class="sidebar-logo-icon mx-auto mb-3" style="width: 48px; height: 48px; font-size: 24px;">🏃</div>
             <h2 class="tt-h2 mb-1">Rejoignez TranspiTrack</h2>
@@ -25,13 +25,13 @@
         <div class="alert-tt alert-info mb-4" th:if="${message != null and !message.isEmpty()}">
             <i class="bi bi-info-circle-fill alert-tt-icon"></i>
             <div class="alert-tt-content"><div class="desc" th:text="${message}"></div></div>
-            <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+            <button type="button" class="alert-tt-close" onclick="this.closest('.alert-tt').remove()" aria-label="Fermer"><i class="bi bi-x-lg"></i></button>
         </div>
 
-        <form action="/users/createUser" method="POST">
-            
+        <form action="/users/createUser" method="POST" enctype="multipart/form-data">
+
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
-                
+
                 <div class="form-group mb-0">
                     <label class="form-label" for="firstNameUser">Prénom <span class="required">*</span></label>
                     <input type="text" class="form-control" placeholder="Ex: Jean" name="firstName" id="firstNameUser" required/>
@@ -96,6 +96,18 @@
                     </div>
                 </div>
 
+                <div class="form-group mb-0" style="grid-column: 1 / -1;">
+                    <label class="form-label" for="profileImageInput">
+                        <i class="bi bi-camera"></i> Photo de profil
+                        <span class="text-muted text-lowercase fw-normal">(optionnel)</span>
+                    </label>
+                    <input type="file" class="form-control" name="profileImage" id="profileImageInput" accept="image/*"/>
+                    <div id="imagePreviewWrapper" style="display:none; margin-top:12px;">
+                        <img id="imagePreview" src="#" alt="Aperçu"
+                             style="width:80px; height:80px; border-radius:50%; object-fit:cover; border:2px solid var(--border);"/>
+                    </div>
+                </div>
+
             </div>
 
             <button type="submit" class="btn-tt btn-primary w-100 justify-content-center mt-4 mb-3" style="padding: 12px;">
@@ -113,5 +125,19 @@
 
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.getElementById('profileImageInput').addEventListener('change', function () {
+        const file = this.files[0];
+        const wrapper = document.getElementById('imagePreviewWrapper');
+        const preview = document.getElementById('imagePreview');
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+            wrapper.style.display = 'block';
+        } else {
+            wrapper.style.display = 'none';
+        }
+    });
+</script>
 </body>
 </html>

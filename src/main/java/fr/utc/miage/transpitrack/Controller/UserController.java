@@ -1,7 +1,9 @@
 package fr.utc.miage.transpitrack.Controller;
 
 import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
+import fr.utc.miage.transpitrack.Service.ImageStorageService;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Friendship;
@@ -30,7 +33,6 @@ import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.Jpa.GoalService;
-import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.UserSport;
 import jakarta.servlet.http.HttpSession;
 
@@ -58,6 +60,9 @@ public class UserController {
 
     @Autowired
     GoalService goalService;
+
+    @Autowired
+    ImageStorageService imageStorageService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -87,6 +92,7 @@ public class UserController {
             @RequestParam("gender") String gender,
             @RequestParam("weight") double weight,
             @RequestParam("city") String city,
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImageFile,
             Model model,
             HttpSession session) {
 
@@ -111,11 +117,17 @@ public class UserController {
             return "users/formCreate";
         }
 
-        try{
+        try {
             User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
+
+            String filename = imageStorageService.store(profileImageFile);
+            newUser.setProfileImage(filename);
 
             User savedUser = userService.createUser(newUser);
             session.setAttribute("userId", savedUser.getId());
+        } catch (IOException e) {
+            model.addAttribute("message", "Erreur lors de l'upload de l'image");
+            return "users/formCreate";
         } catch (Exception e) {
             model.addAttribute("message", "Email invalide");
             return "users/formCreate";
@@ -146,18 +158,19 @@ public class UserController {
     }
 
     @PostMapping("/updateUser")
-    public String updateUser(@RequestParam("firstName") String firstName, 
+    public String updateUser(@RequestParam("firstName") String firstName,
                             @RequestParam("name") String name,
                             @RequestParam("email") String email,
                             @RequestParam("password") String password,
-                            @RequestParam("age") int age, 
+                            @RequestParam("age") int age,
                             @RequestParam("height") double height,
                             @RequestParam("gender") String gender,
                             @RequestParam("weight") double weight,
-                            @RequestParam("city") String city, 
+                            @RequestParam("city") String city,
+                            @RequestParam(value = "profileImage", required = false) MultipartFile profileImageFile,
                             Model model,
                             HttpSession session) {
-                                
+
         if(age<0){
             model.addAttribute("message", "Age ne peut pas être négatif");
             return "users/formUpdate";
@@ -173,50 +186,72 @@ public class UserController {
         }
 
         Long actualUserId = (Long) session.getAttribute("userId");
-
         User actualUser = userService.getUserById(actualUserId);
 
         if(!actualUser.getEmail().equals(email)){
             User userExist = userService.getUserByEmail(email);
 
-            if(userExist==null){                
-                    actualUser.setName(name);
-                    actualUser.setFirstName(firstName);
-                    actualUser.setAge(age);
-                    actualUser.setGender(Gender.valueOf(gender));
-                    actualUser.setEmail(email);
-                    if(!password.isBlank()){
-                        actualUser.setPassword(encoder.encode(password));
-                    }
-                    actualUser.setHeight(height);
-                    actualUser.setWeight(weight);
-                    actualUser.setCity(city);
-            }else{
-                model.addAttribute("message", "email déja existant");
-                return "users/formUpdate";
-            }
-        }else{
+            if(userExist==null){
                 actualUser.setName(name);
                 actualUser.setFirstName(firstName);
                 actualUser.setAge(age);
                 actualUser.setGender(Gender.valueOf(gender));
+                actualUser.setEmail(email);
                 if(!password.isBlank()){
                     actualUser.setPassword(encoder.encode(password));
                 }
                 actualUser.setHeight(height);
                 actualUser.setWeight(weight);
                 actualUser.setCity(city);
+            }else{
+                model.addAttribute("message", "email déja existant");
+                return "users/formUpdate";
+            }
+        }else{
+            actualUser.setName(name);
+            actualUser.setFirstName(firstName);
+            actualUser.setAge(age);
+            actualUser.setGender(Gender.valueOf(gender));
+            if(!password.isBlank()){
+                actualUser.setPassword(encoder.encode(password));
+            }
+            actualUser.setHeight(height);
+            actualUser.setWeight(weight);
+            actualUser.setCity(city);
         }
-        try{
+
+        try {
+            String newFilename = imageStorageService.store(profileImageFile);
+            if (newFilename != null) {
+                imageStorageService.delete(actualUser.getProfileImage());
+                actualUser.setProfileImage(newFilename);
+            }
             userService.updateUser(actualUser);
+        } catch (IOException e) {
+            model.addAttribute("message", "Erreur lors de l'upload de l'image");
+            return "users/formUpdate";
         } catch (Exception e) {
             model.addAttribute("message", "Email invalide");
             return "users/formUpdate";
         }
+
         model.addAttribute("message", "Modification du compte réussie");
 
         //TODO : à modifier à l'avenir quand la page "profil" sera définie
         return "redirect:/users/dashboard";
+    }
+
+    @PostMapping("/deleteProfileImage")
+    public String deleteProfileImage(HttpSession session) {
+        Long userId = (Long) session.getAttribute("userId");
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        User user = userService.getUserById(userId);
+        imageStorageService.delete(user.getProfileImage());
+        user.setProfileImage(null);
+        userService.updateUser(user);
+        return "redirect:/users/formUpdate";
     }
 
 
