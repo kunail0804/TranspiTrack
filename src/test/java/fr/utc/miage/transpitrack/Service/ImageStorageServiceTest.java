@@ -41,7 +41,6 @@ class ImageStorageServiceTest {
         service = new ImageStorageService();
         setUploadDir(service, tempDir.toString());
         service.init();
-        // Le placeholder est supposé déjà présent dans le dossier uploads
         Files.write(tempDir.resolve("placeholder.png"), "placeholder".getBytes());
     }
 
@@ -76,7 +75,6 @@ class ImageStorageServiceTest {
 
     @Test
     void initShouldNotThrowWhenDirectoryAlreadyExists() throws IOException {
-        // setUp() a déjà appelé init() une fois ; un second appel ne doit pas planter
         service.init();
 
         assertTrue(Files.isDirectory(tempDir));
