@@ -22,6 +22,8 @@ public class Badge {
     @Enumerated(EnumType.STRING)
     private BadgeType badgeType;
 
+    private String urlImage;
+
     public Badge() {}
 
     public Badge(String title, String description, double thresholdValue, BadgeType badgeType) {
@@ -29,6 +31,14 @@ public class Badge {
         this.description = description;
         this.thresholdValue = thresholdValue;
         this.badgeType = badgeType;
+    }
+
+    public Badge(String title, String description, double thresholdValue, BadgeType badgeType, String url) {
+        this.title = title;
+        this.description = description;
+        this.thresholdValue = thresholdValue;
+        this.badgeType = badgeType;
+        this.urlImage=url;
     }
 
     public Long getId() {
