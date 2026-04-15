@@ -23,7 +23,17 @@ class UserTest {
 
     @Test
     void constructorShouldInitializeAllFields() {
-        User user = new User("Alice", "Dupont", "alice@example.com", "password", 25, 175.0, Gender.MALE, 70.0, "Paris");
+        User user = new User();
+        user.setFirstName("Alice");
+        user.setName("Dupont");
+        user.setEmail("alice@example.com");
+        user.setPassword("password");
+        user.setAge(25);
+        user.setHeight(175.0);
+        user.setGender(Gender.MALE);
+        user.setWeight(70.0);
+        user.setCity("Paris");
+
         assertEquals("Alice", user.getFirstName());
         assertEquals("Dupont", user.getName());
         assertEquals("alice@example.com", user.getEmail());

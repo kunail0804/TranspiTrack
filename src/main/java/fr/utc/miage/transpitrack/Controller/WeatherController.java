@@ -1,7 +1,8 @@
 package fr.utc.miage.transpitrack.Controller;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Service.WeatherService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
