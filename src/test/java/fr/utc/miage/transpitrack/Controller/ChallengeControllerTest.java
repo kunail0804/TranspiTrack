@@ -242,7 +242,6 @@ class ChallengeControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
 
         String view = challengeController.showChallengeDetails(1L, session, model);
 
@@ -259,7 +258,6 @@ class ChallengeControllerTest {
         when(userService.getUserById(1L)).thenReturn(user);
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
         when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
 
         challengeController.showChallengeDetails(1L, session, model);
 
@@ -275,7 +273,6 @@ class ChallengeControllerTest {
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
         when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(false);
         when(user.isAlreadyJoinChallenge(challenge)).thenReturn(true);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
 
         challengeController.showChallengeDetails(1L, session, model);
 
@@ -289,7 +286,6 @@ class ChallengeControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
 
         challengeController.showChallengeDetails(1L, session, model);
 
@@ -306,7 +302,6 @@ class ChallengeControllerTest {
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
         when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
         when(challengeScoreService.getScoreByUserAndChallenge(user, challenge)).thenReturn(existing);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of(existing));
 
         challengeController.showChallengeDetails(1L, session, model);
 
@@ -321,8 +316,6 @@ class ChallengeControllerTest {
         when(userService.getUserById(1L)).thenReturn(user);
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
         when(user.isTheCreatorOfTheChallenge(challenge)).thenReturn(true);
-        when(challengeScoreService.getScoreByUserAndChallenge(user, challenge)).thenReturn(null);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(List.of());
 
         challengeController.showChallengeDetails(1L, session, model);
 
@@ -330,18 +323,18 @@ class ChallengeControllerTest {
     }
 
     @Test
-    void showChallengeDetailsShouldAddScoresListToModel() {
+    void showChallengeDetailsShouldAddClassementToModel() {
         User user = new User();
         Challenge challenge = new Challenge();
         List<ChallengeScore> scores = List.of(new ChallengeScore(user, challenge, 10.0));
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(challengeService.getChallengeById(1L)).thenReturn(challenge);
-        when(challengeScoreService.getScoresByChallenge(challenge)).thenReturn(scores);
+        when(challengeScoreService.getClassementParChallenge(1L)).thenReturn(scores);
 
         challengeController.showChallengeDetails(1L, session, model);
 
-        verify(model).addAttribute("scores", scores);
+        verify(model).addAttribute("listeScores", scores);
     }
 
     // ── POST /challenges/details/{id}/addScore ─────────────────────
