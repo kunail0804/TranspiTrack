@@ -14,15 +14,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Commentary;
+import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
 import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
+import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
 import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -90,7 +90,7 @@ public class ActivityController {
         Sport selectedSport = sportService.getSportById(sport);
         activity.setSport(selectedSport);
 
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
         activity.setUser(userService.getUserById(userId));
 
         weatherService.assignWeatherToActivity(activity);
@@ -106,7 +106,7 @@ public class ActivityController {
     @GetMapping("/details/{id}")
     public String getActivityDetails(@PathVariable Long id, Model model, HttpSession session) {
 
-        Long currentUserId = (Long) session.getAttribute("userId");
+        Long currentUserId = getUserId(session);
 
         if (currentUserId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte";
@@ -145,7 +145,7 @@ public class ActivityController {
             @PathVariable Long id,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
         if (userId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte pour commenter";
         }
@@ -174,7 +174,7 @@ public class ActivityController {
             @RequestParam ReactionType reaction,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
         if (userId == null) {
             return "redirect:/users/login";
         }
@@ -199,7 +199,7 @@ public class ActivityController {
     @GetMapping("/listActivitiesUser")
     public String listActivitiesUser(Model model,
                                     HttpSession session){
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
 
         if(userId==null){
             model.addAttribute("message", "Il faut êtres connecter !");
@@ -211,5 +211,10 @@ public class ActivityController {
         model.addAttribute("activities", activities);
 
         return "activities/list";
+    }
+
+    
+    public Long getUserId(HttpSession session){
+        return (Long) session.getAttribute("userId");
     }
 }
