@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
     <title th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Profil utilisateur</title>
@@ -9,6 +9,12 @@
 <a th:if="${!isOwner}" th:href="@{/users/search}">Retour à la recherche</a>
 
 <h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Mon profil</h1>
+
+<div style="margin-bottom:16px;">
+    <img th:src="${user.profileImage != null} ? @{/images/users/{f}(f=${user.profileImage})} : @{/images/users/placeholder.png}"
+         th:alt="${user.firstName + ' ' + user.name}"
+         style="width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid #ccc;"/>
+</div>
 
 <p th:if="${!isOwner}">Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
 <p>Nom: <span th:text="${user.name}">nom de l'utilisateur</span></p>

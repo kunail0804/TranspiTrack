@@ -1,10 +1,13 @@
 package fr.utc.miage.transpitrack.Controller;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.springframework.web.multipart.MultipartFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,6 +44,7 @@ import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.UserSport;
+import fr.utc.miage.transpitrack.Service.ImageStorageService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -76,6 +80,9 @@ class UserControllerTest {
     @Mock
     private GoalService goalService;
 
+    @Mock
+    private ImageStorageService imageStorageService;
+
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // ──────────────────────────────────────────────────────────────
@@ -105,7 +112,7 @@ class UserControllerTest {
     void createUserShouldReturnFormCreateWhenEmailFormatInvalid() {
         String view = userController.createUser(
                 "Alice", "Dupont", "email-invalide", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formCreate", view);
         verify(model).addAttribute("message", "Email invalide");
@@ -115,7 +122,7 @@ class UserControllerTest {
     void createUserShouldReturnFormCreateWhenAgeIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                -1, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formCreate", view);
         verify(model).addAttribute("message", "Age ne peut pas être négatif");
@@ -125,7 +132,7 @@ class UserControllerTest {
     void createUserShouldReturnFormCreateWhenHeightIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, -1.0, "FEMALE", 60.0, "Paris", model, session);
+                25, -1.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formCreate", view);
         verify(model).addAttribute("message", "Taille ne peut pas être négatif");
@@ -135,7 +142,7 @@ class UserControllerTest {
     void createUserShouldReturnFormCreateWhenWeightIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", -1.0, "Paris", model, session);
+                25, 165.0, "FEMALE", -1.0, "Paris", null, model, session);
 
         assertEquals("users/formCreate", view);
         verify(model).addAttribute("message", "Poids ne peut pas être négatif");
@@ -147,7 +154,7 @@ class UserControllerTest {
 
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formCreate", view);
         verify(model).addAttribute("message", "email dejas existant");
@@ -163,7 +170,7 @@ class UserControllerTest {
 
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).createUser(any(User.class));
@@ -260,7 +267,7 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Alice", "Dupont", "email-invalide", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", model, session
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session
         );
 
         assertEquals("users/formUpdate", view);
@@ -272,7 +279,7 @@ class UserControllerTest {
     void updateUserShouldReturnFormUpdateWhenAgeIsNegative() {
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                -1, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formUpdate", view);
         verify(model).addAttribute("message", "Age ne peut pas être négatif");
@@ -282,7 +289,7 @@ class UserControllerTest {
     void updateUserShouldReturnFormUpdateWhenHeightIsNegative() {
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, -1.0, "FEMALE", 60.0, "Paris", model, session);
+                25, -1.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formUpdate", view);
         verify(model).addAttribute("message", "Taille ne peut pas être négatif");
@@ -292,7 +299,7 @@ class UserControllerTest {
     void updateUserShouldReturnFormUpdateWhenWeightIsNegative() {
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", -1.0, "Paris", model, session);
+                25, 165.0, "FEMALE", -1.0, "Paris", null, model, session);
 
         assertEquals("users/formUpdate", view);
         verify(model).addAttribute("message", "Poids ne peut pas être négatif");
@@ -307,7 +314,7 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Alice", "Dupont", "newemail@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
 
         assertEquals("users/formUpdate", view);
         verify(model).addAttribute("message", "email déja existant");
@@ -322,7 +329,7 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Bob", "Martin", "newemail@example.com", "",
-                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
@@ -338,7 +345,7 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Bob", "Martin", "newemail@example.com", "newpassword",
-                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
@@ -352,7 +359,7 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Bob", "Martin", "alice@example.com", "",
-                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
@@ -366,10 +373,83 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Bob", "Martin", "alice@example.com", "newpassword",
-                30, 180.0, "MALE", 80.0, "Lyon", model, session);
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).updateUser(actualUser);
+    }
+
+    @Test
+    void createUserShouldReturnFormCreateWhenImageUploadFails() throws IOException {
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(null);
+        when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
+
+        String view = userController.createUser(
+                "Alice", "Dupont", "alice@example.com", "secret",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+
+        assertEquals("users/formCreate", view);
+        verify(model).addAttribute("message", "Erreur lors de l'upload de l'image");
+    }
+
+    @Test
+    void updateUserShouldReturnFormUpdateWhenImageUploadFails() throws IOException {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
+
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+
+        assertEquals("users/formUpdate", view);
+        verify(model).addAttribute("message", "Erreur lors de l'upload de l'image");
+    }
+
+    @Test
+    void updateUserShouldReplaceOldImageWhenNewImageProvided() throws IOException {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        actualUser.setProfileImage("old.jpg");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(imageStorageService.store(any(MultipartFile.class))).thenReturn("new.jpg");
+
+        String view = userController.updateUser(
+                "Alice", "Dupont", "alice@example.com", "",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(imageStorageService).delete("old.jpg");
+        verify(userService).updateUser(actualUser);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // POST /users/deleteProfileImage
+    // ──────────────────────────────────────────────────────────────
+
+    @Test
+    void deleteProfileImageShouldRedirectToLoginWhenNotLoggedIn() {
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = userController.deleteProfileImage(session);
+
+        assertEquals("redirect:/users/formLogin", view);
+    }
+
+    @Test
+    void deleteProfileImageShouldDeleteImageAndRedirectToFormUpdate() {
+        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        user.setProfileImage("myimage.jpg");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(user);
+
+        String view = userController.deleteProfileImage(session);
+
+        assertEquals("redirect:/users/formUpdate", view);
+        verify(imageStorageService).delete("myimage.jpg");
+        verify(userService).updateUser(user);
+        assertNull(user.getProfileImage());
     }
 
     // ──────────────────────────────────────────────────────────────

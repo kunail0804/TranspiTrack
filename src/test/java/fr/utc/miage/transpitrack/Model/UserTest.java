@@ -215,4 +215,19 @@ class UserTest {
 
         assertFalse(user.isTheCreatorOfTheChallenge(challenge));
     }
+
+    @Test
+    void getProfileImageShouldReturnNullWhenNotSet() {
+        User user = new User();
+
+        assertNull(user.getProfileImage());
+    }
+
+    @Test
+    void setProfileImageShouldUpdateProfileImage() {
+        User user = new User();
+        user.setProfileImage("avatar.png");
+
+        assertEquals("avatar.png", user.getProfileImage());
+    }
 }
