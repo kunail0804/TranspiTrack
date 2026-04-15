@@ -1,115 +1,191 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Profil utilisateur</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
-<body> 
-<p th:if="${msg}" th:text="${msg}"></p>
-<a th:if="${!isOwner}" th:href="@{/users/search}">Retour à la recherche</a>
+<body>
 
-<h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName}">Mon profil</h1>
+<div class="layout">
 
-<p th:if="${!isOwner}">Email: <span th:text="${user.email}">email de l'utilisateur</span></p>
-<p>Nom: <span th:text="${user.name}">nom de l'utilisateur</span></p>
-<p>Prénom: <span th:text="${user.firstName}">prénom de l'utilisateur</span></p>
-<p>Âge: <span th:text="${user.age}">âge de l'utilisateur</span></p>
-<p>Sexe: <span th:text="${user.gender}">sexe de l'utilisateur</span></p>
-<p>Poids: <span th:text="${user.weight}">poids de l'utilisateur</span></p>
-<p>Taille: <span th:text="${user.height}">taille de l'utilisateur</span></p>
-<p>Ville: <span th:text="${user.city}">ville de l'utilisateur</span></p>
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div>
+                <div class="sidebar-logo-text">TranspiTrack</div>
+            </div>
+        </div>
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
+        <span class="sidebar-section-label mt-3">Réseau</span>
+        <a th:href="@{/users/profile}" th:classappend="${isOwner} ? 'active' : ''"><i class="bi bi-person"></i> Mon Profil</a>
+    </nav>
 
-<div th:if="${user.sportsPreference != null && !#lists.isEmpty(user.sportsPreference)}">
-    <hr>
-    <h2>Mes sports préférés</h2>
-    <p>Sports préférés:</p>
-    <ul>
-        <li th:each="us : ${user.sportsPreference}">
-            <span th:text="${us.sport.name}">Sport</span> -
-            <span th:text="${us.level}">Niveau</span>
-        </li>
-    </ul>
+    <main class="main">
+
+        <div class="alert-tt alert-info mb-4" th:if="${msg != null and !msg.isEmpty()}">
+            <i class="bi bi-info-circle-fill alert-tt-icon"></i>
+            <div class="alert-tt-content"><div class="desc" th:text="${msg}"></div></div>
+            <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+        </div>
+
+        <div class="page-header d-flex flex-wrap align-items-start justify-content-between gap-16">
+            <div class="d-flex align-items-center gap-16">
+                <div class="avatar xl" style="background:linear-gradient(135deg,var(--primary),var(--primary-light))">
+                    <span th:text="${#strings.substring(user.firstName,0,1) + #strings.substring(user.name,0,1)}">JD</span>
+                </div>
+                <div>
+                    <h1 th:text="${isOwner} ? 'Mon profil' : 'Profil de ' + ${user.firstName} + ' ' + ${user.name}">Mon profil</h1>
+                    <p class="mb-0">
+                        <i class="bi bi-geo-alt"></i> <span th:text="${user.city}">Ville</span>
+                        <span th:if="${!isOwner}"> &nbsp;|&nbsp; <i class="bi bi-envelope"></i> <span th:text="${user.email}">Email</span></span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-8">
+                <a th:if="${!isOwner}" th:href="@{/users/search}" class="btn-tt btn-outline-secondary">
+                    <i class="bi bi-search"></i> Retour recherche
+                </a>
+                <a th:if="${isOwner}" th:href="@{/users/formUpdate}" class="btn-tt btn-outline-primary">
+                    <i class="bi bi-pencil"></i> Modifier
+                </a>
+                
+                <a th:if="${!isOwner && !requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}" class="btn-tt btn-primary">
+                    <i class="bi bi-person-plus"></i> Ajouter en ami
+                </a>
+                <button th:if="${!isOwner && requestSent}" class="btn-tt btn-primary" disabled>
+                    <i class="bi bi-hourglass-split"></i> Demande envoyée
+                </button>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px;">
+            
+            <div>
+                <div class="cards-grid mb-5">
+                    <div class="card-tt stat-card p-3">
+                        <div class="stat-card-label">Âge</div>
+                        <div class="stat-card-value"><span th:text="${user.age}">0</span> <small style="font-size:1rem;color:var(--text-muted)">ans</small></div>
+                    </div>
+                    <div class="card-tt stat-card p-3">
+                        <div class="stat-card-label">Sexe</div>
+                        <div class="stat-card-value" style="font-size: 1.5rem;" th:text="${user.gender}">Sexe</div>
+                    </div>
+                    <div class="card-tt stat-card p-3">
+                        <div class="stat-card-label">Poids</div>
+                        <div class="stat-card-value"><span th:text="${user.weight}">0</span> <small style="font-size:1rem;color:var(--text-muted)">kg</small></div>
+                    </div>
+                    <div class="card-tt stat-card p-3">
+                        <div class="stat-card-label">Taille</div>
+                        <div class="stat-card-value"><span th:text="${user.height}">0</span> <small style="font-size:1rem;color:var(--text-muted)">m</small></div>
+                    </div>
+                </div>
+
+                <section class="mb-5">
+                    <h3 class="section-title"><i class="bi bi-activity"></i> Activités récentes</h3>
+                    <div class="d-flex flex-column gap-12">
+                        <div class="card-tt activity-card p-3" th:each="activity : ${activities}">
+                            <div class="activity-card-sport" style="background:var(--primary-bg)">🏃</div>
+                            <div class="activity-card-info">
+                                <div class="activity-card-title">Session sportive</div>
+                                <div class="activity-card-meta">
+                                    <span><i class="bi bi-calendar3"></i> <span th:text="${activity.date}">Date</span></span>
+                                    <span><i class="bi bi-clock"></i> <span th:text="${activity.duration}">0</span> min</span>
+                                </div>
+                            </div>
+                            <div class="activity-card-value">
+                                <div class="activity-card-distance" th:text="${activity.distance}">0</div>
+                                <div class="activity-card-unit">km</div>
+                            </div>
+                        </div>
+                        <div class="empty-state p-4" th:if="${activities == null or activities.isEmpty()}">
+                            <div class="empty-state-icon">💤</div>
+                            <div class="empty-state-title">Aucune activité</div>
+                            <div class="empty-state-desc">Rien à afficher pour le moment.</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="mb-5">
+                    <h3 class="section-title"><i class="bi bi-trophy"></i> Challenges créés</h3>
+                    <div class="d-flex flex-column gap-12">
+                        <div class="card-tt p-3 d-flex justify-content-between align-items-center" th:each="challenge : ${user.createdChallenges}">
+                            <div class="fw-700" th:text="${challenge.title}">Titre du challenge</div>
+                            <a th:href="@{/challenge/details/{id}(id=${challenge.id})}" class="btn-tt btn-outline-accent btn-sm">
+                                Voir détails
+                            </a>
+                        </div>
+                        <div class="empty-state p-4" th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
+                            <div class="empty-state-desc">Aucun challenge créé.</div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div>
+                <div class="form-card mb-4 p-4" th:if="${user.sportsPreference != null && !#lists.isEmpty(user.sportsPreference)}">
+                    <h4 class="tt-label mb-3 border-bottom pb-2">Sports favoris</h4>
+                    <div class="d-flex flex-wrap gap-8">
+                        <div class="chip" th:each="us : ${user.sportsPreference}">
+                            <span class="fw-700 text-primary" th:text="${us.sport.name}">Sport</span> 
+                            <span class="text-muted" style="font-size: 0.75rem;" th:text="${us.level}">Niveau</span>
+                        </div>
+                    </div>
+                    <a th:if="${isOwner}" th:href="@{/users/listPreferences}" class="btn-tt btn-ghost btn-sm w-100 mt-3 justify-content-center">Gérer</a>
+                </div>
+
+                <div class="form-card mb-4 p-4">
+                    <h4 class="tt-label mb-3 border-bottom pb-2">Badges obtenus</h4>
+                    <div class="d-flex flex-column gap-12">
+                        <div th:each="ub : ${userBadges}" class="d-flex align-items-start gap-12 pb-2" style="border-bottom: 1px dashed var(--border);">
+                            <div class="avatar sm" style="background:var(--warning)">🏆</div>
+                            <div>
+                                <div class="fw-700" style="font-size: 0.9rem;" th:text="${ub.badge.title}">Titre</div>
+                                <div class="text-muted" style="font-size: 0.8rem;" th:text="${ub.badge.description}">Description</div>
+                                <div class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-calendar-check"></i> <span th:text="${ub.earnedAt}">Date</span></div>
+                            </div>
+                        </div>
+                        <div th:if="${userBadges == null or #lists.isEmpty(userBadges)}" class="text-muted-tt" style="font-size: 0.85rem;">
+                            Aucun badge obtenu pour l'instant.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-card p-4" th:if="${isOwner}">
+                    <h4 class="tt-label mb-3 border-bottom pb-2">Mes Amis</h4>
+                    
+                    <div th:if="${pendingFriendships > 0}" class="alert-tt alert-warning p-2 mb-3 align-items-center" style="font-size: 0.8rem;">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="fw-700"><span th:text="${pendingFriendships}"></span> demande(s) en attente.</span>
+                        <a th:href="@{/users/friends/invites}" class="ms-auto fw-700" style="color: inherit;">Voir</a>
+                    </div>
+
+                    <div class="d-flex flex-column gap-8">
+                        <a th:each="friend : ${friends}" th:href="@{/users/profile/{id}(id=${friend.id})}" class="d-flex align-items-center gap-12 text-decoration-none" style="color: var(--text);">
+                            <div class="avatar sm" style="background:var(--secondary-light)"><i class="bi bi-person"></i></div>
+                            <span class="fw-600" style="font-size: 0.9rem;" th:text="${friend.firstName + ' ' + friend.name}">Nom</span>
+                        </a>
+                        <div th:if="${friends == null or #lists.isEmpty(friends)}" class="text-muted-tt" style="font-size: 0.85rem;">
+                            Vous n'avez pas encore d'amis.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
 </div>
 
-<button th:href="@{/users/formUpdate}" th:if="${isOwner}">Modifier mon profil</button>
-
-<hr>
-
-<h2>Activités</h2>
-<ul>
-    <li th:each="activity : ${activities}">
-        <strong>Date:</strong> <span th:text="${activity.date}"></span> -
-        <strong>Distance:</strong> <span th:text="${activity.distance}"></span> km -
-        <strong>Durée:</strong> <span th:text="${activity.duration}"></span> min
-    </li>
-    <li th:if="${activities == null or activities.isEmpty()}">
-        Aucune activité enregistrée.
-    </li>
-</ul>
-
-<hr>
-
-<h2>Badges obtenus</h2>
-<ul>
-    <li th:each="ub : ${userBadges}">
-        <strong th:text="${ub.badge.title}"></strong>
-        — <span th:text="${ub.badge.description}"></span>
-        <em>(<span th:text="${ub.earnedAt}"></span>)</em>
-    </li>
-    <li th:if="${userBadges == null or #lists.isEmpty(userBadges)}">
-        Aucun badge obtenu pour l'instant.
-    </li>
-</ul>
-
-<h2>Challenges créés</h2>
-<ul>
-    <li th:each="challenge : ${user.createdChallenges}">
-        <span th:text="${challenge.title}">Titre</span>
-        <a th:href="@{/challenge/details/{id}(id=${challenge.id})}" class="btn btn-info btn-sm">
-            Détails du challenge
-        </a>
-    </li>
-    <li th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
-        Aucun challenge créé.
-    </li>
-</ul>
-
-
-
-<div th:if="${isOwner}">
-    <hr>
-    <h2>Amis</h2>
-
-    <ul>
-        <li th:each="friend : ${friends}">
-            <a th:href="@{/users/profile/{id}(id=${friend.id})}" th:text="${friend.firstName + ' ' + friend.name}">
-                Nom de l'ami
-            </a>
-        </li>
-    </ul>
-
-    <p th:if="${friends == null or #lists.isEmpty(friends)}">
-        Vous n'avez pas encore d'amis.
-    </p>
-
-    <div th:if="${pendingFriendships > 0}">
-        <p>
-            Vous avez <span th:text="${pendingFriendships}">0</span> demande(s) d'amis en attente.
-        </p>
-
-        <a th:href="@{/users/friends/invites}">
-            Voir les demandes d'amis
-        </a>
-    </div>
-</div>
-
-<hr>
-
-<a th:if="${!isOwner && !requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
-    <button>Ajouter en ami</button>
-</a>
-<a th:if="${!isOwner && requestSent}" th:href="@{/users/friends/addFriend/{id}(id=${user.id})}">
-    <button disabled>Ajouter en ami</button>
-</a>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -2,86 +2,120 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Profil utilisateur</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspiTrack — Préférences sportives</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
-<body> 
-<p th:text = "${message}"></p>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Sport</th>
-        <th>Niveau</th>
-        <th>Modifier</th>
-        <th>Supprimer</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="sp : ${sportsPreference}">
-        
-        <!-- Sport -->
-        <td th:text="${sp.sport.name}">Sport</td>
+<body>
 
-        <!-- Niveau modifiable -->
-        <td>
-            <form th:action="@{/users/updateLevel}" method="post">
-                <input type="hidden" name="userSport" th:value="${sp.id}" />
-                <select name="level" id="level-select" required>
-                    <option value="BEGINNER" th:selected="${sp.level.name() == 'BEGINNER'}">Beginner</option>
-                    <option value="AMATEUR" th:selected="${sp.level.name() == 'AMATEUR'}">Amateur</option>
-                    <option value="INTERMEDIATE" th:selected="${sp.level.name() == 'INTERMEDIATE'}">Intermediate</option>
-                    <option value="ADVANCED" th:selected="${sp.level.name() == 'ADVANCED'}">Advanced</option>
-                    <option value="PROFESSIONAL" th:selected="${sp.level.name() == 'PROFESSIONAL'}">Professional</option>
-                </select>
-        </td>
+<div class="layout">
 
-        <!-- Modifier -->
-        <td>
-                <button type="submit">Modifier</button>
-            </form>
-        </td>
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div>
+                <div class="sidebar-logo-text">TranspiTrack</div>
+            </div>
+        </div>
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
+        <span class="sidebar-section-label mt-3">Paramètres</span>
+        <a th:href="@{/users/profile}"><i class="bi bi-person"></i> Mon Profil</a>
+        <a href="#" class="active"><i class="bi bi-star"></i> Préférences sports</a>
+    </nav>
 
-        <!-- Supprimer -->
-        <td>
-            <form th:action="@{/users/deletePreference}" method="post">
-                <input type="hidden" name="userSport" th:value="${sp.id}" />
-                <button type="submit">Supprimer</button>
-            </form>
-        </td>
+    <main class="main">
 
-    </tr>
-    </tbody>
-</table><br><br><br>
+        <div class="alert-tt alert-info mb-4" th:if="${message != null and !message.isEmpty()}">
+            <i class="bi bi-info-circle-fill alert-tt-icon"></i>
+            <div class="alert-tt-content"><div class="desc" th:text="${message}"></div></div>
+            <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
+        </div>
 
-<h3>Ajouter une préférence sportive</h3>
+        <div class="page-header">
+            <h1>Mes sports préférés</h1>
+            <p>Gérez votre niveau pour chaque discipline.</p>
+        </div>
 
-<form th:action="@{/users/addPreference}" method="post">
+        <section class="section">
+            <table class="table-tt mb-5">
+                <thead>
+                    <tr>
+                        <th>Sport</th>
+                        <th>Niveau</th>
+                        <th style="width: 100px; text-align: center;">Supprimer</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="sp : ${sportsPreference}">
+                        <td class="fw-700">
+                            <span class="badge-tt badge-secondary" th:text="${sp.sport.name}">Sport</span>
+                        </td>
+                        <td>
+                            <form th:action="@{/users/updateLevel}" method="post" class="d-flex align-items-center gap-8 m-0">
+                                <input type="hidden" name="userSport" th:value="${sp.id}" />
+                                <select name="level" class="form-select form-select-sm" style="width: auto; padding: 4px 30px 4px 10px;" required>
+                                    <option value="BEGINNER" th:selected="${sp.level.name() == 'BEGINNER'}">Débutant (Beginner)</option>
+                                    <option value="AMATEUR" th:selected="${sp.level.name() == 'AMATEUR'}">Amateur</option>
+                                    <option value="INTERMEDIATE" th:selected="${sp.level.name() == 'INTERMEDIATE'}">Intermédiaire</option>
+                                    <option value="ADVANCED" th:selected="${sp.level.name() == 'ADVANCED'}">Avancé (Advanced)</option>
+                                    <option value="PROFESSIONAL" th:selected="${sp.level.name() == 'PROFESSIONAL'}">Professionnel</option>
+                                </select>
+                                <button type="submit" class="btn-tt btn-outline-primary btn-sm"><i class="bi bi-save"></i> Mettre à jour</button>
+                            </form>
+                        </td>
+                        <td style="text-align: center;">
+                            <form th:action="@{/users/deletePreference}" method="post" class="m-0">
+                                <input type="hidden" name="userSport" th:value="${sp.id}" />
+                                <button type="submit" class="btn-tt btn-ghost btn-icon btn-sm text-danger"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${sportsPreference == null or sportsPreference.isEmpty()}">
+                        <td colspan="3" class="text-center p-4 text-muted-tt">Aucune préférence sportive renseignée.</td>
+                    </tr>
+                </tbody>
+            </table>
 
-    <!-- Choix du sport -->
-    <label>Sport :</label>
-    <select name="sport" required>
-        <option value="">-- Choisir un sport --</option>
-        <option th:each="sport : ${sports}"
-                th:value="${sport.id}"
-                th:text="${sport.name}">
-        </option>
-    </select>
+            <div class="form-card" style="max-width: 500px;">
+                <h4 class="tt-label mb-3">Ajouter une préférence sportive</h4>
+                <form th:action="@{/users/addPreference}" method="post">
+                    
+                    <div class="form-group">
+                        <label class="form-label">Sport <span class="required">*</span></label>
+                        <select name="sport" class="form-select" required>
+                            <option value="" disabled selected>-- Choisir un sport --</option>
+                            <option th:each="sport : ${sports}" th:value="${sport.id}" th:text="${sport.name}"></option>
+                        </select>
+                    </div>
 
-    <br><br>
+                    <div class="form-group">
+                        <label class="form-label">Niveau <span class="required">*</span></label>
+                        <select name="level" class="form-select" required>
+                            <option value="BEGINNER">Débutant (Beginner)</option>
+                            <option value="AMATEUR">Amateur</option>
+                            <option value="INTERMEDIATE">Intermédiaire</option>
+                            <option value="ADVANCED">Avancé (Advanced)</option>
+                            <option value="PROFESSIONAL">Professionnel</option>
+                        </select>
+                    </div>
 
-    <!-- Choix du niveau -->
-    <label>Niveau :</label>
-    <select name="level" required>
-        <option value="BEGINNER">Beginner</option>
-        <option value="AMATEUR">Amateur</option>
-        <option value="INTERMEDIATE">Intermediate</option>
-        <option value="ADVANCED">Advanced</option>
-        <option value="PROFESSIONAL">Professional</option>
-    </select>
+                    <div class="d-flex justify-content-end mt-3">
+                        <button type="submit" class="btn-tt btn-primary"><i class="bi bi-plus-lg"></i> Ajouter</button>
+                    </div>
+                </form>
+            </div>
+        </section>
 
-    <br><br>
+    </main>
+</div>
 
-    <button type="submit">Ajouter</button>
-
-</form>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

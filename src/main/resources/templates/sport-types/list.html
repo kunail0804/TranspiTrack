@@ -1,24 +1,84 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Sport Types</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspiTrack — Types de Sport</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-<h1>Sport Types</h1>
-<table border="1">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr th:each="sportType : ${sportTypes}">
-        <td th:text="${sportType.name}">Nom</td>
-        <td th:text="${sportType.description}">Description</td>
-    </tr>
-    </tbody>
-</table>
+
+<div class="layout">
+
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div>
+                <div class="sidebar-logo-text">TranspiTrack</div>
+            </div>
+        </div>
+
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
+        
+        <span class="sidebar-section-label mt-3">Administration</span>
+        <a th:href="@{/sports}"><i class="bi bi-list-ul"></i> Liste des sports</a>
+        <a th:href="@{/sport-types}" class="active"><i class="bi bi-tags"></i> Types de sport</a>
+    </nav>
+
+    <main class="main">
+
+        <div class="page-header d-flex align-items-center justify-content-between">
+            <div>
+                <h1>Types de sport</h1>
+                <p>Gérez les grandes catégories de disciplines sportives.</p>
+            </div>
+            <a href="/sport-types/add" class="btn-tt btn-primary">
+                <i class="bi bi-plus-lg"></i> Nouveau type
+            </a>
+        </div>
+
+        <section class="section">
+            <table class="table-tt">
+                <thead>
+                    <tr>
+                        <th>Nom de la catégorie</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="sportType : ${sportTypes}">
+                        <td class="fw-700 text-primary">
+                            <i class="bi bi-tag-fill me-2" style="opacity: 0.5;"></i>
+                            <span th:text="${sportType.name}">Nom</span>
+                        </td>
+                        <td th:text="${sportType.description}">Description</td>
+                    </tr>
+                    
+                    <tr th:if="${sportTypes == null or sportTypes.isEmpty()}">
+                        <td colspan="2" class="text-center p-4">
+                            <div class="empty-state" style="box-shadow: none; background: transparent; padding: 20px;">
+                                <div class="empty-state-icon">🏷️</div>
+                                <div class="empty-state-title">Aucun type de sport</div>
+                                <div class="empty-state-desc">Commencez par créer des catégories (ex: Cardio, Musculation...).</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

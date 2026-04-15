@@ -2,47 +2,93 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Créer un Challenge</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranspiTrack — Créer un Challenge</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
 </head>
 <body>
-    <h1>Créer un nouveau Challenge</h1>
 
-    <form action="/challenges/create" method="POST">
+<div class="layout">
+
+    <nav class="sidebar">
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">🏃</div>
+            <div><div class="sidebar-logo-text">TranspiTrack</div></div>
+        </div>
+        <span class="sidebar-section-label">Menu</span>
+        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
+        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
         
-        <div>
-            <label for="title">Intitulé du challenge :</label>
-            <input type="text" id="title" name="title" required placeholder="Ex: Courir 10km...">
+        <span class="sidebar-section-label mt-3">Challenges</span>
+        <a th:href="@{/challenges/list}"><i class="bi bi-compass"></i> Explorer</a>
+        <a th:href="@{/challenges/formCreate}" class="active"><i class="bi bi-plus-circle"></i> Créer un challenge</a>
+    </nav>
+
+    <main class="main">
+        <div class="page-header">
+            <h1>Créer un nouveau Challenge</h1>
+            <p>Lancez un défi à vos amis ou à toute la communauté !</p>
         </div>
-        <br>
 
-        <div>
-            <label for="durationDays">Durée de validité (en jours) :</label>
-            <input type="number" id="durationDays" name="durationDays" required min="1" placeholder="Ex: 7">
-        </div>
-        <br>
+        <section class="section">
+            <div class="form-card" style="max-width: 600px;">
+                <form action="/challenges/create" method="POST">
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="title">Intitulé du challenge <span class="required">*</span></label>
+                        <div class="input-icon-wrap">
+                            <i class="bi bi-trophy input-icon"></i>
+                            <input type="text" id="title" name="title" class="form-control" required placeholder="Ex: Courir 10km..." />
+                        </div>
+                    </div>
 
-        <label for="sport">Sport :</label>
-        <select name="sportId" id="sport" required>
-            <option value="">-- Choisir un sport --</option>
-            <option th:each="s : ${sports}" 
-                    th:value="${s.id}" 
-                    th:text="${s.name}">Nom du Sport</option>
-        </select>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label" for="sport">Sport concerné <span class="required">*</span></label>
+                            <select name="sportId" id="sport" class="form-select" required>
+                                <option value="" disabled selected>-- Choisir un sport --</option>
+                                <option th:each="s : ${sports}" th:value="${s.id}" th:text="${s.name}">Nom du Sport</option>
+                            </select>
+                        </div>
 
-        <div>
-            <label for="visibility">Statut :</label>
-            <select id="visibility" name="visibility" required>
-                <option value="AMIS">Visible uniquement par mes amis</option>
-                <option value="PUBLIC">Public (Tout le monde)</option>
-            </select>
-        </div>
-        <br>
+                        <div class="form-group">
+                            <label class="form-label" for="durationDays">Durée (jours) <span class="required">*</span></label>
+                            <div class="input-icon-wrap">
+                                <i class="bi bi-calendar-event input-icon"></i>
+                                <input type="number" id="durationDays" name="durationDays" class="form-control" required min="1" placeholder="Ex: 7" />
+                            </div>
+                        </div>
+                    </div>
 
-        <button type="submit">Lancer le challenge !</button>
-    </form>
+                    <div class="form-group">
+                        <label class="form-label" for="visibility">Statut de visibilité <span class="required">*</span></label>
+                        <select id="visibility" name="visibility" class="form-select" required>
+                            <option value="AMIS">🔒 Visible uniquement par mes amis</option>
+                            <option value="PUBLIC">🌍 Public (Tout le monde)</option>
+                        </select>
+                    </div>
 
-    <br>
-    <a href="/users/dashboard">Annuler et retourner au tableau de bord</a>
+                    <div class="divider"></div>
 
+                    <div class="d-flex justify-content-end gap-12">
+                        <a th:href="@{/users/dashboard}" class="btn-tt btn-ghost">Annuler</a>
+                        <button type="submit" class="btn-tt btn-primary">
+                            <i class="bi bi-rocket-takeoff"></i> Lancer le challenge !
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
