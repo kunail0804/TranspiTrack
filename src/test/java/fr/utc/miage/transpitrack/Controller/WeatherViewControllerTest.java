@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Service.WeatherService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 
 @ExtendWith(MockitoExtension.class)
 class WeatherViewControllerTest {

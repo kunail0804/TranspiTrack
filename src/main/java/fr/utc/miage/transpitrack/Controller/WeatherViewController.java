@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Service.WeatherService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 
 @Controller 
 public class WeatherViewController {

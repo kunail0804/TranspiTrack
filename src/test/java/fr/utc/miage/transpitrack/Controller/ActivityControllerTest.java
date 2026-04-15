@@ -15,7 +15,6 @@ import org.mockito.Mock;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -24,14 +23,14 @@ import org.springframework.ui.Model;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Commentary;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
 import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
+import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
-import fr.utc.miage.transpitrack.Service.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)
@@ -47,12 +46,6 @@ class ActivityControllerTest {
     private SportService sportService;
 
     @Mock
-    private BadgeService badgeService;
-
-    @Mock
-    private WeatherService weatherService;
-
-    @Mock
     private Model model;
 
     @Mock
@@ -64,6 +57,12 @@ class ActivityControllerTest {
     @Mock
     private CommentaryService commentaryService;
 
+    @Mock
+    private WeatherService weatherService;
+
+    @Mock
+    private BadgeService badgeService;
+    
     // ──────────────────────────────────────────────────────────────
     // GET /activities
     // ──────────────────────────────────────────────────────────────
@@ -207,18 +206,7 @@ class ActivityControllerTest {
     }
 
     @Test
-    void getActivityDetailsShouldRedirectWhenNotLoggedIn() {
-
-        when(session.getAttribute("userId")).thenReturn(null);
-
-        String view = activityController.getActivityDetails(10L, model, session);
-
-        assertEquals("redirect:/users/login?msg=Vous devez etre connecte", view);
-    }
-
-    @Test
-    void getActivityDetailsShouldRedirectWhenSessionUserIsNull() {
-
+    void getActivityDetailsShouldRedirectWhenUserNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
 
         String view = activityController.getActivityDetails(10L, model, session);

@@ -19,10 +19,10 @@ import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
 import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
 import fr.utc.miage.transpitrack.Model.Jpa.SportService;
 import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
-import fr.utc.miage.transpitrack.Service.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
