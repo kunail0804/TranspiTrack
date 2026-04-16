@@ -29,6 +29,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/activities")
 public class ActivityController {
 
+    private static final String SESSION_USER_ID = "userId";
+
     @Autowired
     private ActivityService activityService;
 
@@ -48,8 +50,12 @@ public class ActivityController {
     private BadgeService badgeService;
 
     @RequestMapping("")
-    public String listActivities(Model model) {
-        List<Activity> activities = activityService.getAllActivities();
+    public String listActivities(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
         activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
         model.addAttribute("activities", activities);
         return "activities/list";
@@ -90,7 +96,7 @@ public class ActivityController {
         Sport selectedSport = sportService.getSportById(sport);
         activity.setSport(selectedSport);
 
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         activity.setUser(userService.getUserById(userId));
 
         weatherService.assignWeatherToActivity(activity);
@@ -106,7 +112,7 @@ public class ActivityController {
     @GetMapping("/details/{id}")
     public String getActivityDetails(@PathVariable Long id, Model model, HttpSession session) {
 
-        Long currentUserId = (Long) session.getAttribute("userId");
+        Long currentUserId = (Long) session.getAttribute(SESSION_USER_ID);
 
         if (currentUserId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte";
@@ -145,7 +151,7 @@ public class ActivityController {
             @PathVariable Long id,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
             return "redirect:/users/login?msg=Vous devez etre connecte pour commenter";
         }
@@ -174,7 +180,7 @@ public class ActivityController {
             @RequestParam ReactionType reaction,
             HttpSession session
     ) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
             return "redirect:/users/login";
         }
@@ -199,7 +205,7 @@ public class ActivityController {
     @GetMapping("/listActivitiesUser")
     public String listActivitiesUser(Model model,
                                     HttpSession session){
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
 
         if(userId==null){
             model.addAttribute("message", "Il faut êtres connecter !");

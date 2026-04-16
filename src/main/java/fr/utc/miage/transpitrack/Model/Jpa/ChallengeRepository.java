@@ -16,4 +16,5 @@ public interface ChallengeRepository extends JpaRepository<Challenge, Long> {
     @Query("SELECT c FROM Challenge c WHERE c.visibility = :visibility")
     List<Challenge> findChallengesByVisibility(String visibility);
 
+    List<Challenge> findByCreatorId(Long creatorId);
 }

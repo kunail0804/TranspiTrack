@@ -6,31 +6,24 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import org.springframework.web.multipart.MultipartFile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
-import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Enum.Level;
 import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Goal;
@@ -50,38 +43,20 @@ import jakarta.servlet.http.HttpSession;
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
-    @Mock
-    private UserService userService;
-
-    @Mock
-    private ActivityService activityService;
-
-    @Mock
-    private Model model;
-
-    @Mock
-    private HttpSession session;
+    @Mock private UserService userService;
+    @Mock private ActivityService activityService;
+    @Mock private FriendshipService friendshipService;
+    @Mock private SportService sportService;
+    @Mock private UserSportService userSportService;
+    @Mock private BadgeService badgeService;
+    @Mock private GoalService goalService;
+    @Mock private ImageStorageService imageStorageService;
+    @Mock private Model model;
+    @Mock private HttpSession session;
+    @Mock private RedirectAttributes redirectAttrs;
 
     @InjectMocks
     private UserController userController;
-
-    @Mock
-    private FriendshipService friendshipService;
-
-    @Mock
-    private SportService sportService;
-
-    @Mock
-    private UserSportService userSportService;
-
-    @Mock
-    private BadgeService badgeService;
-
-    @Mock
-    private GoalService goalService;
-
-    @Mock
-    private ImageStorageService imageStorageService;
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -89,63 +64,52 @@ class UserControllerTest {
     // GET /users/formCreate
     // ──────────────────────────────────────────────────────────────
     @Test
-    void formCreateShouldReturnDashboardWhenUserAlreadyLoggedIn() {
+    void formCreateShouldRedirectToDashboardWhenUserAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.formCreate(null, model, session);
+        String view = userController.formCreate(session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
     }
 
     @Test
     void formCreateShouldReturnFormCreateWhenNotLoggedIn() {
-        String view = userController.formCreate("Bienvenue", model, session);
+        String view = userController.formCreate(session);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Bienvenue");
     }
 
     // ──────────────────────────────────────────────────────────────
     // POST /users/createUser
     // ──────────────────────────────────────────────────────────────
     @Test
-    void createUserShouldReturnFormCreateWhenEmailFormatInvalid() {
-        String view = userController.createUser(
-                "Alice", "Dupont", "email-invalide", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
-
-        assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Email invalide");
-    }
-
-    @Test
     void createUserShouldReturnFormCreateWhenAgeIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
+                -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Age ne peut pas être négatif");
+        verify(model).addAttribute("errorMessage", "L'âge ne peut pas être négatif.");
     }
 
     @Test
     void createUserShouldReturnFormCreateWhenHeightIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, -1.0, "FEMALE", 60.0, "Paris", null, model, session);
+                25, -1.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Taille ne peut pas être négatif");
+        verify(model).addAttribute("errorMessage", "La taille ne peut pas être négative.");
     }
 
     @Test
     void createUserShouldReturnFormCreateWhenWeightIsNegative() {
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", -1.0, "Paris", null, model, session);
+                25, 165.0, "FEMALE", -1.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Poids ne peut pas être négatif");
+        verify(model).addAttribute("errorMessage", "Le poids ne peut pas être négatif.");
     }
 
     @Test
@@ -154,14 +118,27 @@ class UserControllerTest {
 
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "email dejas existant");
+        verify(model).addAttribute("errorMessage", "Cette adresse email est déjà utilisée.");
     }
 
     @Test
-    void createUserShouldReturnDashboardWhenUserCreatedSuccessfully() throws Exception {
+    void createUserShouldReturnFormCreateWhenImageUploadFails() throws IOException {
+        when(userService.getUserByEmail("alice@example.com")).thenReturn(null);
+        when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
+
+        String view = userController.createUser(
+                "Alice", "Dupont", "alice@example.com", "secret",
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session, redirectAttrs);
+
+        assertEquals("users/formCreate", view);
+        verify(model).addAttribute("errorMessage", "Erreur lors de l'upload de la photo de profil.");
+    }
+
+    @Test
+    void createUserShouldRedirectToDashboardWhenUserCreatedSuccessfully() throws Exception {
         User savedUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
         Field idField = User.class.getDeclaredField("id");
         idField.setAccessible(true);
@@ -170,12 +147,12 @@ class UserControllerTest {
 
         String view = userController.createUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(userService).createUser(any(User.class));
         verify(session).setAttribute("userId", savedUser.getId());
-        verify(model).addAttribute("message", "Création compte réussie");
+        verify(redirectAttrs).addFlashAttribute(eq("successMessage"), any());
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -230,22 +207,21 @@ class UserControllerTest {
     // GET /users/formUpdate
     // ──────────────────────────────────────────────────────────────
     @Test
-    void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.formUpdate(null, model, session);
+    void formUpdateShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.formUpdate(model, session);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void formUpdateShouldReturnFormUpdateWithUserWhenLoggedIn() {
-        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
 
-        String view = userController.formUpdate("hello", model, session);
+        String view = userController.formUpdate(model, session);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "hello");
         verify(model).addAttribute("user", user);
     }
 
@@ -253,143 +229,57 @@ class UserControllerTest {
     // POST /users/updateUser
     // ──────────────────────────────────────────────────────────────
     @Test
-    void updateUserShouldReturnFormUpdateWhenEmailFormatInvalid() {
-        when(session.getAttribute("userId")).thenReturn(1L);
-
-        User actualUser = mock(User.class);
-        when(actualUser.getEmail()).thenReturn("old@email.com");
-
-        when(userService.getUserById(1L)).thenReturn(actualUser);
-        when(userService.getUserByEmail("email-invalide")).thenReturn(null);
-
-        doThrow(new RuntimeException())
-                .when(userService).updateUser(any(User.class));
-
-        String view = userController.updateUser(
-                "Alice", "Dupont", "email-invalide", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session
-        );
-
-        assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Email invalide");
-
-    }
-
-    @Test
     void updateUserShouldReturnFormUpdateWhenAgeIsNegative() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris"));
+
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
+                -1, 165.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Age ne peut pas être négatif");
+        verify(model).addAttribute("errorMessage", "L'âge ne peut pas être négatif.");
     }
 
     @Test
     void updateUserShouldReturnFormUpdateWhenHeightIsNegative() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris"));
+
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, -1.0, "FEMALE", 60.0, "Paris", null, model, session);
+                25, -1.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Taille ne peut pas être négatif");
+        verify(model).addAttribute("errorMessage", "La taille ne peut pas être négative.");
     }
 
     @Test
     void updateUserShouldReturnFormUpdateWhenWeightIsNegative() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris"));
+
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", -1.0, "Paris", null, model, session);
+                25, 165.0, "FEMALE", -1.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Poids ne peut pas être négatif");
+        verify(model).addAttribute("errorMessage", "Le poids ne peut pas être négatif.");
     }
 
     @Test
     void updateUserShouldReturnFormUpdateWhenNewEmailAlreadyTaken() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
         when(userService.getUserByEmail("newemail@example.com")).thenReturn(new User());
 
         String view = userController.updateUser(
                 "Alice", "Dupont", "newemail@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", null, model, session, redirectAttrs);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "email déja existant");
-    }
-
-    @Test
-    void updateUserShouldUpdateAndReturnDashboardWhenEmailChangedAndFree() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
-        when(session.getAttribute("userId")).thenReturn(1L);
-        when(userService.getUserById(1L)).thenReturn(actualUser);
-        when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
-
-        String view = userController.updateUser(
-                "Bob", "Martin", "newemail@example.com", "",
-                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
-
-        assertEquals("redirect:/users/dashboard", view);
-        verify(userService).updateUser(actualUser);
-        verify(model).addAttribute("message", "Modification du compte réussie");
-    }
-
-    @Test
-    void updateUserShouldEncodePasswordWhenEmailChangedAndPasswordNotBlank() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
-        when(session.getAttribute("userId")).thenReturn(1L);
-        when(userService.getUserById(1L)).thenReturn(actualUser);
-        when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
-
-        String view = userController.updateUser(
-                "Bob", "Martin", "newemail@example.com", "newpassword",
-                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
-
-        assertEquals("redirect:/users/dashboard", view);
-        verify(userService).updateUser(actualUser);
-    }
-
-    @Test
-    void updateUserShouldUpdateAndReturnDashboardWhenEmailUnchanged() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
-        when(session.getAttribute("userId")).thenReturn(1L);
-        when(userService.getUserById(1L)).thenReturn(actualUser);
-
-        String view = userController.updateUser(
-                "Bob", "Martin", "alice@example.com", "",
-                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
-
-        assertEquals("redirect:/users/dashboard", view);
-        verify(userService).updateUser(actualUser);
-        verify(model).addAttribute("message", "Modification du compte réussie");
-    }
-    @Test
-    void updateUserShouldEncodePasswordWhenEmailUnchangedAndPasswordNotBlank() {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, fr.utc.miage.transpitrack.Model.Enum.Gender.FEMALE, 60.0, "Paris");
-        when(session.getAttribute("userId")).thenReturn(1L);
-        when(userService.getUserById(1L)).thenReturn(actualUser);
-
-        String view = userController.updateUser(
-                "Bob", "Martin", "alice@example.com", "newpassword",
-                30, 180.0, "MALE", 80.0, "Lyon", null, model, session);
-
-        assertEquals("redirect:/users/dashboard", view);
-        verify(userService).updateUser(actualUser);
-    }
-
-    @Test
-    void createUserShouldReturnFormCreateWhenImageUploadFails() throws IOException {
-        when(userService.getUserByEmail("alice@example.com")).thenReturn(null);
-        when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
-
-        String view = userController.createUser(
-                "Alice", "Dupont", "alice@example.com", "secret",
-                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
-
-        assertEquals("users/formCreate", view);
-        verify(model).addAttribute("message", "Erreur lors de l'upload de l'image");
+        verify(model).addAttribute("errorMessage", "Cette adresse email est déjà utilisée.");
     }
 
     @Test
@@ -401,10 +291,69 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "",
-                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session, redirectAttrs);
 
         assertEquals("users/formUpdate", view);
-        verify(model).addAttribute("message", "Erreur lors de l'upload de l'image");
+        verify(model).addAttribute("errorMessage", "Erreur lors de l'upload de la photo de profil.");
+    }
+
+    @Test
+    void updateUserShouldRedirectToDashboardWhenEmailChangedAndFree() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "newemail@example.com", "",
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session, redirectAttrs);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(userService).updateUser(actualUser);
+        verify(redirectAttrs).addFlashAttribute(eq("successMessage"), any());
+    }
+
+    @Test
+    void updateUserShouldEncodePasswordWhenEmailChangedAndPasswordNotBlank() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+        when(userService.getUserByEmail("newemail@example.com")).thenReturn(null);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "newemail@example.com", "newpassword",
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session, redirectAttrs);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(userService).updateUser(actualUser);
+    }
+
+    @Test
+    void updateUserShouldRedirectToDashboardWhenEmailUnchanged() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "alice@example.com", "",
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session, redirectAttrs);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(userService).updateUser(actualUser);
+    }
+
+    @Test
+    void updateUserShouldEncodePasswordWhenEmailUnchangedAndPasswordNotBlank() {
+        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(userService.getUserById(1L)).thenReturn(actualUser);
+
+        String view = userController.updateUser(
+                "Bob", "Martin", "alice@example.com", "newpassword",
+                30, 180.0, "MALE", 80.0, "Lyon", null, model, session, redirectAttrs);
+
+        assertEquals("redirect:/users/dashboard", view);
+        verify(userService).updateUser(actualUser);
     }
 
     @Test
@@ -417,7 +366,7 @@ class UserControllerTest {
 
         String view = userController.updateUser(
                 "Alice", "Dupont", "alice@example.com", "",
-                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session);
+                25, 165.0, "FEMALE", 60.0, "Paris", mock(MultipartFile.class), model, session, redirectAttrs);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(imageStorageService).delete("old.jpg");
@@ -427,7 +376,6 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/deleteProfileImage
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void deleteProfileImageShouldRedirectToLoginWhenNotLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(null);
@@ -456,20 +404,19 @@ class UserControllerTest {
     // GET /users/formLogin
     // ──────────────────────────────────────────────────────────────
     @Test
-    void formLoginShouldReturnDashboardWhenAlreadyLoggedIn() {
+    void formLoginShouldRedirectToDashboardWhenAlreadyLoggedIn() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.formLogin(null, model, session);
+        String view = userController.formLogin(session);
 
-        assertEquals("users/dashboard", view);
+        assertEquals("redirect:/users/dashboard", view);
     }
 
     @Test
     void formLoginShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.formLogin("Connectez-vous", model, session);
+        String view = userController.formLogin(session);
 
         assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Connectez-vous");
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -477,10 +424,10 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     @Test
     void loginUserShouldReturnFormLoginWhenEmailNotFound() {
-        String view = userController.loginUser("unknown@example.com", "secret", model, session);
+        String view = userController.loginUser("unknown@example.com", "secret", model, session, redirectAttrs);
 
         assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "email ou mots de passe incorrect");
+        verify(model).addAttribute("errorMessage", "Email ou mot de passe incorrect.");
     }
 
     @Test
@@ -488,25 +435,25 @@ class UserControllerTest {
         User userLogin = new User("Alice", "Dupont", "alice@example.com", encoder.encode("correct"), 25, 165.0, Gender.FEMALE, 60.0, "Paris");
         when(userService.getUserByEmail("alice@example.com")).thenReturn(userLogin);
 
-        String view = userController.loginUser("alice@example.com", "wrong", model, session);
+        String view = userController.loginUser("alice@example.com", "wrong", model, session, redirectAttrs);
 
         assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "email ou mots de passe incorrect");
+        verify(model).addAttribute("errorMessage", "Email ou mot de passe incorrect.");
     }
 
     @Test
-    void loginUserShouldReturnDashboardWhenCredentialsValid() throws Exception {
+    void loginUserShouldRedirectToDashboardWhenCredentialsValid() throws Exception {
         User userLogin = new User("Alice", "Dupont", "alice@example.com", encoder.encode("secret"), 25, 165.0, Gender.FEMALE, 60.0, "Paris");
         Field idField = User.class.getDeclaredField("id");
         idField.setAccessible(true);
         idField.set(userLogin, 1L);
         when(userService.getUserByEmail("alice@example.com")).thenReturn(userLogin);
 
-        String view = userController.loginUser("alice@example.com", "secret", model, session);
+        String view = userController.loginUser("alice@example.com", "secret", model, session, redirectAttrs);
 
         assertEquals("redirect:/users/dashboard", view);
         verify(session).setAttribute("userId", 1L);
-        verify(model).addAttribute("message", "Connexion compte réussie");
+        verify(redirectAttrs).addFlashAttribute(eq("successMessage"), any());
     }
 
     // ──────────────────────────────────────────────────────────────
@@ -524,21 +471,20 @@ class UserControllerTest {
     // GET /users/profile
     // ──────────────────────────────────────────────────────────────
     @Test
-    void profilePageShouldReturnFormLoginWhenNotLoggedIn() {
+    void profilePageShouldRedirectToLoginWhenNotLoggedIn() {
         String view = userController.profilePage(session, model);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
-    void profilePageShouldReturnFormLoginWhenUserNotFound() {
+    void profilePageShouldRedirectToLoginWhenUserNotFound() {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(null);
 
         String view = userController.profilePage(session, model);
 
-        assertEquals("users/formLogin", view);
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
@@ -611,7 +557,7 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     @Test
     void viewProfileShouldRedirectToFormLoginWhenNotLoggedIn() {
-        String view = userController.viewProfile(2L, null, model, session);
+        String view = userController.viewProfile(2L, model, session);
 
         assertEquals("redirect:/users/formLogin", view);
     }
@@ -621,24 +567,22 @@ class UserControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(2L)).thenReturn(null);
 
-        String view = userController.viewProfile(2L, null, model, session);
+        String view = userController.viewProfile(2L, model, session);
 
         assertEquals("redirect:/users/search", view);
     }
 
     @Test
     void viewProfileShouldReturnProfileViewWithIsOwnerTrueWhenViewingOwnProfile() {
-
         User user = new User();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(activityService.getActivitiesByUserId(1L)).thenReturn(List.of());
         when(friendshipService.requestOrFriendshipExists(1L, 1L)).thenReturn(false);
 
-        String view = userController.viewProfile(1L, null, model, session);
+        String view = userController.viewProfile(1L, model, session);
 
         assertEquals("users/profile", view);
-
         verify(model).addAttribute("user", user);
         verify(model).addAttribute("isOwner", true);
         verify(model).addAttribute(eq("requestSent"), anyBoolean());
@@ -646,17 +590,15 @@ class UserControllerTest {
 
     @Test
     void viewProfileShouldReturnProfileViewWithIsOwnerFalseWhenViewingOtherUserProfile() {
-
         User profileUser = new User();
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(2L)).thenReturn(profileUser);
         when(activityService.getActivitiesByUserId(2L)).thenReturn(List.of());
         when(friendshipService.requestOrFriendshipExists(1L, 2L)).thenReturn(true);
 
-        String view = userController.viewProfile(2L, null, model, session);
+        String view = userController.viewProfile(2L, model, session);
 
         assertEquals("users/profile", view);
-
         verify(model).addAttribute("user", profileUser);
         verify(model).addAttribute("isOwner", false);
         verify(model).addAttribute(eq("requestSent"), anyBoolean());
@@ -666,11 +608,10 @@ class UserControllerTest {
     // GET /users/consultationPreferences
     // ──────────────────────────────────────────────────────────────
     @Test
-    void consultationPreferencesShouldReturnFormLoginWhenNotLoggedIn() {
+    void consultationPreferencesShouldRedirectToLoginWhenNotLoggedIn() {
         String view = userController.consultationPreferences(model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
@@ -691,18 +632,17 @@ class UserControllerTest {
     // POST /users/addPreference
     // ──────────────────────────────────────────────────────────────
     @Test
-    void addPreferenceShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.addPreference(1L, Level.BEGINNER, model, session);
+    void addPreferenceShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.addPreference(1L, Level.BEGINNER, session, redirectAttrs);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void addPreferenceShouldRedirectWhenSportIdIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.addPreference(null, Level.BEGINNER, model, session);
+        String view = userController.addPreference(null, Level.BEGINNER, session, redirectAttrs);
 
         assertEquals("redirect:/users/consultationPreferences", view);
     }
@@ -711,13 +651,13 @@ class UserControllerTest {
     void addPreferenceShouldRedirectWhenLevelIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.addPreference(1L, null, model, session);
+        String view = userController.addPreference(1L, null, session, redirectAttrs);
 
         assertEquals("redirect:/users/consultationPreferences", view);
     }
 
     @Test
-    void addPreferenceShouldRedirectWhenSportAlreadyInList() {
+    void addPreferenceShouldFlashErrorWhenSportAlreadyInList() {
         User user = new User();
         Sport sport = new Sport();
         when(session.getAttribute("userId")).thenReturn(1L);
@@ -726,10 +666,10 @@ class UserControllerTest {
         when(userSportService.getUserSportByUserAndSport(user, sport))
                 .thenReturn(new UserSport(user, sport, Level.BEGINNER));
 
-        String view = userController.addPreference(1L, Level.BEGINNER, model, session);
+        String view = userController.addPreference(1L, Level.BEGINNER, session, redirectAttrs);
 
         assertEquals("redirect:/users/consultationPreferences", view);
-        verify(model).addAttribute("message", "Ce sport est dejas dans votre liste !");
+        verify(redirectAttrs).addFlashAttribute("errorMessage", "Ce sport est déjà dans votre liste !");
     }
 
     @Test
@@ -741,7 +681,7 @@ class UserControllerTest {
         when(sportService.getSportById(1L)).thenReturn(sport);
         when(userSportService.getUserSportByUserAndSport(user, sport)).thenReturn(null);
 
-        String view = userController.addPreference(1L, Level.INTERMEDIATE, model, session);
+        String view = userController.addPreference(1L, Level.INTERMEDIATE, session, redirectAttrs);
 
         assertEquals("redirect:/users/consultationPreferences", view);
         verify(userSportService).createUserSport(any(UserSport.class));
@@ -752,28 +692,26 @@ class UserControllerTest {
     // POST /users/updateLevel
     // ──────────────────────────────────────────────────────────────
     @Test
-    void updateLevelShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
+    void updateLevelShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.updateLevel(1L, Level.ADVANCED, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void updateLevelShouldRedirectWhenUserSportIdIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.updateLevel(null, Level.ADVANCED, model, session);
+        String view = userController.updateLevel(null, Level.ADVANCED, session);
 
         assertEquals("redirect:/users/consultationPreferences", view);
     }
 
     @Test
     void updateLevelShouldRedirectWhenLevelIsNull() {
-
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.updateLevel(1L, null, model, session);
+        String view = userController.updateLevel(1L, null, session);
 
         assertEquals("redirect:/users/consultationPreferences", view);
     }
@@ -786,7 +724,7 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(user);
         when(userSportService.getUserSportById(1L)).thenReturn(us);
 
-        String view = userController.updateLevel(1L, Level.ADVANCED, model, session);
+        String view = userController.updateLevel(1L, Level.ADVANCED, session);
 
         assertEquals("redirect:/users/consultationPreferences", view);
         verify(userSportService).updateUserSport(us);
@@ -798,18 +736,17 @@ class UserControllerTest {
     // POST /users/deletePreference
     // ──────────────────────────────────────────────────────────────
     @Test
-    void deletePreferenceShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.deletePreference(1L, model, session);
+    void deletePreferenceShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.deletePreference(1L, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void deletePreferenceShouldRedirectWhenUserSportIdIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.deletePreference(null, model, session);
+        String view = userController.deletePreference(null, session);
 
         assertEquals("redirect:/users/consultationPreferences", view);
     }
@@ -822,7 +759,7 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(user);
         when(userSportService.getUserSportById(1L)).thenReturn(us);
 
-        String view = userController.deletePreference(1L, model, session);
+        String view = userController.deletePreference(1L, session);
 
         assertEquals("redirect:/users/consultationPreferences", view);
         verify(userSportService).deleteUserSport(us);
@@ -832,13 +769,11 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // GET /users/consultationGoals
     // ──────────────────────────────────────────────────────────────
-
     @Test
-    void consultationGoalsShouldReturnFormLoginWhenNotLoggedIn() {
+    void consultationGoalsShouldRedirectToLoginWhenNotLoggedIn() {
         String view = userController.consultationGoals(model, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
@@ -856,20 +791,18 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/addGoal
     // ──────────────────────────────────────────────────────────────
-
     @Test
-    void addGoalShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.addGoal("Courir", 10.0, model, session);
+    void addGoalShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.addGoal("Courir", 10.0, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void addGoalShouldRedirectWhenTextIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.addGoal(null, 10.0, model, session);
+        String view = userController.addGoal(null, 10.0, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -878,7 +811,7 @@ class UserControllerTest {
     void addGoalShouldRedirectWhenDistanceIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.addGoal("Courir", null, model, session);
+        String view = userController.addGoal("Courir", null, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -889,7 +822,7 @@ class UserControllerTest {
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
 
-        String view = userController.addGoal("Courir 10 km", 10.0, model, session);
+        String view = userController.addGoal("Courir 10 km", 10.0, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
         verify(goalService).createGoal(any(Goal.class));
@@ -899,20 +832,18 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/updateGoal
     // ──────────────────────────────────────────────────────────────
-
     @Test
-    void updateGoalShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.updateGoal(1L, "Courir", 10.0, model, session);
+    void updateGoalShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.updateGoal(1L, "Courir", 10.0, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
     void updateGoalShouldRedirectWhenTextIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.updateGoal(1L, null, 10.0, model, session);
+        String view = userController.updateGoal(1L, null, 10.0, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -921,7 +852,7 @@ class UserControllerTest {
     void updateGoalShouldRedirectWhenDistanceIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.updateGoal(1L, "Courir", null, model, session);
+        String view = userController.updateGoal(1L, "Courir", null, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -934,7 +865,7 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(user);
         when(goalService.getGoalById(1L)).thenReturn(goal);
 
-        String view = userController.updateGoal(1L, "Courir 10 km", 10.0, model, session);
+        String view = userController.updateGoal(1L, "Courir 10 km", 10.0, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
         verify(goalService).updateGoal(goal);
@@ -946,22 +877,20 @@ class UserControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /users/deleteGoal
     // ──────────────────────────────────────────────────────────────
-
     @Test
-    void deleteGoalShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.deleteGoal(1L, model, session);
+    void deleteGoalShouldRedirectToLoginWhenNotLoggedIn() {
+        String view = userController.deleteGoal(1L, session);
 
-        assertEquals("users/formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
+        assertEquals("redirect:/users/formLogin", view);
     }
 
     @Test
-    void deleteGoalShouldRedirectToPreferencesWhenGoalIdIsNull() {
+    void deleteGoalShouldRedirectToGoalsWhenGoalIdIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.deleteGoal(null, model, session);
+        String view = userController.deleteGoal(null, session);
 
-        assertEquals("redirect:/users/consultationPreferences", view);
+        assertEquals("redirect:/users/consultationGoals", view);
     }
 
     @Test
@@ -972,7 +901,7 @@ class UserControllerTest {
         when(userService.getUserById(1L)).thenReturn(user);
         when(goalService.getGoalById(1L)).thenReturn(goal);
 
-        String view = userController.deleteGoal(1L, model, session);
+        String view = userController.deleteGoal(1L, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
         verify(goalService).deleteGoal(goal);

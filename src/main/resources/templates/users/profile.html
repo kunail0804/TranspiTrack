@@ -9,20 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/sidebar :: sidebar-styles}"></th:block>
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body>
 <div class="layout">
-    <nav class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">🏃</div>
-            <div><div class="sidebar-logo-text">TranspiTrack</div></div>
-        </div>
-        <span class="sidebar-section-label">Menu</span>
-        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
-        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
-        <span class="sidebar-section-label mt-3">Réseau</span>
-        <a th:href="@{/users/profile}" th:classappend="${isOwner} ? 'active' : ''"><i class="bi bi-person"></i> Mon Profil</a>
-    </nav>
+    <nav th:replace="~{fragments/sidebar :: sidebar-nav(activePage='profile')}"></nav>
 
     <main class="main">
 
@@ -104,7 +96,7 @@
                     <div class="d-flex flex-column gap-12">
                         <div class="card-tt p-3 d-flex justify-content-between align-items-center" th:each="challenge : ${user.createdChallenges}">
                             <div class="fw-700" th:text="${challenge.title}">Titre du challenge</div>
-                            <a th:href="@{/challenge/details/{id}(id=${challenge.id})}" class="btn-tt btn-outline-accent btn-sm">Voir détails</a>
+                            <a th:href="@{/challenges/details/{id}(id=${challenge.id})}" class="btn-tt btn-outline-accent btn-sm">Voir détails</a>
                         </div>
                         <div class="empty-state p-4" th:if="${user.createdChallenges == null or user.createdChallenges.isEmpty()}">
                             <div class="empty-state-desc">Aucun challenge créé.</div>
@@ -160,5 +152,6 @@
     </main>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

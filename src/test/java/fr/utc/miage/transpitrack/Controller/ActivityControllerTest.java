@@ -15,7 +15,6 @@ import org.mockito.Mock;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -70,13 +69,16 @@ class ActivityControllerTest {
     @Test
     @SuppressWarnings("unchecked")
     void listActivitiesShouldReturnListViewWithActivitiesSortedByDateDesc() {
+        Long userId = 1L;
+        when(session.getAttribute("userId")).thenReturn(userId);
+
         Activity older = new Activity();
         older.setDate(LocalDate.of(2024, 1, 1));
         Activity newer = new Activity();
         newer.setDate(LocalDate.of(2024, 6, 1));
-        when(activityService.getAllActivities()).thenReturn(Arrays.asList(older, newer));
+        when(activityService.getActivitiesByUserId(userId)).thenReturn(Arrays.asList(older, newer));
 
-        String view = activityController.listActivities(model);
+        String view = activityController.listActivities(model, session);
 
         assertEquals("activities/list", view);
         ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
@@ -154,9 +156,11 @@ class ActivityControllerTest {
 
     @Test
     void listActivitiesShouldReturnListViewWithEmptyList() {
-        when(activityService.getAllActivities()).thenReturn(new java.util.ArrayList<>());
+        Long userId = 1L;
+        when(session.getAttribute("userId")).thenReturn(userId);
+        when(activityService.getActivitiesByUserId(userId)).thenReturn(new java.util.ArrayList<>());
 
-        String view = activityController.listActivities(model);
+        String view = activityController.listActivities(model, session);
 
         assertEquals("activities/list", view);
         verify(model).addAttribute(eq("activities"), any());
@@ -216,15 +220,6 @@ class ActivityControllerTest {
         assertEquals("redirect:/users/login?msg=Vous devez etre connecte", view);
     }
 
-    @Test
-    void getActivityDetailsShouldRedirectWhenSessionUserIsNull() {
-
-        when(session.getAttribute("userId")).thenReturn(null);
-
-        String view = activityController.getActivityDetails(10L, model, session);
-
-        assertEquals("redirect:/users/login?msg=Vous devez etre connecte", view);
-    }
 
     @Test
     void getActivityDetailsShouldRedirectWhenUserNotFound() {

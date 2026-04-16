@@ -29,6 +29,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/challenges")
 public class ChallengeController {
 
+    private static final String REDIRECT_CHALLENGE_DETAILS = "redirect:/challenges/details/";
+
     @Autowired
     ChallengeService challengeService;
 
@@ -72,9 +74,9 @@ public class ChallengeController {
         Duration duration = Duration.ofDays(durationDays);
 
         Challenge newChallenge = new Challenge(title, visibility, duration, creator, sport);
-        challengeService.createChallenge(newChallenge);
+        Challenge saved = challengeService.createChallenge(newChallenge);
 
-        return "redirect:/users/dashboard"; 
+        return REDIRECT_CHALLENGE_DETAILS + saved.getId();
     }
 
     @GetMapping("/list")
@@ -93,9 +95,13 @@ public class ChallengeController {
             }
         }
         List<Challenge> challenges = challengeService.getChallengesByVisibility("PUBLIC");
-        
+
+        List<Challenge> myChallenges = challengeService.getChallengesByCreatorId(userId);
+
         model.addAttribute("challenges", challenges);
         model.addAttribute("friendsChallenges", friendsChallenges);
+        model.addAttribute("myChallenges", myChallenges);
+        model.addAttribute("participatingIds", userService.getParticipatingChallengeIds(userId));
 
         return "challenge/listChallenges"; 
     }
@@ -113,26 +119,21 @@ public class ChallengeController {
             return "redirect:/challenges/list";
         }
 
-        User user = userService.getUserById(userId);
-
         Challenge challenge = challengeService.getChallengeById(idChallenge);
 
-        if(user.isAlreadyJoinChallenge(challenge)){
-            model.addAttribute("message", "Vous participer deja a ce challenge !");
-            return"redirect:/challenges/list";
+        if (userService.hasJoinedChallenge(userId, idChallenge)) {
+            return "redirect:/challenges/list";
         }
 
-        if(challenge.getCreator()==user){
-            model.addAttribute("message", "Vous participer deja a ce challenge car vous l'avez créer !");
-            return"redirect:/challenges/list";
+        if (challenge.getCreator().getId().equals(userId)) {
+            return "redirect:/challenges/list";
         }
 
+        User user = userService.getUserById(userId);
         user.addChallenge(challenge);
         userService.updateUser(user);
 
-        
-        model.addAttribute("user", user);
-        return "challenge/testSuccessJoin";
+        return REDIRECT_CHALLENGE_DETAILS + idChallenge;
     }
    
     @GetMapping("/details/{id}")
@@ -144,8 +145,9 @@ public class ChallengeController {
         User currentUser = userService.getUserById(userId);
         Challenge challenge = challengeService.getChallengeById(id);
 
-        boolean canAddScore = currentUser.isTheCreatorOfTheChallenge(challenge)
-                || currentUser.isAlreadyJoinChallenge(challenge);
+        boolean isCreator     = challenge.getCreator().getId().equals(userId);
+        boolean isParticipant = userService.hasJoinedChallenge(userId, id);
+        boolean canAddScore   = isCreator || isParticipant;
 
         ChallengeScore userScore = canAddScore
                 ? challengeScoreService.getScoreByUserAndChallenge(currentUser, challenge)
@@ -154,6 +156,7 @@ public class ChallengeController {
 
         model.addAttribute("challenge", challenge);
         model.addAttribute("canAddScore", canAddScore);
+        model.addAttribute("canJoin", !isCreator && !isParticipant);
         model.addAttribute("userScore", userScore);
         model.addAttribute("listeScores", classementTrie);
         return "challenge/detailChallenge";
@@ -167,13 +170,13 @@ public class ChallengeController {
         if (userId == null) {
             return "redirect:/users/formLogin";
         }
-        User currentUser = userService.getUserById(userId);
         Challenge challenge = challengeService.getChallengeById(id);
 
-        boolean canAddScore = currentUser.isTheCreatorOfTheChallenge(challenge)
-                || currentUser.isAlreadyJoinChallenge(challenge);
+        boolean canAddScore = challenge.getCreator().getId().equals(userId)
+                || userService.hasJoinedChallenge(userId, id);
 
         if (canAddScore) {
+            User currentUser = userService.getUserById(userId);
             ChallengeScore existing = challengeScoreService.getScoreByUserAndChallenge(currentUser, challenge);
             if (existing != null) {
                 existing.setScore(score);
@@ -182,6 +185,6 @@ public class ChallengeController {
                 challengeScoreService.addScore(new ChallengeScore(currentUser, challenge, score));
             }
         }
-        return "redirect:/challenges/details/" + id;
+        return REDIRECT_CHALLENGE_DETAILS + id;
     }
 }

@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/sidebar :: sidebar-styles}"></th:block>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -29,163 +30,99 @@
             border-bottom: 2px solid var(--border) !important;
         }
     </style>
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body>
 
 <div class="layout">
 
-    <nav class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">🏃</div>
-            <div>
-                <div class="sidebar-logo-text">TranspiTrack</div>
-            </div>
-        </div>
-
-        <span class="sidebar-section-label">Menu</span>
-        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
-        <a th:href="@{/activities/add}"><i class="bi bi-plus-circle"></i> Nouvelle Activité</a>
-        <a th:href="@{/dashboard}" class="active"><i class="bi bi-graph-up"></i> Tableau de bord</a>
-
-        <div style="margin-top: auto; padding: 20px;">
-            <form action="/users/logout" method="GET">
-                <button type="submit" class="btn-tt btn-outline-secondary" style="width: 100%; border-color: rgba(255,255,255,0.2); color: #fff;">
-                    <i class="bi bi-box-arrow-right"></i> Se déconnecter
-                </button>
-            </form>
-        </div>
-    </nav>
+    <nav th:replace="~{fragments/sidebar :: sidebar-nav(activePage='dashboard')}"></nav>
 
     <main class="main">
-
-        <div class="alert-tt alert-info" th:if="${message != null}">
-            <i class="bi bi-info-circle-fill alert-tt-icon"></i>
-            <div class="alert-tt-content">
-                <div class="title">Information</div>
-                <div class="desc" th:text="${message}"></div>
-            </div>
-            <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
-        </div>
 
         <div class="page-header">
             <h1>Dashboard</h1>
             <p>Analysez vos performances globales et l'historique de vos sessions.</p>
         </div>
 
-        <div class="tabs-tt">
-            <button class="tab-btn-tt active" onclick="switchTab('general', this)">Général</button>
-            <button class="tab-btn-tt" onclick="switchTab('activities', this)">Activités</button>
-        </div>
-
-        <div id="tab-general" class="tab-panel-tt active">
-
-            <div class="card-tt stat-card mb-4" style="max-width: 300px;">
-                <div class="stat-card-header">
+        <div class="card-tt mb-4" th:if="${weather != null}">
+            <div style="display:flex; align-items:center; gap:24px; padding:20px 24px; flex-wrap:wrap;">
+                <div style="display:flex; align-items:center; gap:16px; flex:0 0 auto;">
+                    <span style="font-size:3rem; line-height:1;">🌤️</span>
                     <div>
-                        <div class="stat-card-label">Total calories dépensées</div>
-                        <div class="stat-card-value">
-                            <span th:text="${#numbers.formatDecimal(totalCalories, 1, 1)}"></span>
-                            <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">kcal</small>
+                        <div style="font-size:2.2rem; font-weight:700; line-height:1; color:var(--text)">
+                            <span th:text="${weather.currentTemp}">20</span>°C
+                        </div>
+                        <div style="font-weight:600; color:var(--text-muted)" th:text="${weather.weatherCondition}">Ensoleillé</div>
+                        <div style="font-size:0.85rem; color:var(--text-muted)">
+                            📍 <span th:text="${weather.city}">Paris</span>
                         </div>
                     </div>
-                    <div class="stat-card-icon" style="background:#FFF7ED; color:#F97316">🔥</div>
                 </div>
-            </div>
-
-            <section class="section mb-5">
-                <h3 class="section-title"><i class="bi bi-bar-chart"></i> Stats par sport</h3>
-                <table class="table-tt">
-                    <thead>
-                        <tr>
-                            <th>Sport</th>
-                            <th>Distance (km)</th>
-                            <th>Durée (min)</th>
-                            <th>Sessions</th>
-                            <th>Calories (kcal)</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="sport : ${distanceBySport.keySet()}">
-                            <td class="fw-700" th:text="${sport.name}"></td>
-                            <td th:text="${distanceBySport.get(sport)}"></td>
-                            <td th:text="${durationBySport.get(sport)}"></td>
-                            <td th:text="${countBySport.get(sport)}"></td>
-                            <td class="fw-700 text-primary" th:text="${#numbers.formatDecimal(caloriesBySport.get(sport), 1, 1)}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <div class="d-flex flex-wrap gap-16 mb-5">
-                <div class="card-tt p-4 flex-fill" style="min-width: 400px;">
-                    <h4 class="tt-label mb-3">Distance par sport (km)</h4>
-                    <div style="height: 300px;">
-                        <canvas id="chartDistance"></canvas>
-                    </div>
-                </div>
-
-                <div class="card-tt p-4 flex-fill" style="min-width: 400px;">
-                    <h4 class="tt-label mb-3">Calories par sport (kcal)</h4>
-                    <div style="height: 300px;">
-                        <canvas id="chartCalories"></canvas>
+                <div style="width:1px; height:64px; background:var(--border); flex-shrink:0;"></div>
+                <div style="display:flex; gap:16px; flex-wrap:wrap;">
+                    <div th:each="day,iter : ${weather.forecast}" th:if="${iter.index < 5}"
+                         style="text-align:center; min-width:44px;">
+                        <div style="font-size:0.72rem; color:var(--text-muted); font-weight:500"
+                             th:text="${#strings.replace(#strings.substring(day.date,5),'-','/')}">04/16</div>
+                        <div style="font-size:0.9rem; font-weight:700; color:var(--text)" th:text="|${day.maxTemp}°|">22°</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted)" th:text="|${day.minTemp}°|">14°</div>
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <div id="tab-activities" class="tab-panel-tt">
-
-            <div class="mb-4">
-                <a href="/activities/add" class="btn-tt btn-primary">
-                    <i class="bi bi-plus-lg"></i> Ajouter une activité
-                </a>
+        <div class="card-tt stat-card mb-4" style="max-width: 300px;">
+            <div class="stat-card-header">
+                <div>
+                    <div class="stat-card-label">Total calories dépensées</div>
+                    <div class="stat-card-value">
+                        <span th:text="${#numbers.formatDecimal(totalCalories, 1, 1)}"></span>
+                        <small style="font-size:1rem;font-weight:500;color:var(--text-muted)">kcal</small>
+                    </div>
+                </div>
+                <div class="stat-card-icon" style="background:#FFF7ED; color:#F97316">🔥</div>
             </div>
+        </div>
 
+        <section class="section mb-5">
+            <h3 class="section-title"><i class="bi bi-bar-chart"></i> Stats par sport</h3>
             <table class="table-tt">
                 <thead>
                     <tr>
                         <th>Sport</th>
-                        <th>Date</th>
                         <th>Distance (km)</th>
-                        <th style="width: 60px; text-align: center;"></th>
+                        <th>Durée (min)</th>
+                        <th>Sessions</th>
+                        <th>Calories (kcal)</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <th:block th:each="activity, stat : ${activities}">
-                        <tr>
-                            <td class="fw-700" th:text="${activity.sport.name}"></td>
-                            <td th:text="${activity.date}"></td>
-                            <td th:text="${activity.distance}"></td>
-                            <td style="text-align: center;">
-                                <button class="btn-tt btn-ghost btn-icon btn-sm"
-                                        th:data-target="|details-${stat.index}|"
-                                        onclick="toggleDetails(this)">
-                                    ▼
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="activity-details" th:id="|details-${stat.index}|">
-                            <td colspan="4">
-                                <strong>Durée :</strong>
-                                <span th:text="${activity.duration}"></span> min &nbsp;|&nbsp;
-                                <strong>Évaluation :</strong>
-                                <span th:text="${activity.evaluation}"></span> &nbsp;|&nbsp;
-                                <strong>Calories :</strong>
-                                <span th:text="${#numbers.formatDecimal(activity.getTotalCaloriesAct(), 1, 1)}"></span> kcal
-                                
-                                <div th:if="${activity.city != null and activity.city != ''}" style="margin-top: 8px; color: var(--info); background: var(--info-bg); padding: 6px 12px; border-radius: var(--radius-sm); display: inline-block; font-size: 0.85rem;">
-                                    📍 <strong th:text="${activity.city}">Ville</strong> &nbsp;|&nbsp; 
-                                    🌤️ <strong>Météo :</strong> 
-                                    <span th:text="${activity.temperature != null ? activity.temperature + '°C' : 'N/A'}"></span> - 
-                                    <span th:text="${activity.weatherCondition != null ? activity.weatherCondition : 'Non disponible'}"></span>
-                                </div>
-                            </td>
-                        </tr>
-                    </th:block>
+                    <tr th:each="sport : ${distanceBySport.keySet()}">
+                        <td class="fw-700" th:text="${sport.name}"></td>
+                        <td th:text="${distanceBySport.get(sport)}"></td>
+                        <td th:text="${durationBySport.get(sport)}"></td>
+                        <td th:text="${countBySport.get(sport)}"></td>
+                        <td class="fw-700 text-primary" th:text="${#numbers.formatDecimal(caloriesBySport.get(sport), 1, 1)}"></td>
+                    </tr>
                 </tbody>
             </table>
+        </section>
 
+        <div class="d-flex flex-wrap gap-16 mb-5">
+            <div class="card-tt p-4 flex-fill" style="min-width: 400px;">
+                <h4 class="tt-label mb-3">Distance par sport (km)</h4>
+                <div style="height: 300px;">
+                    <canvas id="chartDistance"></canvas>
+                </div>
+            </div>
+
+            <div class="card-tt p-4 flex-fill" style="min-width: 400px;">
+                <h4 class="tt-label mb-3">Calories par sport (kcal)</h4>
+                <div style="height: 300px;">
+                    <canvas id="chartCalories"></canvas>
+                </div>
+            </div>
         </div>
 
     </main>
@@ -195,20 +132,6 @@
 
 <script th:inline="javascript">
     /*<![CDATA[*/
-
-    function switchTab(name, btn) {
-        document.querySelectorAll('.tab-panel-tt').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.tab-btn-tt').forEach(b => b.classList.remove('active'));
-        document.getElementById('tab-' + name).classList.add('active');
-        btn.classList.add('active');
-    }
-
-    function toggleDetails(btn) {
-        const targetId = btn.getAttribute('data-target');
-        const row = document.getElementById(targetId);
-        row.classList.toggle('open');
-        btn.textContent = row.classList.contains('open') ? '▲' : '▼';
-    }
 
     // Couleurs de la charte
     const themeColors = [
@@ -267,5 +190,6 @@
     /*]]>*/
 </script>
 
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

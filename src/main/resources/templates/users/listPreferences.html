@@ -10,33 +10,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/sidebar :: sidebar-styles}"></th:block>
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body>
 
 <div class="layout">
 
-    <nav class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">🏃</div>
-            <div>
-                <div class="sidebar-logo-text">TranspiTrack</div>
-            </div>
-        </div>
-        <span class="sidebar-section-label">Menu</span>
-        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
-        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
-        <span class="sidebar-section-label mt-3">Paramètres</span>
-        <a th:href="@{/users/profile}"><i class="bi bi-person"></i> Mon Profil</a>
-        <a href="#" class="active"><i class="bi bi-star"></i> Préférences sports</a>
-    </nav>
+    <nav th:replace="~{fragments/sidebar :: sidebar-nav(activePage='preferences')}"></nav>
 
     <main class="main">
-
-        <div class="alert-tt alert-info mb-4" th:if="${message != null and !message.isEmpty()}">
-            <i class="bi bi-info-circle-fill alert-tt-icon"></i>
-            <div class="alert-tt-content"><div class="desc" th:text="${message}"></div></div>
-            <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
-        </div>
 
         <div class="page-header">
             <h1>Mes sports préférés</h1>
@@ -117,5 +100,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

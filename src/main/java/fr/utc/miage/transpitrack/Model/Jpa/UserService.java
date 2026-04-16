@@ -1,6 +1,8 @@
 package fr.utc.miage.transpitrack.Model.Jpa;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,5 +49,16 @@ public class UserService {
 
     public User getUserById(Long id){
         return userRepository.findById(id).orElse(null);
+    }
+
+    public Set<Long> getParticipatingChallengeIds(Long userId) {
+        Set<Long> ids = new HashSet<>();
+        ids.addAll(userRepository.findCreatedChallengeIdsByUserId(userId));
+        ids.addAll(userRepository.findJoinedChallengeIdsByUserId(userId));
+        return ids;
+    }
+
+    public boolean hasJoinedChallenge(Long userId, Long challengeId) {
+        return userRepository.hasJoinedChallenge(userId, challengeId);
     }
 }

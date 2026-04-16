@@ -29,4 +29,8 @@ public class ChallengeService {
     public List<Challenge> getChallengesByVisibility(String visibility){
         return challengeRepository.findChallengesByVisibility(visibility);
     }
+
+    public List<Challenge> getChallengesByCreatorId(Long creatorId) {
+        return challengeRepository.findByCreatorId(creatorId);
+    }
 }

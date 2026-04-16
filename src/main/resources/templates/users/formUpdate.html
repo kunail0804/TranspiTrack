@@ -9,28 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/sidebar :: sidebar-styles}"></th:block>
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body>
 <div class="layout">
-    <nav class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">&#x1F3C3;</div>
-            <div><div class="sidebar-logo-text">TranspiTrack</div></div>
-        </div>
-        <span class="sidebar-section-label">Menu</span>
-        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activit&#xe9;s</a>
-        <a th:href="@{/activities/add}"><i class="bi bi-plus-circle"></i> Nouvelle Activit&#xe9;</a>
-        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
-        <span class="sidebar-section-label mt-3">Param&#xe8;tres</span>
-        <a href="#" class="active"><i class="bi bi-person-gear"></i> Mon Profil</a>
-        <div style="margin-top:auto;padding:20px;">
-            <form action="/users/logout" method="GET">
-                <button type="submit" class="btn-tt btn-outline-secondary" style="width:100%;border-color:rgba(255,255,255,0.2);color:#fff;">
-                    <i class="bi bi-box-arrow-right"></i> Se d&#xe9;connecter
-                </button>
-            </form>
-        </div>
-    </nav>
+    <nav th:replace="~{fragments/sidebar :: sidebar-nav(activePage='profile-edit')}"></nav>
 
     <main class="main">
 
@@ -41,12 +25,6 @@
 
         <section class="section">
             <div class="form-card" style="max-width:800px;">
-
-                <div class="alert-tt alert-info mb-4" th:if="${message != null and !message.isEmpty()}">
-                    <i class="bi bi-info-circle-fill alert-tt-icon"></i>
-                    <div class="alert-tt-content"><div class="desc" th:text="${message}"></div></div>
-                    <button type="button" class="alert-tt-close" onclick="this.closest('.alert-tt').remove()" aria-label="Fermer"><i class="bi bi-x-lg"></i></button>
-                </div>
 
                 <form action="/users/updateUser" method="POST" enctype="multipart/form-data">
 
@@ -156,5 +134,6 @@
         if (file) { document.getElementById('imagePreview').src = URL.createObjectURL(file); }
     });
 </script>
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

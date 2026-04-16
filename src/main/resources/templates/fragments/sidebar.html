@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr">
+<head>
+  <title>Fragment — Sidebar</title>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FRAGMENT : lien CSS — à insérer dans <head>
+  ═══════════════════════════════════════════════════════════ -->
+  <th:block th:fragment="sidebar-styles">
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+  </th:block>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FRAGMENT : barre de navigation — à insérer dans .layout
+  ═══════════════════════════════════════════════════════════ -->
+  <nav class="sidebar" th:fragment="sidebar-nav(activePage)">
+
+    <!-- Logo -->
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-icon">🏃</div>
+      <div>
+        <div class="sidebar-logo-text">TranspiTrack</div>
+      </div>
+    </div>
+
+    <!-- ── Menu principal ──────────────────────────────── -->
+    <span class="sidebar-section-label">Menu</span>
+    <a th:href="@{/activities}"
+       th:classappend="${activePage == 'activities'} ? ' active' : ''">
+      <i class="bi bi-card-list"></i> Mes Activités
+    </a>
+    <a th:href="@{/users/dashboard}"
+       th:classappend="${activePage == 'dashboard'} ? ' active' : ''">
+      <i class="bi bi-graph-up"></i> Tableau de bord
+    </a>
+
+    <!-- ── Réseau ──────────────────────────────────────── -->
+    <span class="sidebar-section-label">Réseau</span>
+    <a th:href="@{/users/profile}"
+       th:classappend="${activePage == 'profile'} ? ' active' : ''">
+      <i class="bi bi-person"></i> Mon Profil
+    </a>
+    <a th:href="@{/users/search}"
+       th:classappend="${activePage == 'search'} ? ' active' : ''">
+      <i class="bi bi-search"></i> Rechercher
+    </a>
+    <a th:href="@{/users/friends/invites}"
+       th:classappend="${activePage == 'friends'} ? ' active' : ''">
+      <i class="bi bi-envelope"></i> Invitations
+    </a>
+
+    <!-- ── Performances ────────────────────────────────── -->
+    <span class="sidebar-section-label">Performances</span>
+    <a th:href="@{/challenges/list}"
+       th:classappend="${activePage == 'challenges' or activePage == 'challenges-create'} ? ' active' : ''">
+      <i class="bi bi-compass"></i> Challenges
+    </a>
+    <a th:href="@{/users/consultationGoals}"
+       th:classappend="${activePage == 'goals'} ? ' active' : ''">
+      <i class="bi bi-bullseye"></i> Mes Objectifs
+    </a>
+
+    <!-- ── Mon compte ──────────────────────────────────── -->
+    <span class="sidebar-section-label">Mon compte</span>
+    <a th:href="@{/users/consultationPreferences}"
+       th:classappend="${activePage == 'preferences'} ? ' active' : ''">
+      <i class="bi bi-star"></i> Préférences sportives
+    </a>
+    <!-- ── Déconnexion ─────────────────────────────────── -->
+    <div class="sidebar-footer">
+      <form action="/users/logout" method="GET">
+        <button type="submit" class="btn-tt btn-outline-secondary">
+          <i class="bi bi-box-arrow-right"></i> Se déconnecter
+        </button>
+      </form>
+    </div>
+
+  </nav>
+
+</body>
+</html>
