@@ -56,7 +56,7 @@ class ActivityTest {
         assertEquals(user, activity.getUser());
     }
 
-    // ── Logique métier ─────────────────────────────────────────────
+    // ── Business Logic ─────────────────────────────────────────────
 
     @Test
     void getTotalCaloriesShouldReturnOne() {
@@ -76,7 +76,7 @@ class ActivityTest {
 
     @Test
     void getTotalCaloriesActShouldComputeCorrectly() {
-        // calories = MET * poids * (durée / 60)
+        // calories = MET * weight * (duration / 60)
         // 8.0 * 70.0 * (60 / 60.0) = 560.0
         Sport sport = new Sport();
         sport.setMetValue(8.0);

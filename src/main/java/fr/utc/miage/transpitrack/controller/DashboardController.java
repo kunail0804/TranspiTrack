@@ -18,19 +18,40 @@ import fr.utc.miage.transpitrack.model.jpa.ActivityService;
 import fr.utc.miage.transpitrack.model.jpa.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Spring MVC controller that serves the user dashboard at {@code /users/dashboard}.
+ * <p>
+ * Computes per-sport activity statistics (total distance, total duration, session count,
+ * total calories) and optionally fetches weather data for the user's city. All computed
+ * data is exposed to the Thymeleaf template via model attributes.
+ * </p>
+ */
 @Controller
 @RequestMapping("/users/dashboard")
 public class DashboardController {
 
+    /** Service for retrieving the user's activities. */
     @Autowired
     ActivityService activityService;
 
+    /** Service for fetching current weather for the user's city. */
     @Autowired
     WeatherService weatherService;
 
+    /**
+     * Renders the dashboard page for the currently authenticated user.
+     * <p>
+     * Aggregates activity data by sport and attempts to fetch weather. If weather
+     * retrieval fails (city not set, API unavailable), the weather widget is simply
+     * omitted from the page without propagating the error.
+     * </p>
+     *
+     * @param model   the Spring MVC model populated with statistics and weather data
+     * @param session the current HTTP session; must contain {@code "userId"}
+     * @return the {@code users/dashboard} view, or the login form if not authenticated
+     */
     @GetMapping("")
-    public String dashboard(Model model,
-                            HttpSession session){
+    public String dashboard(Model model, HttpSession session){
 
         Long userId = (Long) session.getAttribute("userId");
 
@@ -54,22 +75,22 @@ public class DashboardController {
             String sportName = sport.getName();
             double calories = activity.getTotalCaloriesAct();
 
-            // Distance totale par sport
+            // Total distance per sport
             distanceBySport.merge(sport, activity.getDistance(), Double::sum);
 
-            // Durée totale par sport
+            // Total duration per sport
             durationBySport.merge(sport, activity.getDuration(), Integer::sum);
 
-            // Nombre de séances par sport
+            // Session count per sport
             countBySport.merge(sport, 1, Integer::sum);
 
-            // Distance par nom de sport (pour le graphique)
+            // Distance by sport name (for chart)
             distanceBySportName.merge(sportName, activity.getDistance(), Double::sum);
 
-            // Calories par sport
+            // Calories per sport
             caloriesBySport.merge(sport, calories, Double::sum);
 
-            // Calories par nom de sport (pour le graphique)
+            // Calories by sport name (for chart)
             caloriesBySportName.merge(sportName, calories, Double::sum);
 
             totalCalories += calories;
@@ -87,10 +108,9 @@ public class DashboardController {
             WeatherResponse weather = weatherService.getWeatherForUser(userId);
             model.addAttribute("weather", weather);
         } catch (Exception _) {
-            // Ville non renseignée ou API indisponible — widget absent
+            // City not set or API unavailable — weather widget hidden
         }
 
         return "users/dashboard";
     }
-
 }

@@ -28,42 +28,82 @@ import fr.utc.miage.transpitrack.model.jpa.ImageStorageService;
 import fr.utc.miage.transpitrack.model.jpa.UserService;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Spring MVC controller handling user profile operations under {@code /users}.
+ * <p>
+ * Covers profile display (own and others'), profile editing (personal details,
+ * password, city, and profile picture), profile picture deletion, and user
+ * search. BCrypt is used to hash updated passwords before persistence.
+ * </p>
+ */
 @Controller
 @RequestMapping("/users")
 public class ProfileController {
 
+    /** Redirect to the dashboard after a successful profile update. */
     private static final String REDIRECT_DASHBOARD   = "redirect:/users/dashboard";
-    private static final String REDIRECT_LOGIN       = "redirect:/users/formLogin";
-    private static final String REDIRECT_FORM_UPDATE = "redirect:/users/formUpdate";
-    private static final String REDIRECT_SEARCH      = "redirect:/users/search";
-    private static final String VIEW_FORM_UPDATE     = "users/formUpdate";
-    private static final String SESSION_USER_ID      = "userId";
-    private static final String ERROR_MSG            = "errorMessage";
-    private static final String SUCCESS_MSG          = "successMessage";
-    private static final String MSG                  = "message";
-    private static final String NEEDCONNEXION        = "Il faut être connecte !";
 
+    /** Redirect to the login form when the user is not authenticated. */
+    private static final String REDIRECT_LOGIN       = "redirect:/users/formLogin";
+
+    /** Redirect to the profile update form after a validation error. */
+    private static final String REDIRECT_FORM_UPDATE = "redirect:/users/formUpdate";
+
+    /** Redirect to the user search page when a target profile is not found. */
+    private static final String REDIRECT_SEARCH      = "redirect:/users/search";
+
+    /** Logical view name for the profile update form. */
+    private static final String VIEW_FORM_UPDATE     = "users/formUpdate";
+
+    /** Session attribute key that stores the authenticated user's ID. */
+    private static final String SESSION_USER_ID      = "userId";
+
+    /** Model attribute key for error messages. */
+    private static final String ERROR_MSG            = "errorMessage";
+
+    /** Model attribute key for success messages. */
+    private static final String SUCCESS_MSG          = "successMessage";
+
+    /** Model attribute key for general messages. */
+    private static final String MSG                  = "message";
+
+    /** Message shown when an unauthenticated user attempts to access a protected resource. */
+    private static final String LOGIN_REQUIRED        = "Il faut être connecte !";
+
+    /** Service for user retrieval and updates. */
     @Autowired
     UserService userService;
 
+    /** Service for retrieving the user's activities. */
     @Autowired
     ActivityService activityService;
 
+    /** Service for retrieving friendship data. */
     @Autowired
     FriendshipService friendshipService;
 
+    /** Service for retrieving earned badges. */
     @Autowired
     BadgeService badgeService;
 
+    /** Service for storing and deleting profile images. */
     @Autowired
     ImageStorageService imageStorageService;
 
+    /** BCrypt encoder used to hash passwords before storing them. */
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     // ──────────────────────────────────────────────────────────────
-    // Modification du profil
+    // Profile Update
     // ──────────────────────────────────────────────────────────────
 
+    /**
+     * Displays the profile update form pre-populated with the authenticated user's data.
+     *
+     * @param model   the Spring MVC model
+     * @param session the current HTTP session
+     * @return the {@code users/formUpdate} view, or a redirect to login if not authenticated
+     */
     @GetMapping("/formUpdate")
     public String formUpdate(Model model, HttpSession session) {
         Long userId = (Long) session.getAttribute(SESSION_USER_ID);
@@ -73,6 +113,30 @@ public class ProfileController {
         return VIEW_FORM_UPDATE;
     }
 
+    /**
+     * Processes the profile update form submission.
+     * <p>
+     * Validates that age, height, and weight are non-negative, and that the new
+     * email address is not already taken by another account. If a profile image
+     * is provided, the old image is deleted and replaced. If the password field
+     * is blank, the existing password is kept unchanged.
+     * </p>
+     *
+     * @param firstName        the user's first name
+     * @param name             the user's family name
+     * @param email            the user's email address
+     * @param password         the new password (left blank to keep the current one)
+     * @param age              the user's age in years (must be &ge; 0)
+     * @param height           the user's height in centimetres (must be &ge; 0)
+     * @param gender           the user's gender as a {@link Gender} constant name
+     * @param weight           the user's weight in kilograms (must be &ge; 0)
+     * @param city             the user's city used for weather lookups
+     * @param profileImageFile an optional new profile picture
+     * @param model            the Spring MVC model
+     * @param session          the current HTTP session
+     * @param redirectAttrs    used to pass a success flash message after redirect
+     * @return a redirect to the dashboard on success, or back to the form on validation error
+     */
     @PostMapping("/updateUser")
     public String updateUser(@RequestParam("firstName") String firstName,
                             @RequestParam("name") String name,
@@ -143,6 +207,13 @@ public class ProfileController {
         return REDIRECT_DASHBOARD;
     }
 
+    /**
+     * Deletes the profile picture of the currently authenticated user and resets
+     * the profile image field to {@code null}.
+     *
+     * @param session the current HTTP session
+     * @return a redirect to the profile update form
+     */
     @PostMapping("/deleteProfileImage")
     public String deleteProfileImage(HttpSession session) {
         Long userId = (Long) session.getAttribute(SESSION_USER_ID);
@@ -155,14 +226,25 @@ public class ProfileController {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // Profil
+    // Profile
     // ──────────────────────────────────────────────────────────────
 
+    /**
+     * Displays the profile page of the currently authenticated user.
+     * <p>
+     * Loads the user's activities (sorted newest first), accepted friends,
+     * pending incoming friend-request count, and earned badges.
+     * </p>
+     *
+     * @param session the current HTTP session
+     * @param model   the Spring MVC model
+     * @return the {@code users/profile} view, or a redirect to login if not authenticated
+     */
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {
         Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            model.addAttribute(MSG, NEEDCONNEXION);
+            model.addAttribute(MSG, LOGIN_REQUIRED);
             return REDIRECT_LOGIN;
         }
         User user = userService.getUserById(userId);
@@ -186,6 +268,18 @@ public class ProfileController {
         return "users/profile";
     }
 
+    /**
+     * Displays the public profile page of the user identified by {@code profileId}.
+     * <p>
+     * Resolves whether the viewer is the profile owner and whether a friendship or
+     * pending request already exists between the viewer and the profile owner.
+     * </p>
+     *
+     * @param profileId the ID of the user whose profile to display
+     * @param model     the Spring MVC model
+     * @param session   the current HTTP session
+     * @return the {@code users/profile} view, or a redirect to login / search
+     */
     @GetMapping("/profile/{id}")
     public String viewProfile(@PathVariable("id") Long profileId, Model model, HttpSession session) {
         Long currentUserId = (Long) session.getAttribute(SESSION_USER_ID);
@@ -206,9 +300,22 @@ public class ProfileController {
     }
 
     // ──────────────────────────────────────────────────────────────
-    // Recherche
+    // Search
     // ──────────────────────────────────────────────────────────────
 
+    /**
+     * Searches for users by name or email and displays the results.
+     * <p>
+     * Also computes a set of user IDs that already have a relationship with the
+     * authenticated user (friends, sent requests, received requests) so that the
+     * template can suppress the "Add friend" button for those users.
+     * </p>
+     *
+     * @param query   the search string; if blank or {@code null}, an empty result list is returned
+     * @param model   the Spring MVC model
+     * @param session the current HTTP session
+     * @return the {@code search/searchUser} view, or a redirect to login if not authenticated
+     */
     @GetMapping("/search")
     public String searchUser(@RequestParam(required = false) String query,
                              Model model,

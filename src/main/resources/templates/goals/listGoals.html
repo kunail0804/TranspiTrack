@@ -41,41 +41,43 @@
                 </thead>
                 <tbody>
                     <tr th:each="g : ${goals}">
-                        
-                        <form th:action="@{/users/updateGoal}" method="post" th:id="'updateForm-' + ${g.id}" class="m-0"></form>
 
-                        <td>
-                            <input type="hidden" name="goalId" th:value="${g.id}" th:form="'updateForm-' + ${g.id}" />
-                            <input type="text" class="form-control form-control-sm" th:value="${g.goalText}" placeholder="Ex: Courir mon premier marathon" name="goal" required th:form="'updateForm-' + ${g.id}" />
+                        <td style="display:none;">
+                            <form th:action="@{/users/updateGoal}" method="post" th:id="'updateForm-' + ${g.id}"></form>
                         </td>
 
                         <td>
-                            <select class="form-select form-select-sm" name="sportId" required th:form="'updateForm-' + ${g.id}">
-                                <option th:each="s : ${sports}" th:value="${s.id}" th:text="${s.name}" th:selected="${g.sport != null and s.id == g.sport.id}"></option>
-                            </select>
-                        </td>
-
-                        <td>
-                            <select class="form-select form-select-sm" name="temporality" required th:form="'updateForm-' + ${g.id}">
-                                <option th:each="temp : ${temporalities}" th:value="${temp}" th:text="${temp}" th:selected="${g.temporality != null and temp == g.temporality}"></option>
-                            </select>
+                            <input type="hidden" name="goalId" th:value="${g.id}" th:attr="form='updateForm-' + ${g.id}" />
+                            <input type="text" class="form-control form-control-sm" th:value="${g.goalText}" placeholder="Ex: Courir mon premier marathon" name="goal" required th:attr="form='updateForm-' + ${g.id}" />
                         </td>
 
                         <td>
                             <div class="input-icon-wrap">
                                 <i class="bi bi-speedometer2 input-icon" style="font-size: 0.85rem;"></i>
-                                <input type="number" class="form-control form-control-sm" th:value="${g.targetDistance}" step="0.01" placeholder="Distance" name="targetDistance" required th:form="'updateForm-' + ${g.id}" />
+                                <input type="number" class="form-control form-control-sm" th:value="${g.targetDistance}" step="0.01" placeholder="Distance" name="targetDistance" required th:attr="form='updateForm-' + ${g.id}" />
                             </div>
                         </td>
 
+                        <td>
+                            <select class="form-select form-select-sm" name="sportId" required th:attr="form='updateForm-' + ${g.id}">
+                                <option th:each="s : ${sports}" th:value="${s.id}" th:text="${s.name}" th:selected="${g.sport?.id == s.id}"></option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <select class="form-select form-select-sm" name="temporality" required th:attr="form='updateForm-' + ${g.id}">
+                                <option th:each="temp : ${temporalities}" th:value="${temp}" th:text="${temp}" th:selected="${g.temporality == temp}"></option>
+                            </select>
+                        </td>
+
                         <td style="text-align: center;">
-                            <button type="submit" class="btn-tt btn-outline-primary btn-sm" th:form="'updateForm-' + ${g.id}">
+                            <button type="submit" class="btn-tt btn-outline-primary btn-sm" th:attr="form='updateForm-' + ${g.id}">
                                 <i class="bi bi-save"></i> Modifier
                             </button>
                         </td>
 
                         <td style="text-align: center;">
-                            <form th:action="@{/users/deleteGoal}" method="post" class="m-0">
+                            <form th:action="@{/users/deleteGoal}" method="post">
                                 <input type="hidden" name="goalId" th:value="${g.id}" />
                                 <button type="submit" class="btn-tt btn-ghost btn-icon btn-sm text-danger"><i class="bi bi-trash"></i></button>
                             </form>
