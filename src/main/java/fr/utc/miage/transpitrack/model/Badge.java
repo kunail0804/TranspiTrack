@@ -76,4 +76,12 @@ public class Badge {
     public void setBadgeType(BadgeType badgeType) {
         this.badgeType = badgeType;
     }
+
+    public String getUrlImage() {
+        return urlImage;
+    }
+
+    public void setUrlImage(String urlImage) {
+        this.urlImage = urlImage;
+    }
 }
