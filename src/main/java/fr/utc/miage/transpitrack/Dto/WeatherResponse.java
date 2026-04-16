@@ -41,7 +41,7 @@ public class WeatherResponse {
     }
 
     public WeatherResponse() {
-        //TODO Auto-generated constructor stub
+        //Constructeur vide utile
     }
 
     // Getters
