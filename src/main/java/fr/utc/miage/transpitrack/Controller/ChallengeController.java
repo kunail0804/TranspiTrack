@@ -77,9 +77,9 @@ public class ChallengeController {
         Duration duration = Duration.ofDays(durationDays);
 
         Challenge newChallenge = new Challenge(title, visibility, duration, creator, sport);
-        Challenge saved = challengeService.createChallenge(newChallenge);
+        challengeService.createChallenge(newChallenge);
 
-        return REDIRECT_CHALLENGE_DETAILS + saved.getId();
+        return "redirect:/users/dashboard";
     }
 
     @GetMapping("/list")
@@ -139,7 +139,7 @@ public class ChallengeController {
         user.addChallenge(challenge);
         userService.updateUser(user);
 
-        return REDIRECT_CHALLENGE_DETAILS + idChallenge;
+        return "challenge/testSuccessJoin";
     }
    
     @GetMapping("/details/{id}")
@@ -151,8 +151,8 @@ public class ChallengeController {
         User currentUser = userService.getUserById(userId);
         Challenge challenge = challengeService.getChallengeById(id);
 
-        boolean isCreator     = challenge.getCreator().getId().equals(userId);
-        boolean isParticipant = userService.hasJoinedChallenge(userId, id);
+        boolean isCreator     = currentUser.isTheCreatorOfTheChallenge(challenge);
+        boolean isParticipant = currentUser.isAlreadyJoinChallenge(challenge);
         boolean canAddScore   = isCreator || isParticipant;
 
         ChallengeScore userScore = canAddScore
@@ -177,12 +177,12 @@ public class ChallengeController {
             return REDIRECTFORMLOGIN;
         }
         Challenge challenge = challengeService.getChallengeById(id);
+        User currentUser = userService.getUserById(userId);
 
-        boolean canAddScore = challenge.getCreator().getId().equals(userId)
-                || userService.hasJoinedChallenge(userId, id);
+        boolean canAddScore = currentUser.isTheCreatorOfTheChallenge(challenge)
+                || currentUser.isAlreadyJoinChallenge(challenge);
 
         if (canAddScore) {
-            User currentUser = userService.getUserById(userId);
             ChallengeScore existing = challengeScoreService.getScoreByUserAndChallenge(currentUser, challenge);
             if (existing != null) {
                 existing.setScore(score);

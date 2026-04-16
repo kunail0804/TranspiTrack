@@ -15,7 +15,7 @@ import fr.utc.miage.transpitrack.Dto.WeatherResponse;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Service.WeatherService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
