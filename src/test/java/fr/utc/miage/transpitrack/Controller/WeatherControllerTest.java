@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Service.WeatherService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 
 @ExtendWith(MockitoExtension.class)
 class WeatherControllerTest {

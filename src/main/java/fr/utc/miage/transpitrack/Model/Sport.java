@@ -22,9 +22,6 @@ public class Sport {
     private String description;
     private double metValue;
 
-    //@ManyToMany(mappedBy = "sports")
-    //private List<Goal> goals;
-
     @OneToMany(mappedBy = "sport")
     private List<UserSport> users = new ArrayList<>();
 
@@ -35,8 +32,7 @@ public class Sport {
     public Sport() {
     }
 
-    public Sport(Long id, String name, String description, List<Goal> goals) {
-        this.id = id;
+    public Sport(String name, String description){
         this.name = name;
         this.description = description;
     }

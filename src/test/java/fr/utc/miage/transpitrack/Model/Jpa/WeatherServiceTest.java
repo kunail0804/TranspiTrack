@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Service;
+package fr.utc.miage.transpitrack.Model.Jpa;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -16,15 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Model.Jpa.UserRepository;
+import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,6 +45,7 @@ class WeatherServiceTest {
     private User testUser;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
         testUser = new User();
         testUser.setCity("Paris");
@@ -51,8 +55,8 @@ class WeatherServiceTest {
     void getWeatherForUserShouldThrowWhenUserNotFound() {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(RuntimeException.class, () ->
-                weatherService.getWeatherForUser(1L));
+        Exception exception = assertThrows(RuntimeException.class, ()
+                -> weatherService.getWeatherForUser(1L));
 
         assertTrue(exception.getMessage().contains("Utilisateur non trouvé"));
     }
@@ -62,10 +66,91 @@ class WeatherServiceTest {
         testUser.setCity("");
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
-        Exception exception = assertThrows(RuntimeException.class, () ->
-                weatherService.getWeatherForUser(1L));
+        Exception exception = assertThrows(RuntimeException.class, ()
+                -> weatherService.getWeatherForUser(1L));
 
         assertTrue(exception.getMessage().contains("pas de ville renseignée"));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "null",
+        "{}",
+        "{\"results\":[]}"
+    })
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldHandleInvalidGeoResponses(String geoResponseBody) throws Exception {
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
+        when(geoResp.body()).thenReturn(geoResponseBody);
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(geoResp);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> weatherService.getWeatherForUser(1L));
+
+        assertTrue(ex.getMessage().contains("Ville introuvable"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldFailWhenCurrentWeatherMissing() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
+
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = mock(HttpResponse.class);
+
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn("{\"daily\":{}}");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(geoResp, weatherResp);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> weatherService.getWeatherForUser(1L));
+
+        assertTrue(ex.getMessage().contains("Erreur de format"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldFailWhenDailyMissing() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
+
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = mock(HttpResponse.class);
+
+        when(geoResp.body()).thenReturn(geoJson);
+        when(weatherResp.body()).thenReturn("{\"current_weather\":{}}");
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(geoResp, weatherResp);
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> weatherService.getWeatherForUser(1L));
+
+        assertTrue(ex.getMessage().contains("Erreur de format"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getWeatherForUserShouldWrapIOException() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new IOException("network fail"));
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> weatherService.getWeatherForUser(1L));
+
+        assertTrue(ex.getMessage().contains("Erreur météo"));
     }
 
     @Test
@@ -73,8 +158,8 @@ class WeatherServiceTest {
         testUser.setCity(null);
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
-        Exception exception = assertThrows(RuntimeException.class, () ->
-                weatherService.getWeatherForUser(1L));
+        Exception exception = assertThrows(RuntimeException.class, ()
+                -> weatherService.getWeatherForUser(1L));
 
         assertTrue(exception.getMessage().contains("pas de ville renseignée"));
     }
@@ -133,11 +218,11 @@ class WeatherServiceTest {
                 + "\"temperature_2m_min\":[10,11,12,13,14,15,16],"
                 + "\"temperature_2m_max\":[20,21,22,23,24,25,26]}}";
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
-        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = (HttpResponse<String>) mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = (HttpResponse<String>) mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(weatherResp.body()).thenReturn(weatherJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
         WeatherResponse response = weatherService.getWeatherForUser(1L);
 
@@ -158,11 +243,11 @@ class WeatherServiceTest {
         String geoJson = "{\"results\":[{\"latitude\":43.60,\"longitude\":1.44,\"name\":\"Toulouse\"}]}";
         String weatherJson = "{\"daily\":{\"temperature_2m_max\":[25.0],\"weathercode\":[0]}}";
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
-        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = (HttpResponse<String>) mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = (HttpResponse<String>) mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(weatherResp.body()).thenReturn(weatherJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
         weatherService.assignWeatherToActivity(activity);
 
@@ -183,7 +268,6 @@ class WeatherServiceTest {
     }
 
     // ── WeatherResponse ────────────────────────────────────────────
-
     @Test
     void weatherResponseGetWeatherConditionShouldReturnCondition() {
         WeatherResponse response = new WeatherResponse("Lyon", 18.0, "Nuageux", List.of());
@@ -191,18 +275,19 @@ class WeatherServiceTest {
     }
 
     // ── WeatherService : branches manquantes ───────────────────────
-
     @Test
     @SuppressWarnings("unchecked")
     void getWeatherForUserShouldThrowWhenCityNotFoundInGeocoding() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         String geoJson = "{\"results\":[]}";
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenReturn(geoResp);
 
-        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        assertTrue(e.getMessage().contains("Ville introuvable"));
     }
 
     @Test
@@ -213,13 +298,14 @@ class WeatherServiceTest {
         String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
         String weatherJson = "{}";
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
-        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = (HttpResponse<String>) mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = (HttpResponse<String>) mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(weatherResp.body()).thenReturn(weatherJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
-        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        assertTrue(e.getMessage().contains("Erreur de format"));
     }
 
     @Test
@@ -230,9 +316,9 @@ class WeatherServiceTest {
         activity.setDate(LocalDate.now());
 
         String geoJson = "{}";
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp);
 
         weatherService.assignWeatherToActivity(activity);
 
@@ -241,17 +327,17 @@ class WeatherServiceTest {
     }
 
     // ── branches manquantes supplémentaires ───────────────────────
-
     @Test
     @SuppressWarnings("unchecked")
     void getWeatherForUserShouldThrowWhenGeoResponseHasNoResultsKey() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn("{}");
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp);
 
-        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        assertTrue(e.getMessage().contains("Ville introuvable"));
     }
 
     @Test
@@ -262,13 +348,14 @@ class WeatherServiceTest {
         String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
         String weatherJson = "{\"current_weather\":{\"temperature\":22.0,\"weathercode\":0}}";
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
-        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(weatherResp.body()).thenReturn(weatherJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
-        assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
+        assertTrue(e.getMessage().contains("Erreur de format"));
     }
 
     @Test
@@ -312,9 +399,9 @@ class WeatherServiceTest {
         activity.setCity("Inconnue");
         activity.setDate(LocalDate.now());
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn("{\"results\":[]}");
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp);
 
         weatherService.assignWeatherToActivity(activity);
 
@@ -332,11 +419,11 @@ class WeatherServiceTest {
         String geoJson = "{\"results\":[{\"latitude\":45.74,\"longitude\":4.84,\"name\":\"Lyon\"}]}";
         String weatherJson = "{\"other\":\"data\"}";
 
-        HttpResponse<Object> geoResp = (HttpResponse<Object>) mock(HttpResponse.class);
-        HttpResponse<Object> weatherResp = (HttpResponse<Object>) mock(HttpResponse.class);
+        HttpResponse<String> geoResp = mock(HttpResponse.class);
+        HttpResponse<String> weatherResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(weatherResp.body()).thenReturn(weatherJson);
-        when(httpClient.send(any(HttpRequest.class), any())).thenReturn(geoResp, weatherResp);
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
         weatherService.assignWeatherToActivity(activity);
 
@@ -344,16 +431,55 @@ class WeatherServiceTest {
         assertNull(activity.getWeatherCondition());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void assignWeatherToActivityShouldSuppressExceptionAndNotUpdateWeather() throws Exception {
         fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
         activity.setCity("Paris");
         activity.setDate(LocalDate.now());
-        when(httpClient.send(any(HttpRequest.class), any())).thenThrow(new IOException("connection refused"));
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenThrow(new IOException("connection refused"));
 
         weatherService.assignWeatherToActivity(activity);
 
         assertNull(activity.getTemperature());
         assertNull(activity.getWeatherCondition());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getWeatherForUserShouldRestoreInterruptFlagWhenInterruptedExceptionOccurs() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        Thread testThread = new Thread(() -> {
+            try {
+                weatherService.getWeatherForUser(1L);
+            } catch (RuntimeException ignored) {
+                // expected wrapping
+            }
+        });
+
+        testThread.start();
+        testThread.join();
+
+        // The key assertion: interrupt flag must be set
+        assertTrue(testThread.isInterrupted());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldInterruptThreadWhenInterruptedExceptionOccurs() throws Exception {
+        Activity activity = new Activity();
+        activity.setCity("Paris");
+        activity.setDate(LocalDate.now());
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertTrue(Thread.currentThread().isInterrupted());
     }
 }
