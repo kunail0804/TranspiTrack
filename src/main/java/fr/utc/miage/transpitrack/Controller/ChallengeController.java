@@ -44,8 +44,8 @@ public class ChallengeController {
     @Autowired
     ChallengeScoreService challengeScoreService;
 
-    private final String redirectFormLogin = "redirect:/users/formLogin";
-    private final String redirectList = "redirect:/challenges/list";
+    private static final String redirectFormLogin = "redirect:/users/formLogin";
+    private static final String redirectList = "redirect:/challenges/list";
 
     @GetMapping("/formCreate")
     public String formCreateChallenge(HttpSession session, Model model) {

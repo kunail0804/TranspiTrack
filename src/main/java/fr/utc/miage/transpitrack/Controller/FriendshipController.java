@@ -27,7 +27,7 @@ public class FriendshipController {
     @Autowired
     private UserService userService;
 
-    private final String redirectProfile = "redirect:/users/profile/";
+    private static final String redirectProfile = "redirect:/users/profile/";
 
     @GetMapping("/addFriend/{id}")
     public String addFriend(@PathVariable(value="id") Long friendId, HttpSession session, Model model) {

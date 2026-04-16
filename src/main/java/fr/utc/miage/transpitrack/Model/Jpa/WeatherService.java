@@ -31,9 +31,9 @@ public class WeatherService {
     @Autowired
     private HttpClient httpClient;
 
-    private final String stringDaily = "daily";
-    private final String stringResults = "results";
-    private final String stringCurrentWeather = "current_weather";
+    private static final String stringDaily = "daily";
+    private static final String stringResults = "results";
+    private static final String stringCurrentWeather = "current_weather";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
