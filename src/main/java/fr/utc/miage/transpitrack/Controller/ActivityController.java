@@ -223,6 +223,6 @@ public class ActivityController {
 
     
     public Long getUserId(HttpSession session){
-        return (Long) session.getAttribute("userId");
+        return (Long) session.getAttribute(SESSION_USER_ID);
     }
 }

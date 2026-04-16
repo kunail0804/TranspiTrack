@@ -17,6 +17,20 @@ public class WeatherResponse {
             this.minTemp = minTemp;
             this.maxTemp = maxTemp;
         }
+
+        public String getDate() {
+            return date;
+        }
+
+        public double getMinTemp() {
+            return minTemp;
+        }
+
+        public double getMaxTemp() {
+            return maxTemp;
+        }
+
+        
     }
 
     public WeatherResponse(String city, double currentTemp, String weatherCondition, List<ForecastDay> forecast) {
@@ -26,9 +40,15 @@ public class WeatherResponse {
         this.forecast = forecast;
     }
 
+    public WeatherResponse() {
+        //TODO Auto-generated constructor stub
+    }
+
     // Getters
     public String getCity() { return city; }
     public double getCurrentTemp() { return currentTemp; }
     public String getWeatherCondition() { return weatherCondition; }
     public List<ForecastDay> getForecast() { return forecast; }
+
+
 }

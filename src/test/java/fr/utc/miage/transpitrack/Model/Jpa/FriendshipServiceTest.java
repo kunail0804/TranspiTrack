@@ -25,6 +25,7 @@ import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 
 @ExtendWith(MockitoExtension.class)
 class FriendshipServiceTest {
+
     @Mock
     private FriendshipRepository friendshipRepository;
 
@@ -198,5 +199,22 @@ class FriendshipServiceTest {
         friendshipService.rejectFriendRequest(friendship);
 
         verify(friendshipRepository).delete(friendship);
+    }
+
+    @Test
+    void shouldReturnSentPendingFriendships() {
+
+        Friendship friendship = mock(Friendship.class);
+        List<Friendship> expected = List.of(friendship);
+
+        when(friendshipRepository.findByStatusAndRequesterId(FriendshipStatus.PENDING, 1L))
+                .thenReturn(expected);
+
+        List<Friendship> result = friendshipService.getMySentPendingFriendships(1L);
+
+        assertEquals(expected, result);
+
+        verify(friendshipRepository)
+                .findByStatusAndRequesterId(FriendshipStatus.PENDING, 1L);
     }
 }

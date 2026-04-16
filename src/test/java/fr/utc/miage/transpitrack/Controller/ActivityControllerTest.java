@@ -88,6 +88,16 @@ class ActivityControllerTest {
         assertEquals(older, sorted.get(1));
     }
 
+    @Test
+    void listActivitiesShouldRedirectWhenUserNotLoggedIn() {
+
+        when(session.getAttribute("userId")).thenReturn(null);
+
+        String view = activityController.listActivities(model, session);
+
+        assertEquals("redirect:/users/formLogin", view);
+    }
+
     // ──────────────────────────────────────────────────────────────
     // GET /activities/add
     // ──────────────────────────────────────────────────────────────

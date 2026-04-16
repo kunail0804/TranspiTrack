@@ -16,8 +16,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
+import fr.utc.miage.transpitrack.Dto.WeatherResponse;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 import fr.utc.miage.transpitrack.Model.Sport;
 import jakarta.servlet.http.HttpSession;
 
@@ -35,6 +37,9 @@ class DashboardControllerTest {
 
     @InjectMocks
     private DashboardController dashboardController;
+
+    @Mock
+    private WeatherService weatherService;
 
     // ─────────────────────────────────────────────
     // 1. USER NOT CONNECTED
@@ -118,5 +123,36 @@ class DashboardControllerTest {
         verify(model).addAttribute(eq("caloriesBySportName"), any());
         verify(model).addAttribute(eq("totalCalories"), any());
         verify(model).addAttribute(eq("activities"), any());
+    }
+
+    @Test
+    void dashboardShouldAddWeatherWhenServiceSucceeds() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(activityService.getActivitiesByUserId(1L)).thenReturn(List.of());
+
+        WeatherResponse weather = new WeatherResponse();
+        when(weatherService.getWeatherForUser(1L)).thenReturn(weather);
+
+        dashboardController.dashboard(model, session);
+
+        verify(weatherService).getWeatherForUser(1L);
+        verify(model).addAttribute("weather", weather);
+    }
+
+    @Test
+    void dashboardShouldHandleWeatherException() {
+
+        when(session.getAttribute("userId")).thenReturn(1L);
+        when(activityService.getActivitiesByUserId(1L)).thenReturn(List.of());
+
+        when(weatherService.getWeatherForUser(1L))
+                .thenThrow(new RuntimeException("API down"));
+
+        dashboardController.dashboard(model, session);
+
+        verify(weatherService).getWeatherForUser(1L);
+
+        verify(model, org.mockito.Mockito.never()).addAttribute(eq("weather"), any());
     }
 }

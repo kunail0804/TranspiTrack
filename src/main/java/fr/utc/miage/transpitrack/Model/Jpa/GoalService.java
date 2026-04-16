@@ -12,30 +12,30 @@ import fr.utc.miage.transpitrack.Model.User;
 public class GoalService {
 
     @Autowired
-    GoalRepository GoalRepository;
+    GoalRepository goalRepository;
 
     public List<Goal> getAllGoals(){
-        return GoalRepository.findAll();
+        return goalRepository.findAll();
     }
 
     public List<Goal> getGoalByUser(User user){
-        return GoalRepository.findByUser(user);
+        return goalRepository.findByUser(user);
     }
 
     public Goal createGoal(Goal goal){
-        return GoalRepository.save(goal);
+        return goalRepository.save(goal);
     }
 
     public void updateGoal(Goal goal){
-        GoalRepository.save(goal);
+        goalRepository.save(goal);
     }
 
     public void deleteGoal(Goal goal){
-        GoalRepository.delete(goal);
+        goalRepository.delete(goal);
     }
 
     public Goal getGoalById(Long id){
-        return GoalRepository.findById(id).orElse(null);
+        return goalRepository.findById(id).orElse(null);
     }
 
 }

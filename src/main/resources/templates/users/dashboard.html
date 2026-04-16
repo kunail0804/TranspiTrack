@@ -64,9 +64,9 @@
                     <div th:each="day,iter : ${weather.forecast}" th:if="${iter.index < 5}"
                          style="text-align:center; min-width:44px;">
                         <div style="font-size:0.72rem; color:var(--text-muted); font-weight:500"
-                             th:text="${#strings.replace(#strings.substring(day.date,5),'-','/')}">04/16</div>
-                        <div style="font-size:0.9rem; font-weight:700; color:var(--text)" th:text="|${day.maxTemp}°|">22°</div>
-                        <div style="font-size:0.8rem; color:var(--text-muted)" th:text="|${day.minTemp}°|">14°</div>
+                             th:text="${#strings.replace(#strings.substring(day.getDate(),5),'-','/')}">04/16</div>
+                        <div style="font-size:0.9rem; font-weight:700; color:var(--text)" th:text="|${day.getMaxTemp()}°|">22°</div>
+                        <div style="font-size:0.8rem; color:var(--text-muted)" th:text="|${day.getMinTemp()}°|">14°</div>
                     </div>
                 </div>
             </div>

@@ -10,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -89,5 +91,21 @@ class ChallengeServiceTest {
 
         assertEquals(0, result.size());
         verify(challengeRepository).findChallengesByVisibility("PRIVATE");
+    }
+
+    @Test
+    void shouldReturnChallengesByCreatorId() {
+
+        Challenge challenge = mock(Challenge.class);
+        List<Challenge> expected = List.of(challenge);
+
+        when(challengeRepository.findByCreatorId(1L))
+                .thenReturn(expected);
+
+        List<Challenge> result = challengeService.getChallengesByCreatorId(1L);
+
+        assertEquals(expected, result);
+
+        verify(challengeRepository).findByCreatorId(1L);
     }
 }

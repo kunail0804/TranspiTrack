@@ -66,7 +66,9 @@ public class User {
     @ManyToMany
     private List<Challenge> joinedChallenges = new ArrayList<>();
 
-    public User(){}
+    public User(){
+        // Cette méthode est intentionnellement vide
+    }
 
     public Long getId() {
         return id;
