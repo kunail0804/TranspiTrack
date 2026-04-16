@@ -31,9 +31,9 @@ public class WeatherService {
     @Autowired
     private HttpClient httpClient;
 
-    private static final String stringDaily = "daily";
-    private static final String stringResults = "results";
-    private static final String stringCurrentWeather = "current_weather";
+    private static final String STRINGDAILY = "daily";
+    private static final String STRINGRESULTS = "results";
+    private static final String STRINGCURRENTWEATHER = "current_weather";
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,11 +56,11 @@ public class WeatherService {
             HttpResponse<String> geoResponseStr = httpClient.send(geoRequest, HttpResponse.BodyHandlers.ofString());
             JsonNode geoResponse = objectMapper.readTree(geoResponseStr.body());
 
-            if (!geoResponse.has(stringResults) || geoResponse.get(stringResults).isEmpty()) {
+            if (!geoResponse.has(STRINGRESULTS) || geoResponse.get(STRINGRESULTS).isEmpty()) {
                 throw new WeatherServiceException("Ville introuvable : " + city);
             }
 
-            JsonNode locationData = geoResponse.get(stringResults).get(0);
+            JsonNode locationData = geoResponse.get(STRINGRESULTS).get(0);
             double lat = locationData.get("latitude").asDouble();
             double lon = locationData.get("longitude").asDouble();
             String resolvedCityName = locationData.get("name").asText();
@@ -72,15 +72,15 @@ public class WeatherService {
             HttpResponse<String> weatherResponseStr = httpClient.send(weatherRequest, HttpResponse.BodyHandlers.ofString());
             JsonNode weatherData = objectMapper.readTree(weatherResponseStr.body());
 
-            if (!weatherData.has(stringCurrentWeather) || !weatherData.has(stringDaily)) {
+            if (!weatherData.has(STRINGCURRENTWEATHER) || !weatherData.has(STRINGDAILY)) {
                 throw new WeatherServiceException("Erreur de format de la réponse météo");
             }
 
-            double currentTemp = weatherData.get(stringCurrentWeather).get("temperature").asDouble();
-            int weatherCode = weatherData.get(stringCurrentWeather).get("weathercode").asInt();
+            double currentTemp = weatherData.get(STRINGCURRENTWEATHER).get("temperature").asDouble();
+            int weatherCode = weatherData.get(STRINGCURRENTWEATHER).get("weathercode").asInt();
             String condition = interpretWeatherCode(weatherCode);
 
-            JsonNode daily = weatherData.get(stringDaily);
+            JsonNode daily = weatherData.get(STRINGDAILY);
             List<WeatherResponse.ForecastDay> forecast = new ArrayList<>();
 
             int daysAvailable = daily.get("time").size();
@@ -95,10 +95,11 @@ public class WeatherService {
 
             return new WeatherResponse(resolvedCityName, currentTemp, condition, forecast);
 
-        } catch (IOException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new WeatherServiceException("Erreur météo", e);
+
+        } catch (IOException e) {
             throw new WeatherServiceException("Erreur météo", e);
         }
     }
@@ -138,11 +139,11 @@ public class WeatherService {
             HttpResponse<String> geoResponseStr = httpClient.send(geoRequest, HttpResponse.BodyHandlers.ofString());
             JsonNode geoResponse = objectMapper.readTree(geoResponseStr.body());
 
-            if (!geoResponse.has(stringResults) || geoResponse.get(stringResults).isEmpty()) {
+            if (!geoResponse.has(STRINGRESULTS) || geoResponse.get(STRINGRESULTS).isEmpty()) {
                 return;
             }
 
-            JsonNode locationData = geoResponse.get(stringResults).get(0);
+            JsonNode locationData = geoResponse.get(STRINGRESULTS).get(0);
             double lat = locationData.get("latitude").asDouble();
             double lon = locationData.get("longitude").asDouble();
 
@@ -154,8 +155,8 @@ public class WeatherService {
             HttpResponse<String> weatherResponseStr = httpClient.send(weatherRequest, HttpResponse.BodyHandlers.ofString());
             JsonNode weatherData = objectMapper.readTree(weatherResponseStr.body());
 
-            if (weatherData.has(stringDaily)) {
-                JsonNode daily = weatherData.get(stringDaily);
+            if (weatherData.has(STRINGDAILY)) {
+                JsonNode daily = weatherData.get(STRINGDAILY);
                 double temp = daily.get("temperature_2m_max").get(0).asDouble();
                 int code = daily.get("weathercode").get(0).asInt();
 

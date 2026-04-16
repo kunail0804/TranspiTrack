@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.function.Executable;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Badge;
@@ -222,8 +223,11 @@ class BadgeServiceTest {
         when(badgeRepository.findAll()).thenReturn(List.of(badge));
         when(userBadgeRepository.existsByUserAndBadge(user, badge)).thenReturn(false);
 
-        IllegalStateException ex = assertThrows(IllegalStateException.class,
-                () -> badgeService.checkAndAwardBadges(user, List.of(a)));
+        List<Activity> activities = List.of(a);
+
+        Executable exec = () -> badgeService.checkAndAwardBadges(user, activities);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class, exec);
 
         assertEquals("Badge type cannot be null", ex.getMessage());
 
