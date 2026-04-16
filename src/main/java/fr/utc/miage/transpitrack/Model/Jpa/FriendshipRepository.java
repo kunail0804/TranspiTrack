@@ -1,12 +1,12 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import fr.utc.miage.transpitrack.Model.Friendship;
-import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
+import fr.utc.miage.transpitrack.model.Friendship;
+import fr.utc.miage.transpitrack.model.enumer.FriendshipStatus;
 
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, Long> {

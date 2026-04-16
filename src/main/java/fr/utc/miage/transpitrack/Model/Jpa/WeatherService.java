@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,9 +18,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.dto.WeatherResponse;
 import fr.utc.miage.transpitrack.exception.WeatherServiceException;
+import fr.utc.miage.transpitrack.model.User;
 
 @Service
 public class WeatherService {
@@ -126,7 +126,7 @@ public class WeatherService {
         return "Nuageux";
     }
 
-    public void assignWeatherToActivity(fr.utc.miage.transpitrack.Model.Activity activity) {
+    public void assignWeatherToActivity(fr.utc.miage.transpitrack.model.Activity activity) {
         if (activity.getCity() == null || activity.getCity().isBlank() || activity.getDate() == null) {
             return;
         }

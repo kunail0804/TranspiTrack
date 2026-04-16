@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.time.Duration;
 import java.util.List;
@@ -16,8 +16,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.utc.miage.transpitrack.Model.Challenge;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.model.Challenge;
+import fr.utc.miage.transpitrack.model.User;
 
 @ExtendWith(MockitoExtension.class)
 class ChallengeServiceTest {

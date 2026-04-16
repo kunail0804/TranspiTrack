@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
@@ -12,8 +12,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.Model.SportType;
-import fr.utc.miage.transpitrack.Model.Jpa.SportTypeService;
+import fr.utc.miage.transpitrack.controller.SportTypeController;
+import fr.utc.miage.transpitrack.model.SportType;
+import fr.utc.miage.transpitrack.model.jpa.SportTypeService;
 
 @ExtendWith(MockitoExtension.class)
 class SportTypeControllerTest {

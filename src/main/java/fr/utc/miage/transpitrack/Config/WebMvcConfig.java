@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Config;
+package fr.utc.miage.transpitrack.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;

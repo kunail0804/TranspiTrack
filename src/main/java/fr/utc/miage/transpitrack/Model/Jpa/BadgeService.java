@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,11 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Badge;
-import fr.utc.miage.transpitrack.Model.Enum.BadgeType;
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.UserBadge;
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.Badge;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.UserBadge;
 
 @Service
 public class BadgeService {

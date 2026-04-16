@@ -1,8 +1,8 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import org.springframework.stereotype.Repository;
 
-import fr.utc.miage.transpitrack.Model.SportType;
+import fr.utc.miage.transpitrack.model.SportType;
 
 import java.util.List;
 

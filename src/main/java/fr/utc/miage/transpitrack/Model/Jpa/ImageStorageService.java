@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.io.IOException;
 import java.nio.file.Files;

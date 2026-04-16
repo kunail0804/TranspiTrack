@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -6,8 +6,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
+import fr.utc.miage.transpitrack.dto.WeatherResponse;
+import fr.utc.miage.transpitrack.model.jpa.WeatherService;
 
 @Controller 
 public class WeatherViewController {

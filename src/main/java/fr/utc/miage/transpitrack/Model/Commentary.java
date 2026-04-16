@@ -1,6 +1,6 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
-import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
+import fr.utc.miage.transpitrack.model.enumer.ReactionType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

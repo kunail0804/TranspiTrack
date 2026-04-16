@@ -1,10 +1,10 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import fr.utc.miage.transpitrack.Model.Commentary;
+import fr.utc.miage.transpitrack.model.Commentary;
 
 public interface CommentaryRepository extends JpaRepository<Commentary, Long> {
     

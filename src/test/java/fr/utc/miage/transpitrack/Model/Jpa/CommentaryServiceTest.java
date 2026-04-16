@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -12,7 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.utc.miage.transpitrack.Model.Commentary;
+import fr.utc.miage.transpitrack.model.Commentary;
 
 @ExtendWith(MockitoExtension.class)
 class CommentaryServiceTest {

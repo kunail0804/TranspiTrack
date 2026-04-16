@@ -1,12 +1,12 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import fr.utc.miage.transpitrack.Model.Badge;
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.UserBadge;
+import fr.utc.miage.transpitrack.model.Badge;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.UserBadge;
 
 public interface UserBadgeRepository extends JpaRepository<UserBadge, Long> {
 

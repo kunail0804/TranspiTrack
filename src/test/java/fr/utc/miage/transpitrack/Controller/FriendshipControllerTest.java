@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -12,10 +12,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.Model.Friendship;
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
+import fr.utc.miage.transpitrack.controller.FriendshipController;
+import fr.utc.miage.transpitrack.model.Friendship;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.jpa.FriendshipService;
+import fr.utc.miage.transpitrack.model.jpa.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)

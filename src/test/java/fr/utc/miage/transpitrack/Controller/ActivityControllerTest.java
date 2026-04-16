@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -20,17 +20,18 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Commentary;
-import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
-import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
-import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
+import fr.utc.miage.transpitrack.controller.ActivityController;
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.Commentary;
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.enumer.ReactionType;
+import fr.utc.miage.transpitrack.model.jpa.ActivityService;
+import fr.utc.miage.transpitrack.model.jpa.BadgeService;
+import fr.utc.miage.transpitrack.model.jpa.CommentaryService;
+import fr.utc.miage.transpitrack.model.jpa.SportService;
+import fr.utc.miage.transpitrack.model.jpa.UserService;
+import fr.utc.miage.transpitrack.model.jpa.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)

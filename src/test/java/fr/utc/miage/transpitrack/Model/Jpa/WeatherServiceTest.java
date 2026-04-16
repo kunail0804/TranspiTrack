@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.io.IOException;
 import java.net.http.HttpClient;
@@ -26,9 +26,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.utc.miage.transpitrack.Dto.WeatherResponse;
-import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.dto.WeatherResponse;
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.User;
 
 @ExtendWith(MockitoExtension.class)
 class WeatherServiceTest {
@@ -236,7 +236,7 @@ class WeatherServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void assignWeatherToActivityShouldPopulateWeatherFields() throws Exception {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("Toulouse");
         activity.setDate(LocalDate.now());
 
@@ -259,7 +259,7 @@ class WeatherServiceTest {
 
     @Test
     void assignWeatherToActivityShouldDoNothingIfCityIsEmpty() {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("");
         activity.setDate(LocalDate.now());
         weatherService.assignWeatherToActivity(activity);
@@ -311,7 +311,7 @@ class WeatherServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void assignWeatherToActivityShouldDoNothingWhenCityNotFoundInGeocoding() throws Exception {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("VilleInconnue");
         activity.setDate(LocalDate.now());
 
@@ -370,7 +370,7 @@ class WeatherServiceTest {
 
     @Test
     void assignWeatherToActivityShouldDoNothingIfCityIsNull() {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity(null);
         activity.setDate(LocalDate.now());
 
@@ -382,7 +382,7 @@ class WeatherServiceTest {
 
     @Test
     void assignWeatherToActivityShouldDoNothingIfDateIsNull() {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("Paris");
         activity.setDate(null);
 
@@ -395,7 +395,7 @@ class WeatherServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void assignWeatherToActivityShouldDoNothingWhenGeoResultsListIsEmpty() throws Exception {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("Inconnue");
         activity.setDate(LocalDate.now());
 
@@ -412,7 +412,7 @@ class WeatherServiceTest {
     @Test
     @SuppressWarnings("unchecked")
     void assignWeatherToActivityShouldNotUpdateWeatherWhenDailyKeyMissing() throws Exception {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("Lyon");
         activity.setDate(LocalDate.now());
 
@@ -434,7 +434,7 @@ class WeatherServiceTest {
     @SuppressWarnings("unchecked")
     @Test
     void assignWeatherToActivityShouldSuppressExceptionAndNotUpdateWeather() throws Exception {
-        fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
+        fr.utc.miage.transpitrack.model.Activity activity = new fr.utc.miage.transpitrack.model.Activity();
         activity.setCity("Paris");
         activity.setDate(LocalDate.now());
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenThrow(new IOException("connection refused"));

@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import java.util.List;
 
@@ -12,17 +12,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Commentary;
-import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
-import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
-import fr.utc.miage.transpitrack.Model.Jpa.CommentaryService;
-import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.Commentary;
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.enumer.ReactionType;
+import fr.utc.miage.transpitrack.model.jpa.ActivityService;
+import fr.utc.miage.transpitrack.model.jpa.BadgeService;
+import fr.utc.miage.transpitrack.model.jpa.CommentaryService;
+import fr.utc.miage.transpitrack.model.jpa.SportService;
+import fr.utc.miage.transpitrack.model.jpa.UserService;
+import fr.utc.miage.transpitrack.model.jpa.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller

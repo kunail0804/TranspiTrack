@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +6,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
-import fr.utc.miage.transpitrack.Model.Friendship;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.model.Friendship;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.enumer.FriendshipStatus;
 
 @Service
 public class FriendshipService {

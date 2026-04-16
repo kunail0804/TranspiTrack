@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -11,7 +11,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.model.Challenge;
+import fr.utc.miage.transpitrack.model.Goal;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.UserSport;
+import fr.utc.miage.transpitrack.model.enumer.Gender;
 
 class UserTest {
 
