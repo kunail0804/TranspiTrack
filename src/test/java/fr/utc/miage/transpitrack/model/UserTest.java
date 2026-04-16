@@ -11,10 +11,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.Challenge;
-import fr.utc.miage.transpitrack.model.Goal;
-import fr.utc.miage.transpitrack.model.User;
-import fr.utc.miage.transpitrack.model.UserSport;
 import fr.utc.miage.transpitrack.model.enumer.Gender;
 
 class UserTest {

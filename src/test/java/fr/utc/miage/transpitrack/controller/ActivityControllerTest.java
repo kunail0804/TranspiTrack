@@ -20,7 +20,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.controller.ActivityController;
 import fr.utc.miage.transpitrack.model.Activity;
 import fr.utc.miage.transpitrack.model.Commentary;
 import fr.utc.miage.transpitrack.model.Sport;

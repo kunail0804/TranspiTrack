@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.controller.ChallengeController;
 import fr.utc.miage.transpitrack.model.Challenge;
 import fr.utc.miage.transpitrack.model.ChallengeScore;
 import fr.utc.miage.transpitrack.model.Friendship;

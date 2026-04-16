@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.controller.SportController;
 import fr.utc.miage.transpitrack.model.Sport;
 import fr.utc.miage.transpitrack.model.jpa.SportService;
 import fr.utc.miage.transpitrack.model.jpa.SportTypeService;

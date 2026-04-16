@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.Friendship;
-import fr.utc.miage.transpitrack.model.User;
 import fr.utc.miage.transpitrack.model.enumer.FriendshipStatus;
 
 class FriendshipTest {

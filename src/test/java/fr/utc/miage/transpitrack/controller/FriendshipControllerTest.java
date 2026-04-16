@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.controller.FriendshipController;
 import fr.utc.miage.transpitrack.model.Friendship;
 import fr.utc.miage.transpitrack.model.User;
 import fr.utc.miage.transpitrack.model.jpa.FriendshipService;

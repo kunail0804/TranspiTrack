@@ -13,8 +13,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.model.Commentary;
-import fr.utc.miage.transpitrack.model.jpa.CommentaryRepository;
-import fr.utc.miage.transpitrack.model.jpa.CommentaryService;
 
 @ExtendWith(MockitoExtension.class)
 class CommentaryServiceTest {

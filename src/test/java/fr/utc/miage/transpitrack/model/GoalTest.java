@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.Goal;
-import fr.utc.miage.transpitrack.model.User;
-
 class GoalTest {
 
     // ── Constructeur & getters ──────────────────────────────────────

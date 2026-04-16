@@ -5,9 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.Sport;
-import fr.utc.miage.transpitrack.model.User;
-import fr.utc.miage.transpitrack.model.UserSport;
 import fr.utc.miage.transpitrack.model.enumer.Level;
 
 class UserSportTest {

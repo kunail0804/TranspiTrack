@@ -6,10 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import java.time.LocalDate;
 
 import org.junit.jupiter.api.Test;
-
-import fr.utc.miage.transpitrack.model.Badge;
-import fr.utc.miage.transpitrack.model.User;
-import fr.utc.miage.transpitrack.model.UserBadge;
 import fr.utc.miage.transpitrack.model.enumer.BadgeType;
 
 class UserBadgeTest {

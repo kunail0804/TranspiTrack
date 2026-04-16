@@ -5,10 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.Challenge;
-import fr.utc.miage.transpitrack.model.ChallengeScore;
-import fr.utc.miage.transpitrack.model.User;
-
 class ChallengeScoreTest {
 
     // ── Constructeur & getters ──────────────────────────────────────

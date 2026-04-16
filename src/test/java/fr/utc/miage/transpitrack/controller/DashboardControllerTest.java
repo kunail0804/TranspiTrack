@@ -16,7 +16,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.controller.DashboardController;
 import fr.utc.miage.transpitrack.dto.WeatherResponse;
 import fr.utc.miage.transpitrack.model.Activity;
 import fr.utc.miage.transpitrack.model.Sport;

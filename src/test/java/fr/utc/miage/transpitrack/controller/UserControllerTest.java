@@ -24,7 +24,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import fr.utc.miage.transpitrack.controller.UserController;
 import fr.utc.miage.transpitrack.model.Activity;
 import fr.utc.miage.transpitrack.model.Friendship;
 import fr.utc.miage.transpitrack.model.Goal;

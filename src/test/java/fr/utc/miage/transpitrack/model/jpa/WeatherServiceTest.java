@@ -29,8 +29,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import fr.utc.miage.transpitrack.dto.WeatherResponse;
 import fr.utc.miage.transpitrack.model.Activity;
 import fr.utc.miage.transpitrack.model.User;
-import fr.utc.miage.transpitrack.model.jpa.UserRepository;
-import fr.utc.miage.transpitrack.model.jpa.WeatherService;
 
 @ExtendWith(MockitoExtension.class)
 class WeatherServiceTest {

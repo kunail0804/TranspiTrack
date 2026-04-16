@@ -7,10 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.Challenge;
-import fr.utc.miage.transpitrack.model.Sport;
-import fr.utc.miage.transpitrack.model.User;
-
 
 class ChallengeTest {
 

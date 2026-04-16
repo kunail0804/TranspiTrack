@@ -3,8 +3,6 @@ package fr.utc.miage.transpitrack.model.enumer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
-import fr.utc.miage.transpitrack.model.enumer.ReactionType;
-
 class ReactionTypeTest {
 
     @Test
