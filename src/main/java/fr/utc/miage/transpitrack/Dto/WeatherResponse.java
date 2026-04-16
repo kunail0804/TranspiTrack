@@ -8,9 +8,9 @@ public class WeatherResponse {
     private List<ForecastDay> forecast; 
 
     public static class ForecastDay {
-        public String date;
-        public double minTemp;
-        public double maxTemp;
+        private String date;
+        private double minTemp;
+        private double maxTemp;
         
         public ForecastDay(String date, double minTemp, double maxTemp) {
             this.date = date;

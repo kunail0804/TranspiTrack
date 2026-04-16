@@ -47,7 +47,7 @@ public class ActivityController {
     @Autowired
     private BadgeService badgeService;
 
-    private final String redirectDetails = "redirect:/activities/details/";
+    private static final String redirectDetails = "redirect:/activities/details/";
 
     @RequestMapping("")
     public String listActivities(Model model) {

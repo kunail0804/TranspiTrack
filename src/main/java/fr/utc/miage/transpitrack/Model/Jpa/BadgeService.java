@@ -37,12 +37,17 @@ public class BadgeService {
 
             boolean earned = false;
 
-            if (badge.getBadgeType() == BadgeType.DISTANCE) {
-                earned = totalDistance >= badge.getThresholdValue();
-            } else if (badge.getBadgeType() == BadgeType.ACTIVITY_COUNT) {
-                earned = totalCount >= badge.getThresholdValue();
-            } else if (badge.getBadgeType() == BadgeType.DURATION) {
-                earned = totalDuration >= badge.getThresholdValue();
+            if (badge.getBadgeType() == null) {
+                throw new IllegalStateException("Badge type cannot be null");
+            }
+
+            switch (badge.getBadgeType()) {
+                case DISTANCE ->
+                    earned = totalDistance >= badge.getThresholdValue();
+                case ACTIVITY_COUNT ->
+                    earned = totalCount >= badge.getThresholdValue();
+                case DURATION ->
+                    earned = totalDuration >= badge.getThresholdValue();
             }
 
             if (earned) {

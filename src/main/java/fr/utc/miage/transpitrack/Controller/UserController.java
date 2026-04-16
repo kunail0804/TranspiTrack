@@ -61,14 +61,14 @@ public class UserController {
     ImageStorageService imageStorageService;
 
     private String message = "";
-    private final String needConnexion = "Il faut être connecte !";
+    private static final String needConnexion = "Il faut être connecte !";
 
-    private final String redirectFormLogin = "redirect:/users/formLogin";
-    private final String redirectFormUpdate = "redirect:/users/formUpdate";
-    private final String redirectFormCreate = "redirect:/users/formCreate";
-    private final String redirectDashboard = "redirect:/users/dashboard";
-    private final String redirectConsultationPreferences = "redirect:/users/consultationPreferences";
-    private final String redirectConsultationGoals = "redirect:/users/consultationGoals";
+    private static final String redirectFormLogin = "redirect:/users/formLogin";
+    private static final String redirectFormUpdate = "redirect:/users/formUpdate";
+    private static final String redirectFormCreate = "redirect:/users/formCreate";
+    private static final String redirectDashboard = "redirect:/users/dashboard";
+    private static final String redirectConsultationPreferences = "redirect:/users/consultationPreferences";
+    private static final String redirectConsultationGoals = "redirect:/users/consultationGoals";
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -81,7 +81,7 @@ public class UserController {
         if (userId != null) {
             return "users/dashboard";
         }
-        model.addAttribute("message", message);
+        model.addAttribute(getViewAttributes(), message);
         message = "";
         return "users/formCreate";
     }
@@ -122,24 +122,32 @@ public class UserController {
         }
 
         try {
-            User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
+            User newUser = new User();
+            newUser.setName(name);
+            newUser.setFirstName(firstName);
+            newUser.setEmail(email);
+            newUser.setPassword(encoder.encode(password));
+            newUser.setAge(age);
+            newUser.setHeight(height);
+            newUser.setGender(Gender.valueOf(gender));
+            newUser.setWeight(weight);
 
             String filename = imageStorageService.store(profileImageFile);
             newUser.setProfileImage(filename);
 
             User savedUser = userService.createUser(newUser);
-            session.setAttribute("userId", savedUser.getId());
-        } catch (IOException e) {
+            setSession(session, savedUser.getId());
+        } catch (IOException _) {
             message = "Erreur lors de l'upload de l'image";
-            model.addAttribute("message", message);
+            model.addAttribute(getViewAttributes(), message);
             return "users/formCreate";
-        } catch (Exception e) {
+        } catch (Exception _) {
             message = "Email invalide";
             return redirectWithMessage(message, redirectFormCreate, model);
         }
 
         message = "Création compte réussie";
-        model.addAttribute("message", message);
+        model.addAttribute(getViewAttributes(), message);
         message = "";
         
         return redirectDashboard;
@@ -177,18 +185,9 @@ public class UserController {
                             Model model,
                             HttpSession session) {
 
-        if(age<0){
-            message = "Age ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormUpdate, model);
-        }
-        if(height<0){
-            message = "Taille ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormUpdate, model);
-        }
-
-        if(weight<0){
-            message = "Poids ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormUpdate, model);
+        String validationError = validateInputs(age, height, weight);
+        if (validationError != null) {
+            return redirectWithMessage(validationError, redirectFormUpdate, model);
         }
 
         Long actualUserId = getUserId(session);
@@ -234,17 +233,17 @@ public class UserController {
                 actualUser.setProfileImage(newFilename);
             }
             userService.updateUser(actualUser);
-        } catch (IOException e) {
+        } catch (IOException _) {
             message = "Erreur lors de l'upload de l'image";
-            model.addAttribute("message", message);
+            model.addAttribute(getViewAttributes(), message);
             return "users/formUpdate";
-        } catch (Exception e) {
+        } catch (Exception _) {
             message = "Email invalide";
             return redirectWithMessage(message, redirectFormUpdate, model);
         }
         message = "Modification du compte réussie";
 
-        model.addAttribute("message", message);
+        model.addAttribute(getViewAttributes(), message);
 
 
         return redirectDashboard;
@@ -259,7 +258,7 @@ public class UserController {
         if (userId != null) {
             return "users/dashboard";
         }
-        model.addAttribute("message", message);
+        model.addAttribute(getViewAttributes(), message);
         message = "";
 
         return "users/formLogin";
@@ -285,10 +284,10 @@ public class UserController {
             return redirectWithMessage(message, redirectFormLogin, model);
         }
 
-        session.setAttribute("userId", userLogin.getId());
+        setSession(session, userLogin.getId());
 
         message = "Connexion compte réussie";
-        model.addAttribute("message", message);
+        model.addAttribute(getViewAttributes(), message);
 
         return redirectDashboard;
     }
@@ -593,7 +592,7 @@ public class UserController {
 
     @PostMapping("/deleteProfileImage")
     public String deleteProfileImage(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
+        Long userId = getUserId(session);
         if (userId == null) {
             return "redirect:/users/formLogin";
         }
@@ -602,5 +601,20 @@ public class UserController {
         user.setProfileImage(null);
         userService.updateUser(user);
         return "redirect:/users/formUpdate";
+    }
+
+    public String getViewAttributes() {
+        return "message";
+    }
+
+    public void setSession(HttpSession session, Long id){
+        session.setAttribute("userId", id);
+    }
+
+    private String validateInputs(int age, double height, double weight) {
+        if (age < 0) return "Age ne peut pas être négatif";
+        if (height < 0) return "Taille ne peut pas être négatif";
+        if (weight < 0) return "Poids ne peut pas être négatif";
+        return null;
     }
 }

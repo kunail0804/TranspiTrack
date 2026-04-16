@@ -29,7 +29,7 @@ class BadgeInitializerTest {
     private BadgeInitializer badgeInitializer;
 
     @Test
-    void runShouldInsertAllBadgesWhenNoneExist() throws Exception {
+    void runShouldInsertAllBadgesWhenNoneExist() {
         when(badgeRepository.existsByTitle(any())).thenReturn(false);
 
         badgeInitializer.run(args);
@@ -38,7 +38,7 @@ class BadgeInitializerTest {
     }
 
     @Test
-    void runShouldSkipBadgesAlreadyPresent() throws Exception {
+    void runShouldSkipBadgesAlreadyPresent() {
         when(badgeRepository.existsByTitle(any())).thenReturn(true);
 
         badgeInitializer.run(args);

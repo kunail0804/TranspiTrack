@@ -1,6 +1,7 @@
 package fr.utc.miage.transpitrack.Model.Jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -34,7 +35,6 @@ class BadgeServiceTest {
     private BadgeService badgeService;
 
     // ── getUserBadges ───────────────────────────────────────────────
-
     @Test
     void getUserBadgesShouldReturnBadgesForUser() {
         User user = new User();
@@ -48,7 +48,6 @@ class BadgeServiceTest {
     }
 
     // ── checkAndAwardBadges : DISTANCE ─────────────────────────────
-
     @Test
     void checkAndAwardBadgesShouldAwardDistanceBadgeWhenThresholdMet() {
         User user = new User();
@@ -85,7 +84,6 @@ class BadgeServiceTest {
     }
 
     // ── checkAndAwardBadges : ACTIVITY_COUNT ───────────────────────
-
     @Test
     void checkAndAwardBadgesShouldAwardActivityCountBadgeWhenThresholdMet() {
         User user = new User();
@@ -107,7 +105,6 @@ class BadgeServiceTest {
     }
 
     // ── checkAndAwardBadges : DURATION ─────────────────────────────
-
     @Test
     void checkAndAwardBadgesShouldAwardDurationBadgeWhenThresholdMet() {
         User user = new User();
@@ -126,7 +123,6 @@ class BadgeServiceTest {
     }
 
     // ── checkAndAwardBadges : déjà obtenu ──────────────────────────
-
     @Test
     void checkAndAwardBadgesShouldNotAwardBadgeAlreadyEarned() {
         User user = new User();
@@ -145,7 +141,6 @@ class BadgeServiceTest {
     }
 
     // ── checkAndAwardBadges : plusieurs badges à la fois ───────────
-
     @Test
     void checkAndAwardBadgesShouldAwardMultipleBadgesAtOnce() {
         User user = new User();
@@ -156,7 +151,7 @@ class BadgeServiceTest {
 
         Badge distanceBadge = new Badge("Premiers km", "10 km", 10.0, BadgeType.DISTANCE);
         Badge durationBadge = new Badge("Première heure", "60 min", 60.0, BadgeType.DURATION);
-        Badge countBadge    = new Badge("Premier pas", "1 activité", 1.0, BadgeType.ACTIVITY_COUNT);
+        Badge countBadge = new Badge("Premier pas", "1 activité", 1.0, BadgeType.ACTIVITY_COUNT);
 
         when(badgeRepository.findAll()).thenReturn(List.of(distanceBadge, durationBadge, countBadge));
         when(userBadgeRepository.existsByUserAndBadge(any(), any())).thenReturn(false);
@@ -167,7 +162,6 @@ class BadgeServiceTest {
     }
 
     // ── checkAndAwardBadges : liste vide ───────────────────────────
-
     @Test
     void checkAndAwardBadgesShouldNotAwardAnythingWhenNoActivities() {
         User user = new User();
@@ -211,6 +205,27 @@ class BadgeServiceTest {
         when(userBadgeRepository.existsByUserAndBadge(user, badge)).thenReturn(false);
 
         badgeService.checkAndAwardBadges(user, List.of(a));
+
+        verify(userBadgeRepository, never()).save(any());
+    }
+
+    @Test
+    void checkAndAwardBadgesShouldThrowWhenBadgeTypeIsNull() {
+        User user = new User();
+
+        Activity a = new Activity();
+        a.setDistance(100.0);
+        a.setDuration(100);
+
+        Badge badge = new Badge("Invalid", "No type", 0.0, null);
+
+        when(badgeRepository.findAll()).thenReturn(List.of(badge));
+        when(userBadgeRepository.existsByUserAndBadge(user, badge)).thenReturn(false);
+
+        IllegalStateException ex = assertThrows(IllegalStateException.class,
+                () -> badgeService.checkAndAwardBadges(user, List.of(a)));
+
+        assertEquals("Badge type cannot be null", ex.getMessage());
 
         verify(userBadgeRepository, never()).save(any());
     }
