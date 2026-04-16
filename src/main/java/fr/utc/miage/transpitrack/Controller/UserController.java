@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Enum.Level;
+import fr.utc.miage.transpitrack.Model.Enum.Temporality;
 import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Goal;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
@@ -457,19 +458,25 @@ public class UserController {
         }
         User user = userService.getUserById(userId);
         model.addAttribute("goals", user.getGoals());
+        model.addAttribute("sports", sportService.getAllSports());
+        model.addAttribute("temporalities", Temporality.values());
+
         return "goals/listGoals";
     }
 
     @PostMapping("/addGoal")
     public String addGoal(@RequestParam("goal") String textGoal,
                           @RequestParam("targetDistance") Double distance,
+                          @RequestParam("sportId") Long sportId,
+                          @RequestParam("temporality") Temporality temporality,
                           HttpSession session) {
         Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) return REDIRECT_LOGIN;
         if (textGoal == null || distance == null) return REDIRECT_GOALS;
 
         User user = userService.getUserById(userId);
-        Goal goal = new Goal(distance, textGoal, user);
+        Sport sport = sportService.getSportById(sportId);
+        Goal goal = new Goal(distance, textGoal, user, sport, temporality);
         goalService.createGoal(goal);
         user.addGoal(goal);
         userService.updateUser(user);
@@ -480,16 +487,21 @@ public class UserController {
     public String updateGoal(@RequestParam("goalId") Long goalId,
                              @RequestParam("goal") String textGoal,
                              @RequestParam("targetDistance") Double distance,
+                             @RequestParam("sportId") Long sportId,
+                             @RequestParam("temporality") Temporality temporality,
                              HttpSession session) {
         Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) return REDIRECT_LOGIN;
         if (textGoal == null || distance == null) return REDIRECT_GOALS;
 
         Goal goal = goalService.getGoalById(goalId);
+        Sport sport = sportService.getSportById(sportId);
         User user = userService.getUserById(userId);
         user.deleteGoal(goal);
         goal.setGoalText(textGoal);
         goal.setTargetDistance(distance);
+        goal.setSport(sport);
+        goal.setTemporality(temporality);
         goalService.updateGoal(goal);
         user.addGoal(goal);
         userService.updateUser(user);
