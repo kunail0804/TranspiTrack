@@ -24,7 +24,7 @@ import fr.utc.miage.transpitrack.Model.User;
 import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 
 @ExtendWith(MockitoExtension.class)
-public class FriendshipServiceTest {
+class FriendshipServiceTest {
     @Mock
     private FriendshipRepository friendshipRepository;
 

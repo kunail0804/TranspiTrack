@@ -61,14 +61,14 @@ public class UserController {
     ImageStorageService imageStorageService;
 
     private String message = "";
-    private static final String needConnexion = "Il faut être connecte !";
+    private static final String NEEDCONNEXION = "Il faut être connecte !";
 
-    private static final String redirectFormLogin = "redirect:/users/formLogin";
-    private static final String redirectFormUpdate = "redirect:/users/formUpdate";
-    private static final String redirectFormCreate = "redirect:/users/formCreate";
-    private static final String redirectDashboard = "redirect:/users/dashboard";
-    private static final String redirectConsultationPreferences = "redirect:/users/consultationPreferences";
-    private static final String redirectConsultationGoals = "redirect:/users/consultationGoals";
+    private static final String REDIRECTFORMLOGIN = "redirect:/users/formLogin";
+    private static final String REDIRECTFORMUPDATE = "redirect:/users/formUpdate";
+    private static final String REDIRECTFORMCREATE = "redirect:/users/formCreate";
+    private static final String REDIRECTDASHBOARD = "redirect:/users/dashboard";
+    private static final String REDIRECTCONSULTATIONPREFERENCES = "redirect:/users/consultationPreferences";
+    private static final String REDIRECTCONSULTATIONGOALS = "redirect:/users/consultationGoals";
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -102,23 +102,23 @@ public class UserController {
 
         if (age < 0) {
             message = "Age ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            return redirectWithMessage(message, REDIRECTFORMCREATE, model);
         }
         if (height < 0) {
             message = "Taille ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            return redirectWithMessage(message, REDIRECTFORMCREATE, model);
         }
 
         if (weight < 0) {
             message = "Poids ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            return redirectWithMessage(message, REDIRECTFORMCREATE, model);
         }
 
         User userExist = userService.getUserByEmail(email);
 
         if (userExist != null) {
             message = "email dejas existant";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            return redirectWithMessage(message, REDIRECTFORMCREATE, model);
         }
 
         try {
@@ -135,14 +135,14 @@ public class UserController {
             return "users/formCreate";
         } catch (Exception _) {
             message = "Email invalide";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            return redirectWithMessage(message, REDIRECTFORMCREATE, model);
         }
 
         message = "Création compte réussie";
         model.addAttribute(getViewAttributes(), message);
         message = "";
         
-        return redirectDashboard;
+        return REDIRECTDASHBOARD;
     }
 
 
@@ -153,8 +153,8 @@ public class UserController {
         Long userId = getUserId(session);
 
         if(userId==null){
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
         User user = userService.getUserById(userId);
         model.addAttribute("user", user);
@@ -179,7 +179,7 @@ public class UserController {
 
         String validationError = validateInputs(age, height, weight);
         if (validationError != null) {
-            return redirectWithMessage(validationError, redirectFormUpdate, model);
+            return redirectWithMessage(validationError, REDIRECTFORMUPDATE, model);
         }
 
         Long actualUserId = getUserId(session);
@@ -203,7 +203,7 @@ public class UserController {
                 actualUser.setCity(city);
             }else{
                 message = "email déja existant";
-                return redirectWithMessage(message, redirectFormUpdate, model);
+                return redirectWithMessage(message, REDIRECTFORMUPDATE, model);
             }
         }else{
             actualUser.setName(name);
@@ -231,14 +231,14 @@ public class UserController {
             return "users/formUpdate";
         } catch (Exception _) {
             message = "Email invalide";
-            return redirectWithMessage(message, redirectFormUpdate, model);
+            return redirectWithMessage(message, REDIRECTFORMUPDATE, model);
         }
         message = "Modification du compte réussie";
 
         model.addAttribute(getViewAttributes(), message);
 
 
-        return redirectDashboard;
+        return REDIRECTDASHBOARD;
     }
 
     @GetMapping("/formLogin")
@@ -266,14 +266,14 @@ public class UserController {
 
         if (userLogin == null) {
             message = "email ou mots de passe incorrect";
-            return redirectWithMessage(message, redirectFormLogin, model);
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
 
         boolean isValid = encoder.matches(password, userLogin.getPassword());
 
         if (!isValid) {
             message = "email ou mots de passe incorrect";
-            return redirectWithMessage(message, redirectFormLogin, model);
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
 
         setSession(session, userLogin.getId());
@@ -281,7 +281,7 @@ public class UserController {
         message = "Connexion compte réussie";
         model.addAttribute(getViewAttributes(), message);
 
-        return redirectDashboard;
+        return REDIRECTDASHBOARD;
     }
 
     @GetMapping("/search")
@@ -291,8 +291,8 @@ public class UserController {
 
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
 
         if (query != null && !query.isBlank()) {
@@ -308,20 +308,20 @@ public class UserController {
     @GetMapping("/logout")
     public String logoutPage(HttpSession session) {
         session.invalidate();
-        return redirectFormLogin;
+        return REDIRECTFORMLOGIN;
     }
 
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
         User user = userService.getUserById(userId);
         if (user == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
         
 
@@ -347,7 +347,7 @@ public class UserController {
     
     Long currentUserId = getUserId(session);
     if (currentUserId == null) {
-        return redirectFormLogin;
+        return REDIRECTFORMLOGIN;
     }
 
     User profileUser = userService.getUserById(profileId);
@@ -377,8 +377,8 @@ public class UserController {
                                           HttpSession session){
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
         User user = userService.getUserById(userId);
         List<Sport> sports = sportService.getAllSports();
@@ -395,12 +395,12 @@ public class UserController {
                                 HttpSession session){
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
 
         if(sportId == null || level == null){
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONPREFERENCES, model);
         }
 
         Sport sport = sportService.getSportById(sportId);
@@ -410,7 +410,7 @@ public class UserController {
         UserSport userSportExist = userSportService.getUserSportByUserAndSport(user, sport);
         if(userSportExist!=null){
             message = "Ce sport est dejas dans votre liste !";
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONPREFERENCES, model);
         }
         
 
@@ -419,7 +419,7 @@ public class UserController {
         user.addPreference(userSport);
         userService.updateUser(user);
 
-        return redirectConsultationPreferences;
+        return REDIRECTCONSULTATIONPREFERENCES;
     }
 
      @PostMapping("/updateLevel")
@@ -430,12 +430,12 @@ public class UserController {
 
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
 
          if(userSportId == null || level == null){
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONPREFERENCES, model);
         }
 
         UserSport userSport = userSportService.getUserSportById(userSportId);
@@ -449,7 +449,7 @@ public class UserController {
         user.addPreference(userSport);
         userService.updateUser(user);
 
-        return redirectConsultationPreferences;
+        return REDIRECTCONSULTATIONPREFERENCES;
     }
 
     @PostMapping("/deletePreference")
@@ -458,13 +458,13 @@ public class UserController {
                                    HttpSession session){
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
 
         if(userSportId == null){
             message = "UserSport non trouvé";
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONPREFERENCES, model);
         }
         UserSport userSport = userSportService.getUserSportById(userSportId);
 
@@ -474,7 +474,7 @@ public class UserController {
         user.deletePreference(userSport);
         userService.updateUser(user);
 
-        return redirectConsultationPreferences;
+        return REDIRECTCONSULTATIONPREFERENCES;
     }
 
 
@@ -483,8 +483,8 @@ public class UserController {
                                           HttpSession session){
         Long userId = getUserId(session);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            message = NEEDCONNEXION;
+            return redirectWithMessage(message, REDIRECTFORMLOGIN, model);
         }
         User user = userService.getUserById(userId);
 
@@ -499,11 +499,11 @@ public class UserController {
                           HttpSession session){
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectWithMessage(needConnexion, redirectFormLogin, model);
+            return redirectWithMessage(NEEDCONNEXION, REDIRECTFORMLOGIN, model);
         }
 
         if(textGoal == null || distance == null){
-            return redirectWithMessage(message, redirectConsultationGoals, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONGOALS, model);
         }
 
         User user = userService.getUserById(userId);
@@ -514,7 +514,7 @@ public class UserController {
         user.addGoal(goal);
         userService.updateUser(user);
 
-        return redirectConsultationGoals;
+        return REDIRECTCONSULTATIONGOALS;
     }
 
      @PostMapping("/updateGoal")
@@ -526,11 +526,11 @@ public class UserController {
 
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectWithMessage(needConnexion, redirectFormLogin, model);
+            return redirectWithMessage(NEEDCONNEXION, REDIRECTFORMLOGIN, model);
         }
 
         if(textGoal == null || distance == null){
-            return redirectWithMessage(message, redirectConsultationGoals, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONGOALS, model);
         }
 
 
@@ -546,7 +546,7 @@ public class UserController {
         user.addGoal(goal);
         userService.updateUser(user);
 
-        return redirectConsultationGoals;
+        return REDIRECTCONSULTATIONGOALS;
     }
 
     @PostMapping("/deleteGoal")
@@ -555,12 +555,12 @@ public class UserController {
                                    HttpSession session){
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectWithMessage(needConnexion, redirectFormLogin, model);
+            return redirectWithMessage(NEEDCONNEXION, REDIRECTFORMLOGIN, model);
         }
 
         if(goalId == null){
             message = "Goal non trouvé";
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
+            return redirectWithMessage(message, REDIRECTCONSULTATIONPREFERENCES, model);
         }
         Goal goal = goalService.getGoalById(goalId);
 
@@ -570,7 +570,7 @@ public class UserController {
         user.deleteGoal(goal);
         userService.updateUser(user);
 
-        return redirectConsultationGoals;
+        return REDIRECTCONSULTATIONGOALS;
     }
 
     public Long getUserId(HttpSession session){
