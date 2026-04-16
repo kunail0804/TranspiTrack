@@ -456,7 +456,7 @@ class WeatherServiceTest {
         Thread testThread = new Thread(() -> {
             try {
                 weatherService.getWeatherForUser(1L);
-            } catch (RuntimeException ignored) {
+            } catch (RuntimeException _) {
                 // expected wrapping
             }
         });

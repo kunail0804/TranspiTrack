@@ -2,9 +2,13 @@ package fr.utc.miage.transpitrack.Model.Jpa;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.Mockito.verify;
@@ -152,7 +156,6 @@ class UserServiceTest {
     // ──────────────────────────────────────────────────────────────
     // searchUsers
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void searchUsersShouldReturnMatchingUsers() {
         User user = new User();
@@ -173,5 +176,76 @@ class UserServiceTest {
 
         assertEquals(0, result.size());
         verify(userRepository).searchByFullName("Inconnu");
+    }
+
+    @Test
+    void shouldReturnCreatedAndJoinedChallengeIds() {
+
+        when(userRepository.findCreatedChallengeIdsByUserId(1L))
+                .thenReturn(Set.of(1L, 2L));
+
+        when(userRepository.findJoinedChallengeIdsByUserId(1L))
+                .thenReturn(Set.of(2L, 3L));
+
+        Set<Long> result = userService.getParticipatingChallengeIds(1L);
+
+        assertEquals(Set.of(1L, 2L, 3L), result);
+
+        verify(userRepository).findCreatedChallengeIdsByUserId(1L);
+        verify(userRepository).findJoinedChallengeIdsByUserId(1L);
+    }
+
+    @Test
+    void shouldReturnOnlyCreatedChallenges() {
+
+        when(userRepository.findCreatedChallengeIdsByUserId(1L))
+                .thenReturn(Set.of(1L));
+
+        when(userRepository.findJoinedChallengeIdsByUserId(1L))
+                .thenReturn(Set.of());
+
+        Set<Long> result = userService.getParticipatingChallengeIds(1L);
+
+        assertEquals(Set.of(1L), result);
+    }
+
+    @Test
+    void shouldReturnOnlyJoinedChallenges() {
+
+        when(userRepository.findCreatedChallengeIdsByUserId(1L))
+                .thenReturn(Set.of());
+
+        when(userRepository.findJoinedChallengeIdsByUserId(1L))
+                .thenReturn(Set.of(5L, 6L));
+
+        Set<Long> result = userService.getParticipatingChallengeIds(1L);
+
+        assertEquals(Set.of(5L, 6L), result);
+    }
+
+    @Test
+    void shouldReturnTrueWhenUserHasJoinedChallenge() {
+
+        when(userRepository.hasJoinedChallenge(1L, 10L))
+                .thenReturn(true);
+
+        boolean result = userService.hasJoinedChallenge(1L, 10L);
+
+        assertTrue(result);
+
+        verify(userRepository).hasJoinedChallenge(1L, 10L);
+    }
+
+    @Test
+    void shouldReturnFalseWhenUserHasNotJoinedChallenge() {
+
+        when(userRepository.hasJoinedChallenge(1L, 10L))
+                .thenReturn(false);
+
+        boolean result = userService.hasJoinedChallenge(1L, 10L);
+
+        assertFalse(result);
+
+        verify(userRepository).hasJoinedChallenge(1L, 10L);
     }
 }

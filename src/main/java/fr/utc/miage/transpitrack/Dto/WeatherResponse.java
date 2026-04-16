@@ -26,6 +26,10 @@ public class WeatherResponse {
         this.forecast = forecast;
     }
 
+    public WeatherResponse() {
+        //TODO Auto-generated constructor stub
+    }
+
     // Getters
     public String getCity() { return city; }
     public double getCurrentTemp() { return currentTemp; }

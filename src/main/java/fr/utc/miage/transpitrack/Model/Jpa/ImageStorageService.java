@@ -49,7 +49,7 @@ public class ImageStorageService {
         }
         try {
             Files.deleteIfExists(uploadPath.resolve(filename));
-        } catch (IOException e) {
+        } catch (IOException _) {
             // log silently
         }
     }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -45,17 +46,28 @@ import jakarta.servlet.http.HttpSession;
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
 
-    @Mock private UserService userService;
-    @Mock private ActivityService activityService;
-    @Mock private FriendshipService friendshipService;
-    @Mock private SportService sportService;
-    @Mock private UserSportService userSportService;
-    @Mock private BadgeService badgeService;
-    @Mock private GoalService goalService;
-    @Mock private ImageStorageService imageStorageService;
-    @Mock private Model model;
-    @Mock private HttpSession session;
-    @Mock private RedirectAttributes redirectAttrs;
+    @Mock
+    private UserService userService;
+    @Mock
+    private ActivityService activityService;
+    @Mock
+    private FriendshipService friendshipService;
+    @Mock
+    private SportService sportService;
+    @Mock
+    private UserSportService userSportService;
+    @Mock
+    private BadgeService badgeService;
+    @Mock
+    private GoalService goalService;
+    @Mock
+    private ImageStorageService imageStorageService;
+    @Mock
+    private Model model;
+    @Mock
+    private HttpSession session;
+    @Mock
+    private RedirectAttributes redirectAttrs;
 
     @InjectMocks
     private UserController userController;
@@ -206,6 +218,37 @@ class UserControllerTest {
     }
 
     @Test
+    void searchUserShouldHandleFriendships() {
+        when(session.getAttribute("userId")).thenReturn(1L);
+
+        User requester = mock(User.class);
+        User receiver = mock(User.class);
+
+        when(requester.getId()).thenReturn(1L);
+        when(receiver.getId()).thenReturn(2L);
+
+        Friendship friendship = mock(Friendship.class);
+        when(friendship.getRequester()).thenReturn(requester);
+        when(friendship.getReceiver()).thenReturn(receiver);
+
+        Friendship friendship2 = mock(Friendship.class);
+        when(friendship2.getRequester()).thenReturn(requester);
+        when(friendship2.getReceiver()).thenReturn(receiver);
+
+        when(friendshipService.getMyFriendships(1L)).thenReturn(List.of(friendship));
+        when(friendshipService.getMySentPendingFriendships(1L))
+                .thenReturn(List.of(friendship2));
+        when(friendshipService.getMyPendingFriendships(1L))
+                .thenReturn(List.of(friendship2));
+
+        String view = userController.searchUser("Jean", model, session);
+
+        assertEquals("search/searchUser", view);
+
+        verify(model).addAttribute(eq("relatedUserIds"), anySet());
+    }
+
+    @Test
     void formUpdateShouldReturnFormLoginWhenNotLoggedIn() {
         String view = userController.formUpdate(model, session);
 
@@ -319,7 +362,6 @@ class UserControllerTest {
         assertEquals("redirect:/users/formUpdate", view);
         verify(model).addAttribute("message", "email déja existant");
     }
-
 
     @Test
     void createUserShouldReturnFormCreateWhenImageUploadFails() throws IOException {
@@ -591,7 +633,6 @@ class UserControllerTest {
         user.setGender(Gender.FEMALE);
         user.setWeight(60.0);
         user.setCity("Paris");
-
 
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
@@ -904,7 +945,7 @@ class UserControllerTest {
     void addGoalShouldSaveAndRedirectWhenValid() {
         User user = new User();
         Sport sport = new Sport(); // On simule un sport
-        
+
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(sportService.getSportById(1L)).thenReturn(sport); // Il faut mocker le sportService
@@ -946,10 +987,10 @@ class UserControllerTest {
         User user = new User();
         Sport oldSport = new Sport();
         Sport newSport = new Sport();
-        
+
         // On utilise le nouveau constructeur pour initialiser le goal mocké
         Goal goal = new Goal(5.0, "Ancienne", user, oldSport, Temporality.QUOTIDIEN);
-        
+
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(goalService.getGoalById(1L)).thenReturn(goal);
@@ -960,7 +1001,7 @@ class UserControllerTest {
         assertEquals("redirect:/users/consultationGoals", view);
         verify(goalService).updateGoal(goal);
         verify(userService).updateUser(user);
-        
+
         // On vérifie que TOUTES les valeurs ont bien été mises à jour
         assertEquals("Courir 10 km", goal.getGoalText());
         assertEquals(10.0, goal.getTargetDistance(), 0.001);
