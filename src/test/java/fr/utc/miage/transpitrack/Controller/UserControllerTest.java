@@ -25,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
 import fr.utc.miage.transpitrack.Model.Enum.Level;
+import fr.utc.miage.transpitrack.Model.Enum.Temporality;
 import fr.utc.miage.transpitrack.Model.Friendship;
 import fr.utc.miage.transpitrack.Model.Goal;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
@@ -899,7 +900,8 @@ class UserControllerTest {
 
     @Test
     void addGoalShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.addGoal("Courir", 10.0, model, session);
+        // Ajout de paramètres bidons pour sportId (1L) et temporality (Temporality.QUOTIDIEN)
+        String view = userController.addGoal("Courir", 10.0, 1L, Temporality.QUOTIDIEN, model, session);
 
         assertEquals("redirect:/users/formLogin", view);
         verify(model).addAttribute("message", "Il faut être connecte !");
@@ -909,7 +911,7 @@ class UserControllerTest {
     void addGoalShouldRedirectWhenTextIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.addGoal(null, 10.0, model, session);
+        String view = userController.addGoal(null, 10.0, 1L, Temporality.QUOTIDIEN, model, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -918,7 +920,7 @@ class UserControllerTest {
     void addGoalShouldRedirectWhenDistanceIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.addGoal("Courir", null, model, session);
+        String view = userController.addGoal("Courir", null, 1L, Temporality.QUOTIDIEN, model, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -926,10 +928,13 @@ class UserControllerTest {
     @Test
     void addGoalShouldSaveAndRedirectWhenValid() {
         User user = new User();
+        Sport sport = new Sport(); // On simule un sport
+        
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
+        when(sportService.getSportById(1L)).thenReturn(sport); // Il faut mocker le sportService
 
-        String view = userController.addGoal("Courir 10 km", 10.0, model, session);
+        String view = userController.addGoal("Courir 10 km", 10.0, 1L, Temporality.HEBDOMADAIRE, model, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
         verify(goalService).createGoal(any(Goal.class));
@@ -938,7 +943,7 @@ class UserControllerTest {
 
     @Test
     void updateGoalShouldReturnFormLoginWhenNotLoggedIn() {
-        String view = userController.updateGoal(1L, "Courir", 10.0, model, session);
+        String view = userController.updateGoal(1L, "Courir", 10.0, 1L, Temporality.QUOTIDIEN, model, session);
 
         assertEquals("redirect:/users/formLogin", view);
         verify(model).addAttribute("message", "Il faut être connecte !");
@@ -948,7 +953,7 @@ class UserControllerTest {
     void updateGoalShouldRedirectWhenTextIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.updateGoal(1L, null, 10.0, model, session);
+        String view = userController.updateGoal(1L, null, 10.0, 1L, Temporality.QUOTIDIEN, model, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -957,7 +962,7 @@ class UserControllerTest {
     void updateGoalShouldRedirectWhenDistanceIsNull() {
         when(session.getAttribute("userId")).thenReturn(1L);
 
-        String view = userController.updateGoal(1L, "Courir", null, model, session);
+        String view = userController.updateGoal(1L, "Courir", null, 1L, Temporality.QUOTIDIEN, model, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
     }
@@ -965,18 +970,29 @@ class UserControllerTest {
     @Test
     void updateGoalShouldUpdateAndRedirectWhenValid() {
         User user = new User();
-        Goal goal = new Goal(5.0, "Ancienne", user);
+        Sport oldSport = new Sport();
+        Sport newSport = new Sport();
+        
+        // On utilise le nouveau constructeur pour initialiser le goal mocké
+        Goal goal = new Goal(5.0, "Ancienne", user, oldSport, Temporality.QUOTIDIEN);
+        
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
         when(goalService.getGoalById(1L)).thenReturn(goal);
+        when(sportService.getSportById(2L)).thenReturn(newSport); // On mock la récupération du nouveau sport
 
-        String view = userController.updateGoal(1L, "Courir 10 km", 10.0, model, session);
+        // On teste la modification avec l'id du nouveau sport (2L) et une nouvelle temporalité
+        String view = userController.updateGoal(1L, "Courir 10 km", 10.0, 2L, Temporality.MENSUEL, model, session);
 
         assertEquals("redirect:/users/consultationGoals", view);
         verify(goalService).updateGoal(goal);
         verify(userService).updateUser(user);
+        
+        // On vérifie que TOUTES les valeurs ont bien été mises à jour
         assertEquals("Courir 10 km", goal.getGoalText());
         assertEquals(10.0, goal.getTargetDistance(), 0.001);
+        assertEquals(newSport, goal.getSport());
+        assertEquals(Temporality.MENSUEL, goal.getTemporality());
     }
 
     @Test

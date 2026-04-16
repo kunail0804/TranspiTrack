@@ -1,6 +1,9 @@
 package fr.utc.miage.transpitrack.Model;
 
+import fr.utc.miage.transpitrack.Model.Enum.Temporality;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -24,12 +27,28 @@ public class Goal {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "sport_id", nullable = false)
+    private Sport sport;
+
+    @Enumerated(EnumType.STRING)
+    private Temporality temporality;
+
     public Goal(){}
 
     public Goal(Double targetDistance, String goalText, User user) {
         this.targetDistance = targetDistance;
         this.user = user;
         this.goalText = goalText;
+    }
+
+
+    public Goal(Double targetDistance, String goalText, User user, Sport sport, Temporality temporality) {
+        this.targetDistance = targetDistance;
+        this.goalText = goalText;
+        this.user = user;
+        this.sport = sport;
+        this.temporality = temporality;
     }
 
     public Double getTargetDistance() {
@@ -58,5 +77,23 @@ public class Goal {
 
     public Long getId() {
         return id;
-    }    
+    }
+
+    public void setSport(Sport sport) {
+        this.sport = sport;
+    }
+
+    public void setTemporality(Temporality temporality) {
+        this.temporality = temporality;
+    }
+
+    public Sport getSport() {
+        return sport;
+    }
+
+    public Temporality getTemporality() {
+        return temporality;
+    }   
+    
+    
 }
