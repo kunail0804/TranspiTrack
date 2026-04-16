@@ -1,9 +1,11 @@
 package fr.utc.miage.transpitrack.Model.Jpa;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import fr.utc.miage.transpitrack.Model.User;
 
@@ -23,4 +25,13 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT u FROM User u WHERE u.email = ?1 ")
     User findByEmail(String email);
+
+    @Query("SELECT c.id FROM User u JOIN u.joinedChallenges c WHERE u.id = :userId")
+    Set<Long> findJoinedChallengeIdsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT c.id FROM Challenge c WHERE c.creator.id = :userId")
+    Set<Long> findCreatedChallengeIdsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(u) > 0 FROM User u JOIN u.joinedChallenges c WHERE u.id = :userId AND c.id = :challengeId")
+    boolean hasJoinedChallenge(@Param("userId") Long userId, @Param("challengeId") Long challengeId);
 }

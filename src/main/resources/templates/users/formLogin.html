@@ -11,6 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body class="d-flex align-items-center justify-content-center" style="min-height: 100vh; background: var(--bg); padding: 20px;">
 
@@ -20,12 +21,6 @@
             <div class="sidebar-logo-icon mx-auto mb-3" style="width: 56px; height: 56px; font-size: 28px;">🏃</div>
             <h2 class="tt-h2 mb-1">Bon retour !</h2>
             <p class="text-muted-tt mb-0">Connectez-vous à votre compte</p>
-        </div>
-
-        <div class="alert-tt alert-info mb-4" th:if="${message != null and !message.isEmpty()}">
-            <i class="bi bi-info-circle-fill alert-tt-icon"></i>
-            <div class="alert-tt-content"><div class="desc" th:text="${message}"></div></div>
-            <i class="bi bi-x-lg alert-tt-close" onclick="this.closest('.alert-tt').remove()"></i>
         </div>
 
         <form action="/users/loginUser" method="POST">
@@ -62,5 +57,6 @@
 
     </div>
 
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

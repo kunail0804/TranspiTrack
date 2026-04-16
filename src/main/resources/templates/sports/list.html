@@ -10,27 +10,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/sidebar :: sidebar-styles}"></th:block>
 </head>
 <body>
 
 <div class="layout">
 
-    <nav class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">🏃</div>
-            <div>
-                <div class="sidebar-logo-text">TranspiTrack</div>
-            </div>
-        </div>
-
-        <span class="sidebar-section-label">Menu</span>
-        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
-        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
-        
-        <span class="sidebar-section-label mt-3">Administration</span>
-        <a th:href="@{/sports}" class="active"><i class="bi bi-list-ul"></i> Liste des sports</a>
-        <a th:href="@{/sports/add}"><i class="bi bi-plus-circle"></i> Ajouter un sport</a>
-    </nav>
+    <nav th:replace="~{fragments/sidebar :: sidebar-nav(activePage='activities')}"></nav>
 
     <main class="main">
 

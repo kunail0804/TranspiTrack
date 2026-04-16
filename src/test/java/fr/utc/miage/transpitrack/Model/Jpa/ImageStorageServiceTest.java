@@ -61,7 +61,6 @@ class ImageStorageServiceTest {
     // ──────────────────────────────────────────────────────────────
     // init()
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void initShouldCreateUploadDirectoryWhenItDoesNotExist() throws Exception {
         Path subDir = tempDir.resolve("newSubDir");
@@ -83,7 +82,6 @@ class ImageStorageServiceTest {
     // ──────────────────────────────────────────────────────────────
     // store()
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void storeShouldReturnNullWhenFileIsNull() throws IOException {
         String result = service.store(null);
@@ -99,6 +97,19 @@ class ImageStorageServiceTest {
         String result = service.store(emptyFile);
 
         assertNull(result);
+    }
+
+    @Test
+    void storeShouldHandleNullOriginalFilename() throws IOException {
+        MultipartFile file = mock(MultipartFile.class);
+        when(file.isEmpty()).thenReturn(false);
+        when(file.getOriginalFilename()).thenReturn(null);
+        when(file.getInputStream()).thenReturn(new ByteArrayInputStream("data".getBytes()));
+
+        String result = service.store(file);
+
+        assertNotNull(result);
+        assertFalse(result.contains(".")); // no extension
     }
 
     @Test
@@ -155,7 +166,6 @@ class ImageStorageServiceTest {
     // ──────────────────────────────────────────────────────────────
     // delete()
     // ──────────────────────────────────────────────────────────────
-
     @ParameterizedTest
     @NullSource
     @ValueSource(strings = {"   ", "placeholder.png"})
@@ -187,7 +197,7 @@ class ImageStorageServiceTest {
     void deleteShouldSilentlyHandleIOExceptionFromFileSystem() {
         try (MockedStatic<Files> mockedFiles = Mockito.mockStatic(Files.class)) {
             mockedFiles.when(() -> Files.deleteIfExists(any(Path.class)))
-                       .thenThrow(new IOException("disk error"));
+                    .thenThrow(new IOException("disk error"));
 
             assertDoesNotThrow(() -> service.delete("someFile.png"));
         }
@@ -196,7 +206,6 @@ class ImageStorageServiceTest {
     // ──────────────────────────────────────────────────────────────
     // getPlaceholderFilename()
     // ──────────────────────────────────────────────────────────────
-
     @Test
     void getPlaceholderFilenameShouldReturnPlaceholderPng() {
         assertEquals("placeholder.png", service.getPlaceholderFilename());

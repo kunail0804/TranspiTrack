@@ -1,8 +1,7 @@
 package fr.utc.miage.transpitrack;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.mock;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
@@ -14,8 +13,7 @@ class TranspitrackApplicationTests {
 
 	@Test
     void mainMethodRuns() {
-        SpringApplication app = mock(SpringApplication.class);
-        TranspitrackApplication.main(new String[] {});
+        assertDoesNotThrow(() -> TranspitrackApplication.main(new String[] {}));
     }
 
 }

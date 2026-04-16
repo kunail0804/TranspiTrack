@@ -16,14 +16,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
+import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.User;
 
 @ExtendWith(MockitoExtension.class)
@@ -41,6 +45,7 @@ class WeatherServiceTest {
     private User testUser;
 
     @BeforeEach
+    @SuppressWarnings("unused")
     void setUp() {
         testUser = new User();
         testUser.setCity("Paris");
@@ -67,13 +72,19 @@ class WeatherServiceTest {
         assertTrue(exception.getMessage().contains("pas de ville renseignée"));
     }
 
-    @Test
+    @ParameterizedTest
+    @ValueSource(strings = {
+        "null",
+        "{}",
+        "{\"results\":[]}"
+    })
     @SuppressWarnings("unchecked")
-    void getWeatherForUser_shouldHandleNullGeoResponse() throws Exception {
+    void getWeatherForUserShouldHandleInvalidGeoResponses(String geoResponseBody) throws Exception {
+
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         HttpResponse<String> geoResp = mock(HttpResponse.class);
-        when(geoResp.body()).thenReturn("null"); // makes objectMapper return null
+        when(geoResp.body()).thenReturn(geoResponseBody);
 
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
                 .thenReturn(geoResp);
@@ -86,41 +97,7 @@ class WeatherServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void getWeatherForUser_shouldHandleMissingResultsKey() throws Exception {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-
-        HttpResponse<String> geoResp = mock(HttpResponse.class);
-        when(geoResp.body()).thenReturn("{}");
-
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(geoResp);
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> weatherService.getWeatherForUser(1L));
-
-        assertTrue(ex.getMessage().contains("Ville introuvable"));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    void getWeatherForUser_shouldHandleEmptyResultsArray() throws Exception {
-        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
-
-        HttpResponse<String> geoResp = mock(HttpResponse.class);
-        when(geoResp.body()).thenReturn("{\"results\":[]}");
-
-        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-                .thenReturn(geoResp);
-
-        RuntimeException ex = assertThrows(RuntimeException.class,
-                () -> weatherService.getWeatherForUser(1L));
-
-        assertTrue(ex.getMessage().contains("Ville introuvable"));
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    void getWeatherForUser_shouldFailWhenCurrentWeatherMissing() throws Exception {
+    void getWeatherForUserShouldFailWhenCurrentWeatherMissing() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
@@ -142,7 +119,7 @@ class WeatherServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void getWeatherForUser_shouldFailWhenDailyMissing() throws Exception {
+    void getWeatherForUserShouldFailWhenDailyMissing() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         String geoJson = "{\"results\":[{\"latitude\":48.85,\"longitude\":2.35,\"name\":\"Paris\"}]}";
@@ -164,7 +141,7 @@ class WeatherServiceTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    void getWeatherForUser_shouldWrapIOException() throws Exception {
+    void getWeatherForUserShouldWrapIOException() throws Exception {
         when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
 
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
@@ -307,7 +284,7 @@ class WeatherServiceTest {
         HttpResponse<String> geoResp = mock(HttpResponse.class);
         when(geoResp.body()).thenReturn(geoJson);
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
-        .thenReturn(geoResp);
+                .thenReturn(geoResp);
 
         Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
         assertTrue(e.getMessage().contains("Ville introuvable"));
@@ -454,6 +431,7 @@ class WeatherServiceTest {
         assertNull(activity.getWeatherCondition());
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void assignWeatherToActivityShouldSuppressExceptionAndNotUpdateWeather() throws Exception {
         fr.utc.miage.transpitrack.Model.Activity activity = new fr.utc.miage.transpitrack.Model.Activity();
@@ -465,5 +443,43 @@ class WeatherServiceTest {
 
         assertNull(activity.getTemperature());
         assertNull(activity.getWeatherCondition());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getWeatherForUserShouldRestoreInterruptFlagWhenInterruptedExceptionOccurs() throws Exception {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(testUser));
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        Thread testThread = new Thread(() -> {
+            try {
+                weatherService.getWeatherForUser(1L);
+            } catch (RuntimeException ignored) {
+                // expected wrapping
+            }
+        });
+
+        testThread.start();
+        testThread.join();
+
+        // The key assertion: interrupt flag must be set
+        assertTrue(testThread.isInterrupted());
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void assignWeatherToActivityShouldInterruptThreadWhenInterruptedExceptionOccurs() throws Exception {
+        Activity activity = new Activity();
+        activity.setCity("Paris");
+        activity.setDate(LocalDate.now());
+
+        when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
+                .thenThrow(new InterruptedException("interrupted"));
+
+        weatherService.assignWeatherToActivity(activity);
+
+        assertTrue(Thread.currentThread().isInterrupted());
     }
 }

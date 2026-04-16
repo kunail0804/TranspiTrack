@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Enum.Gender;
@@ -36,6 +37,22 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/users")
 public class UserController {
+
+    private static final String REDIRECT_DASHBOARD   = "redirect:/users/dashboard";
+    private static final String REDIRECT_LOGIN       = "redirect:/users/formLogin";
+    private static final String REDIRECT_PREFERENCES = "redirect:/users/consultationPreferences";
+    private static final String REDIRECT_GOALS       = "redirect:/users/consultationGoals";
+    private static final String REDIRECT_FORM_UPDATE = "redirect:/users/formUpdate";
+    private static final String REDIRECT_FORM_CREATE = "redirect:/users/formCreate";
+    private static final String REDIRECT_SEARCH      = "redirect:/users/search";
+    private static final String VIEW_FORM_CREATE     = "users/formCreate";
+    private static final String VIEW_FORM_UPDATE     = "users/formUpdate";
+    private static final String VIEW_FORM_LOGIN      = "users/formLogin";
+    private static final String SESSION_USER_ID      = "userId";
+    private static final String ERROR_MSG            = "errorMessage";
+    private static final String SUCCESS_MSG          = "successMessage";
+    private static final String MSG                  = "message";
+    private static final String NEEDCONNEXION        = "Il faut être connecte !";
 
     @Autowired
     UserService userService;
@@ -61,30 +78,18 @@ public class UserController {
     @Autowired
     ImageStorageService imageStorageService;
 
-    private String message = "";
-    private final String needConnexion = "Il faut être connecte !";
-
-    private final String redirectFormLogin = "redirect:/users/formLogin";
-    private final String redirectFormUpdate = "redirect:/users/formUpdate";
-    private final String redirectFormCreate = "redirect:/users/formCreate";
-    private final String redirectDashboard = "redirect:/users/dashboard";
-    private final String redirectConsultationPreferences = "redirect:/users/consultationPreferences";
-    private final String redirectConsultationGoals = "redirect:/users/consultationGoals";
-
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    // ──────────────────────────────────────────────────────────────
+    // Inscription
+    // ──────────────────────────────────────────────────────────────
+
     @GetMapping("/formCreate")
-    public String formCreate(Model model,
-                             HttpSession session) {
-
-        Long userId = getUserId(session);
-
-        if (userId != null) {
-            return "users/dashboard";
-        }
-        model.addAttribute("message", message);
-        message = "";
-        return "users/formCreate";
+    public String formCreate(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId != null) return REDIRECT_DASHBOARD;
+        model.addAttribute(MSG, "");
+        return VIEW_FORM_CREATE;
     }
 
     @PostMapping("/createUser")
@@ -99,69 +104,66 @@ public class UserController {
             @RequestParam("city") String city,
             @RequestParam(value = "profileImage", required = false) MultipartFile profileImageFile,
             Model model,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttrs) {
 
         if (age < 0) {
-            message = "Age ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            model.addAttribute(MSG, "Age ne peut pas être négatif");
+            return REDIRECT_FORM_CREATE;
         }
         if (height < 0) {
-            message = "Taille ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            model.addAttribute(MSG, "Taille ne peut pas être négatif");
+            return REDIRECT_FORM_CREATE;
         }
-
         if (weight < 0) {
-            message = "Poids ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            model.addAttribute(MSG, "Poids ne peut pas être négatif");
+            return REDIRECT_FORM_CREATE;
         }
 
         User userExist = userService.getUserByEmail(email);
-
         if (userExist != null) {
-            message = "email dejas existant";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            model.addAttribute(MSG, "email dejas existant");
+            return REDIRECT_FORM_CREATE;
         }
 
         try {
-            User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
-
+            User newUser = new User();
+            newUser.setName(name);
+            newUser.setFirstName(firstName);
+            newUser.setEmail(email);
+            newUser.setPassword(encoder.encode(password));
+            newUser.setAge(age);
+            newUser.setHeight(height);
+            newUser.setGender(Gender.valueOf(gender));
+            newUser.setWeight(weight);
+            newUser.setCity(city);
             String filename = imageStorageService.store(profileImageFile);
             newUser.setProfileImage(filename);
-
             User savedUser = userService.createUser(newUser);
-            session.setAttribute("userId", savedUser.getId());
-        } catch (IOException e) {
-            message = "Erreur lors de l'upload de l'image";
-            model.addAttribute("message", message);
-            return "users/formCreate";
-        } catch (Exception e) {
-            message = "Email invalide";
-            return redirectWithMessage(message, redirectFormCreate, model);
+            session.setAttribute(SESSION_USER_ID, savedUser.getId());
+        } catch (IOException _) {
+            model.addAttribute(MSG, "Erreur lors de l'upload de l'image");
+            return VIEW_FORM_CREATE;
+        } catch (Exception _) {
+            model.addAttribute(MSG, "Email invalide");
+            return REDIRECT_FORM_CREATE;
         }
 
-        message = "Création compte réussie";
-        model.addAttribute("message", message);
-        message = "";
-        
-        return redirectDashboard;
+        redirectAttrs.addFlashAttribute(SUCCESS_MSG, "Compte créé avec succès ! Bienvenue sur TranspiTrack.");
+        return REDIRECT_DASHBOARD;
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // Modification du profil
+    // ──────────────────────────────────────────────────────────────
 
     @GetMapping("/formUpdate")
-    public String formUpdate(Model model, 
-                             HttpSession session){
-
-        Long userId = getUserId(session);
-
-        if(userId==null){
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
-        }
+    public String formUpdate(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
         User user = userService.getUserById(userId);
         model.addAttribute("user", user);
-        message = "";
-
-        return "users/formUpdate";
+        return VIEW_FORM_UPDATE;
     }
 
     @PostMapping("/updateUser")
@@ -176,56 +178,44 @@ public class UserController {
                             @RequestParam("city") String city,
                             @RequestParam(value = "profileImage", required = false) MultipartFile profileImageFile,
                             Model model,
-                            HttpSession session) {
+                            HttpSession session,
+                            RedirectAttributes redirectAttrs) {
 
-        if(age<0){
-            message = "Age ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormUpdate, model);
-        }
-        if(height<0){
-            message = "Taille ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormUpdate, model);
-        }
-
-        if(weight<0){
-            message = "Poids ne peut pas être négatif";
-            return redirectWithMessage(message, redirectFormUpdate, model);
-        }
-
-        Long actualUserId = getUserId(session);
-
+        Long actualUserId = (Long) session.getAttribute(SESSION_USER_ID);
         User actualUser = userService.getUserById(actualUserId);
 
-        if(!actualUser.getEmail().equals(email)){
-            User userExist = userService.getUserByEmail(email);
+        if (age < 0) {
+            model.addAttribute(MSG, "Age ne peut pas être négatif");
+            return REDIRECT_FORM_UPDATE;
+        }
+        if (height < 0) {
+            model.addAttribute(MSG, "Taille ne peut pas être négatif");
+            return REDIRECT_FORM_UPDATE;
+        }
+        if (weight < 0) {
+            model.addAttribute(MSG, "Poids ne peut pas être négatif");
+            return REDIRECT_FORM_UPDATE;
+        }
 
-            if(userExist==null){
-                actualUser.setName(name);
-                actualUser.setFirstName(firstName);
-                actualUser.setAge(age);
-                actualUser.setGender(Gender.valueOf(gender));
-                actualUser.setEmail(email);
-                if(!password.isBlank()){
-                    actualUser.setPassword(encoder.encode(password));
-                }
-                actualUser.setHeight(height);
-                actualUser.setWeight(weight);
-                actualUser.setCity(city);
-            }else{
-                message = "email déja existant";
-                return redirectWithMessage(message, redirectFormUpdate, model);
+        // Vérification email si changement
+        if (!email.equals(actualUser.getEmail())) {
+            User userExist = userService.getUserByEmail(email);
+            if (userExist != null) {
+                model.addAttribute(MSG, "email déja existant");
+                return REDIRECT_FORM_UPDATE;
             }
-        }else{
-            actualUser.setName(name);
-            actualUser.setFirstName(firstName);
-            actualUser.setAge(age);
-            actualUser.setGender(Gender.valueOf(gender));
-            if(!password.isBlank()){
-                actualUser.setPassword(encoder.encode(password));
-            }
-            actualUser.setHeight(height);
-            actualUser.setWeight(weight);
-            actualUser.setCity(city);
+        }
+
+        actualUser.setName(name);
+        actualUser.setFirstName(firstName);
+        actualUser.setAge(age);
+        actualUser.setGender(Gender.valueOf(gender));
+        actualUser.setEmail(email);
+        actualUser.setHeight(height);
+        actualUser.setWeight(weight);
+        actualUser.setCity(city);
+        if (!password.isBlank()) {
+            actualUser.setPassword(encoder.encode(password));
         }
 
         try {
@@ -235,113 +225,94 @@ public class UserController {
                 actualUser.setProfileImage(newFilename);
             }
             userService.updateUser(actualUser);
-        } catch (IOException e) {
-            message = "Erreur lors de l'upload de l'image";
-            model.addAttribute("message", message);
-            return "users/formUpdate";
-        } catch (Exception e) {
-            message = "Email invalide";
-            return redirectWithMessage(message, redirectFormUpdate, model);
+        } catch (IOException _) {
+            model.addAttribute(ERROR_MSG, "Erreur lors de l'upload de la photo de profil.");
+            return VIEW_FORM_UPDATE;
+        } catch (Exception _) {
+            model.addAttribute(MSG, "Email invalide");
+            return REDIRECT_FORM_UPDATE;
         }
-        message = "Modification du compte réussie";
 
-        model.addAttribute("message", message);
-
-
-        return redirectDashboard;
+        redirectAttrs.addFlashAttribute(SUCCESS_MSG, "Profil mis à jour avec succès !");
+        return REDIRECT_DASHBOARD;
     }
 
+    @PostMapping("/deleteProfileImage")
+    public String deleteProfileImage(HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        User user = userService.getUserById(userId);
+        imageStorageService.delete(user.getProfileImage());
+        user.setProfileImage(null);
+        userService.updateUser(user);
+        return REDIRECT_FORM_UPDATE;
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // Connexion / Déconnexion
+    // ──────────────────────────────────────────────────────────────
+
     @GetMapping("/formLogin")
-    public String formLogin(Model model,
-                            HttpSession session) {
-
-        Long userId = getUserId(session);
-
-        if (userId != null) {
-            return "users/dashboard";
-        }
-        model.addAttribute("message", message);
-        message = "";
-
-        return "users/formLogin";
+    public String formLogin(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId != null) return REDIRECT_DASHBOARD;
+        model.addAttribute(MSG, "");
+        return VIEW_FORM_LOGIN;
     }
 
     @PostMapping("/loginUser")
     public String loginUser(@RequestParam("email") String email,
             @RequestParam("password") String password,
             Model model,
-            HttpSession session) {
+            HttpSession session,
+            RedirectAttributes redirectAttrs) {
 
         User userLogin = userService.getUserByEmail(email);
-
         if (userLogin == null) {
-            message = "email ou mots de passe incorrect";
-            return redirectWithMessage(message, redirectFormLogin, model);
+            model.addAttribute(MSG, "email ou mots de passe incorrect");
+            return REDIRECT_LOGIN;
         }
 
         boolean isValid = encoder.matches(password, userLogin.getPassword());
-
         if (!isValid) {
-            message = "email ou mots de passe incorrect";
-            return redirectWithMessage(message, redirectFormLogin, model);
+            model.addAttribute(MSG, "email ou mots de passe incorrect");
+            return REDIRECT_LOGIN;
         }
 
-        session.setAttribute("userId", userLogin.getId());
-
-        message = "Connexion compte réussie";
-        model.addAttribute("message", message);
-
-        return redirectDashboard;
-    }
-
-    @GetMapping("/search")
-    public String searchUser(@RequestParam(required = false) String query,
-                             Model model,
-                             HttpSession session) {
-
-        Long userId = getUserId(session);
-        if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
-        }
-
-        if (query != null && !query.isBlank()) {
-            model.addAttribute("users", userService.searchUsers(query));
-        } else {
-            model.addAttribute("users", List.of());
-        }
-
-        model.addAttribute("query", query);
-        return "search/searchUser";
+        session.setAttribute(SESSION_USER_ID, userLogin.getId());
+        redirectAttrs.addFlashAttribute(SUCCESS_MSG, "Bienvenue, " + userLogin.getFirstName() + " !");
+        return REDIRECT_DASHBOARD;
     }
 
     @GetMapping("/logout")
     public String logoutPage(HttpSession session) {
         session.invalidate();
-        return redirectFormLogin;
+        return REDIRECT_LOGIN;
     }
+
+    // ──────────────────────────────────────────────────────────────
+    // Profil
+    // ──────────────────────────────────────────────────────────────
 
     @GetMapping("/profile")
     public String profilePage(HttpSession session, Model model) {
-        Long userId = getUserId(session);
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            model.addAttribute(MSG, NEEDCONNEXION);
+            return REDIRECT_LOGIN;
         }
         User user = userService.getUserById(userId);
-        if (user == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
-        }
-        
+        if (user == null) return REDIRECT_LOGIN;
 
         List<Activity> activities = activityService.getActivitiesByUserId(userId);
         List<Friendship> friendships = friendshipService.getMyFriendships(userId);
-        List<User> friends = friendships.stream().map(f -> f.getRequester().getId().equals(userId) ? f.getReceiver() : f.getRequester()).toList();
+        List<User> friends = friendships.stream()
+                .map(f -> f.getRequester().getId().equals(userId) ? f.getReceiver() : f.getRequester())
+                .toList();
         int pendingFriendships = friendshipService.getMyPendingFriendships(userId).size();
 
-        model.addAttribute("user", user);
         activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        model.addAttribute("user", user);
         model.addAttribute("activities", activities);
         model.addAttribute("friends", friends);
         model.addAttribute("pendingFriendships", pendingFriendships);
@@ -351,153 +322,141 @@ public class UserController {
         return "users/profile";
     }
 
-
     @GetMapping("/profile/{id}")
-    public String viewProfile(@PathVariable("id") Long profileId, @RequestParam(required = false) String msg, Model model, HttpSession session) {
-    
-    Long currentUserId = getUserId(session);
-    if (currentUserId == null) {
-        return redirectFormLogin;
+    public String viewProfile(@PathVariable("id") Long profileId, Model model, HttpSession session) {
+        Long currentUserId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (currentUserId == null) return REDIRECT_LOGIN;
+
+        User profileUser = userService.getUserById(profileId);
+        if (profileUser == null) return REDIRECT_SEARCH;
+
+        List<Activity> activities = activityService.getActivitiesByUserId(profileId);
+        boolean isOwner = currentUserId.equals(profileId);
+        boolean requestSent = friendshipService.requestOrFriendshipExists(currentUserId, profileId);
+
+        model.addAttribute("user", profileUser);
+        model.addAttribute("activities", activities);
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("requestSent", requestSent);
+        return "users/profile";
     }
 
-    User profileUser = userService.getUserById(profileId);
-    if (profileUser == null) {
-        return "redirect:/users/search"; 
+    // ──────────────────────────────────────────────────────────────
+    // Recherche
+    // ──────────────────────────────────────────────────────────────
+
+    @GetMapping("/search")
+    public String searchUser(@RequestParam(required = false) String query,
+                             Model model,
+                             HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+
+        if (query != null && !query.isBlank()) {
+            model.addAttribute("users", userService.searchUsers(query));
+        } else {
+            model.addAttribute("users", List.of());
+        }
+
+        java.util.Set<Long> relatedUserIds = new java.util.HashSet<>();
+        friendshipService.getMyFriendships(userId).forEach(f ->
+            relatedUserIds.add(f.getRequester().getId().equals(userId) ? f.getReceiver().getId() : f.getRequester().getId())
+        );
+        friendshipService.getMySentPendingFriendships(userId).forEach(f -> relatedUserIds.add(f.getReceiver().getId()));
+        friendshipService.getMyPendingFriendships(userId).forEach(f -> relatedUserIds.add(f.getRequester().getId()));
+
+        model.addAttribute("currentUserId", userId);
+        model.addAttribute("relatedUserIds", relatedUserIds);
+        model.addAttribute("query", query);
+        return "search/searchUser";
     }
 
-    List<Activity> userActivities = activityService.getActivitiesByUserId(profileId);
-
-    boolean isOwner = currentUserId.equals(profileId);
-
-    boolean requestSent = friendshipService.requestOrFriendshipExists(currentUserId, profileId);
-
-
-    model.addAttribute("user", profileUser);
-    model.addAttribute("activities", userActivities);
-    model.addAttribute("isOwner", isOwner);
-    model.addAttribute("requestSent", requestSent);
-    model.addAttribute("msg", msg);
-    model.addAttribute("userBadges", badgeService.getUserBadges(profileUser));
-
-    return "users/profile";
-}
+    // ──────────────────────────────────────────────────────────────
+    // Préférences sportives
+    // ──────────────────────────────────────────────────────────────
 
     @GetMapping("/consultationPreferences")
-    public String consultationPreferences(Model model,
-                                          HttpSession session){
-        Long userId = getUserId(session);
+    public String consultationPreferences(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            model.addAttribute(MSG, NEEDCONNEXION);
+            return REDIRECT_LOGIN;
         }
         User user = userService.getUserById(userId);
-        List<Sport> sports = sportService.getAllSports();
-
         model.addAttribute("sportsPreference", user.getSportsPreference());
-        model.addAttribute("sports", sports);
+        model.addAttribute("sports", sportService.getAllSports());
         return "users/listPreferences";
     }
 
     @PostMapping("/addPreference")
     public String addPreference(@RequestParam("sport") Long sportId,
                                 @RequestParam("level") Level level,
-                                Model model,
-                                HttpSession session){
-        Long userId = getUserId(session);
-        if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
-        }
-
-        if(sportId == null || level == null){
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
-        }
+                                HttpSession session,
+                                RedirectAttributes redirectAttrs) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        if (sportId == null || level == null) return REDIRECT_PREFERENCES;
 
         Sport sport = sportService.getSportById(sportId);
-
         User user = userService.getUserById(userId);
-       
         UserSport userSportExist = userSportService.getUserSportByUserAndSport(user, sport);
-        if(userSportExist!=null){
-            message = "Ce sport est dejas dans votre liste !";
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
+        if (userSportExist != null) {
+            redirectAttrs.addFlashAttribute(ERROR_MSG, "Ce sport est déjà dans votre liste !");
+            return REDIRECT_PREFERENCES;
         }
-        
 
         UserSport userSport = new UserSport(user, sport, level);
         userSportService.createUserSport(userSport);
         user.addPreference(userSport);
         userService.updateUser(user);
-
-        return redirectConsultationPreferences;
+        return REDIRECT_PREFERENCES;
     }
 
-     @PostMapping("/updateLevel")
+    @PostMapping("/updateLevel")
     public String updateLevel(@RequestParam("userSport") Long userSportId,
                               @RequestParam("level") Level level,
-                              Model model,
-                              HttpSession session){
-
-        Long userId = getUserId(session);
-        if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
-        }
-
-         if(userSportId == null || level == null){
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
-        }
+                              HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        if (userSportId == null || level == null) return REDIRECT_PREFERENCES;
 
         UserSport userSport = userSportService.getUserSportById(userSportId);
-
         User user = userService.getUserById(userId);
         user.deletePreference(userSport);
-
         userSport.setLevel(level);
         userSportService.updateUserSport(userSport);
-
         user.addPreference(userSport);
         userService.updateUser(user);
-
-        return redirectConsultationPreferences;
+        return REDIRECT_PREFERENCES;
     }
 
     @PostMapping("/deletePreference")
     public String deletePreference(@RequestParam("userSport") Long userSportId,
-                                   Model model,
-                                   HttpSession session){
-        Long userId = getUserId(session);
-        if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
-        }
+                                   HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        if (userSportId == null) return REDIRECT_PREFERENCES;
 
-        if(userSportId == null){
-            message = "UserSport non trouvé";
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
-        }
         UserSport userSport = userSportService.getUserSportById(userSportId);
-
         userSportService.deleteUserSport(userSport);
-
         User user = userService.getUserById(userId);
         user.deletePreference(userSport);
         userService.updateUser(user);
-
-        return redirectConsultationPreferences;
+        return REDIRECT_PREFERENCES;
     }
 
+    // ──────────────────────────────────────────────────────────────
+    // Objectifs
+    // ──────────────────────────────────────────────────────────────
 
     @GetMapping("/consultationGoals")
-    public String consultationGoals(Model model,
-                                          HttpSession session){
-        Long userId = getUserId(session);
+    public String consultationGoals(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
         if (userId == null) {
-            message = needConnexion;
-            return redirectWithMessage(message, redirectFormLogin, model);
+            model.addAttribute(MSG, NEEDCONNEXION);
+            return REDIRECT_LOGIN;
         }
         User user = userService.getUserById(userId);
-
         model.addAttribute("goals", user.getGoals());
         model.addAttribute("sports", sportService.getAllSports());
         model.addAttribute("temporalities", Temporality.values());
@@ -510,109 +469,56 @@ public class UserController {
                           @RequestParam("targetDistance") Double distance,
                           @RequestParam("sportId") Long sportId,
                           @RequestParam("temporality") Temporality temporality,
-                          Model model,
-                          HttpSession session){
-        Long userId = getUserId(session);
-        if (userId == null) {
-            return redirectWithMessage(needConnexion, redirectFormLogin, model);
-        }
-
-        if(textGoal == null || distance == null){
-            return redirectWithMessage(message, redirectConsultationGoals, model);
-        }
+                          HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        if (textGoal == null || distance == null) return REDIRECT_GOALS;
 
         User user = userService.getUserById(userId);
         Sport sport = sportService.getSportById(sportId);
-
-        Goal goal = new Goal(distance, textGoal, user, sport, temporality); 
-
+        Goal goal = new Goal(distance, textGoal, user, sport, temporality);
         goalService.createGoal(goal);
         user.addGoal(goal);
         userService.updateUser(user);
-
-        return redirectConsultationGoals;
+        return REDIRECT_GOALS;
     }
 
-     @PostMapping("/updateGoal")
+    @PostMapping("/updateGoal")
     public String updateGoal(@RequestParam("goalId") Long goalId,
                              @RequestParam("goal") String textGoal,
                              @RequestParam("targetDistance") Double distance,
                              @RequestParam("sportId") Long sportId,
                              @RequestParam("temporality") Temporality temporality,
-                             Model model,
-                             HttpSession session){
-
-        Long userId = getUserId(session);
-        if (userId == null) {
-            return redirectWithMessage(needConnexion, redirectFormLogin, model);
-        }
-
-        if(textGoal == null || distance == null){
-            return redirectWithMessage(message, redirectConsultationGoals, model);
-        }
-
+                             HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        if (textGoal == null || distance == null) return REDIRECT_GOALS;
 
         Goal goal = goalService.getGoalById(goalId);
         Sport sport = sportService.getSportById(sportId);
-
         User user = userService.getUserById(userId);
         user.deleteGoal(goal);
-
         goal.setGoalText(textGoal);
         goal.setTargetDistance(distance);
         goal.setSport(sport);
         goal.setTemporality(temporality);
         goalService.updateGoal(goal);
-
         user.addGoal(goal);
         userService.updateUser(user);
-
-        return redirectConsultationGoals;
+        return REDIRECT_GOALS;
     }
 
     @PostMapping("/deleteGoal")
-    public String deleteGoal(@RequestParam("goalId") Long goalId,
-                                   Model model,
-                                   HttpSession session){
-        Long userId = getUserId(session);
-        if (userId == null) {
-            return redirectWithMessage(needConnexion, redirectFormLogin, model);
-        }
+    public String deleteGoal(@RequestParam("goalId") Long goalId, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        if (goalId == null) return REDIRECT_GOALS;
 
-        if(goalId == null){
-            message = "Goal non trouvé";
-            return redirectWithMessage(message, redirectConsultationPreferences, model);
-        }
         Goal goal = goalService.getGoalById(goalId);
-
         goalService.deleteGoal(goal);
-
         User user = userService.getUserById(userId);
         user.deleteGoal(goal);
         userService.updateUser(user);
-
-        return redirectConsultationGoals;
-    }
-
-    public Long getUserId(HttpSession session){
-        return (Long) session.getAttribute("userId");
-    }
-
-    private String redirectWithMessage(String message, String redirectUrl, Model model) {
-        model.addAttribute("message", message);
-        return redirectUrl;
-    }
-
-    @PostMapping("/deleteProfileImage")
-    public String deleteProfileImage(HttpSession session) {
-        Long userId = (Long) session.getAttribute("userId");
-        if (userId == null) {
-            return "redirect:/users/formLogin";
-        }
-        User user = userService.getUserById(userId);
-        imageStorageService.delete(user.getProfileImage());
-        user.setProfileImage(null);
-        userService.updateUser(user);
-        return "redirect:/users/formUpdate";
+        return REDIRECT_GOALS;
     }
 }

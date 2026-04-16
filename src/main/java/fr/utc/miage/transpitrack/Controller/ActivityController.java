@@ -29,6 +29,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/activities")
 public class ActivityController {
 
+    private static final String SESSION_USER_ID = "userId";
+
     @Autowired
     private ActivityService activityService;
 
@@ -47,11 +49,15 @@ public class ActivityController {
     @Autowired
     private BadgeService badgeService;
 
-    private final String redirectDetails = "redirect:/activities/details/";
+    private static final String REDIRECTDETAILS = "redirect:/activities/details/";
 
     @RequestMapping("")
-    public String listActivities(Model model) {
-        List<Activity> activities = activityService.getAllActivities();
+    public String listActivities(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
         activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
         model.addAttribute("activities", activities);
         return "activities/list";
@@ -154,7 +160,7 @@ public class ActivityController {
 
         Commentary existingCommentary = commentaryService.getCommentariesByAuthorIdAndActivityId(userId, id).stream().findFirst().orElse(null);
         if (existingCommentary != null) {
-            return redirectDetails + id + "?msg=Vous avez deja commente cette activite";
+            return REDIRECTDETAILS + id + "?msg=Vous avez deja commente cette activite";
         }
 
         User user = userService.getUserById(userId);
@@ -167,7 +173,7 @@ public class ActivityController {
         commentary.setActivity(activity);
 
         commentaryService.createCommentary(commentary);
-        return redirectDetails + activity.getId();
+        return REDIRECTDETAILS + activity.getId();
     }
 
     @PostMapping("/comment/{commentId}/reaction")
@@ -189,13 +195,13 @@ public class ActivityController {
 
         // sécurité : seul l'auteur peut modifier
         if (!commentary.getAuthor().getId().equals(userId)) {
-            return redirectDetails + commentary.getActivity().getId();
+            return REDIRECTDETAILS + commentary.getActivity().getId();
         }
 
         commentary.setReaction(reaction);
         commentaryService.createCommentary(commentary);
 
-        return redirectDetails + commentary.getActivity().getId();
+        return REDIRECTDETAILS + commentary.getActivity().getId();
     }
 
     @GetMapping("/listActivitiesUser")

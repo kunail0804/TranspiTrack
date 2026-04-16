@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body class="d-flex align-items-center justify-content-center" style="min-height:100vh;background:var(--bg);padding:40px 20px;">
 
@@ -17,12 +18,6 @@
             <div class="sidebar-logo-icon mx-auto mb-3" style="width:48px;height:48px;font-size:24px;">🏃</div>
             <h2 class="tt-h2 mb-1">Rejoignez TranspiTrack</h2>
             <p class="text-muted-tt mb-0">Créez votre compte pour suivre vos performances</p>
-        </div>
-
-        <div class="alert-tt alert-info mb-4" th:if="${message != null and !message.isEmpty()}">
-            <i class="bi bi-info-circle-fill alert-tt-icon"></i>
-            <div class="alert-tt-content"><div class="desc" th:text="${message}"></div></div>
-            <button type="button" class="alert-tt-close" onclick="this.closest('.alert-tt').remove()" aria-label="Fermer"><i class="bi bi-x-lg"></i></button>
         </div>
 
         <form action="/users/createUser" method="POST" enctype="multipart/form-data">
@@ -117,5 +112,6 @@
         else { wrapper.style.display = 'none'; }
     });
 </script>
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

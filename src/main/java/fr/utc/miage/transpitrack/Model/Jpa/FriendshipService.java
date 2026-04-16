@@ -42,6 +42,10 @@ public class FriendshipService {
         return friendshipRepository.findByStatusAndReceiverId(FriendshipStatus.PENDING, userId);
     }
 
+    public List<Friendship> getMySentPendingFriendships(Long userId) {
+        return friendshipRepository.findByStatusAndRequesterId(FriendshipStatus.PENDING, userId);
+    }
+
     public boolean requestOrFriendshipExists(Long userId1, Long userId2) {
         boolean isFriend1 = friendshipRepository.existsByRequesterIdAndReceiverId(userId1, userId2);
         boolean isFriend2 = friendshipRepository.existsByRequesterIdAndReceiverId(userId2, userId1);
