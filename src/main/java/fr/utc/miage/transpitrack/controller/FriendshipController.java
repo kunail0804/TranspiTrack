@@ -17,21 +17,48 @@ import fr.utc.miage.transpitrack.model.jpa.FriendshipService;
 import fr.utc.miage.transpitrack.model.jpa.UserService;
 import jakarta.servlet.http.HttpSession;
 
+/**
+ * Spring MVC controller handling friend requests under {@code /users/friends}.
+ * <p>
+ * Allows authenticated users to send friend requests, view incoming and outgoing
+ * pending requests, and accept or reject incoming requests.
+ * </p>
+ */
 @Controller
 @RequestMapping("/users/friends")
 public class FriendshipController {
-    
+
+    /** Service for friendship CRUD operations. */
     @Autowired
     private FriendshipService friendshipService;
 
+    /** Service for user retrieval. */
     @Autowired
     private UserService userService;
 
+    /** Redirect prefix for the profile page of a specific user. */
     private static final String REDIRECTPROFILE = "redirect:/users/profile/";
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public FriendshipController() {
+        // Spring-managed bean.
+    }
+
+    /**
+     * Sends a friend request from the currently authenticated user to the user with
+     * the given ID.
+     * <p>
+     * Redirects with an error message if the user tries to add themselves, or if a
+     * friendship or request already exists.
+     * </p>
+     *
+     * @param friendId the ID of the user to send a request to
+     * @param session  the current HTTP session
+     * @param model    the Spring MVC model (unused but required by Spring MVC)
+     * @return a redirect to the target user's profile page with a status message
+     */
     @GetMapping("/addFriend/{id}")
     public String addFriend(@PathVariable(value="id") Long friendId, HttpSession session, Model model) {
-
         Long userId = getUserId(session);
 
         if (userId == null) {
@@ -48,7 +75,7 @@ public class FriendshipController {
             return REDIRECTPROFILE + friendId + "?msg=ID de l'ami est requis";
         }
 
-        if(Objects.equals(friendId, userId)) {
+        if (Objects.equals(friendId, userId)) {
             return REDIRECTPROFILE + friendId + "?msg=Vous ne pouvez pas vous ajouter en tant qu'ami";
         }
 
@@ -62,8 +89,16 @@ public class FriendshipController {
         return REDIRECTPROFILE + friendId + "?msg=Demande d'amitie envoyee avec succes";
     }
 
+    /**
+     * Displays all pending friend requests received by and sent by the authenticated user.
+     *
+     * @param msg     optional status message to display (may be {@code null})
+     * @param session the current HTTP session
+     * @param model   the Spring MVC model
+     * @return the {@code users/friendInvites} view, or a redirect to login
+     */
     @GetMapping("/invites")
-    public String showInvites(@RequestParam(required=false) String msg, HttpSession session, Model model){
+    public String showInvites(@RequestParam(required=false) String msg, HttpSession session, Model model) {
         Long userId = getUserId(session);
 
         if (userId == null) {
@@ -76,6 +111,14 @@ public class FriendshipController {
         return "users/friendInvites";
     }
 
+    /**
+     * Accepts a pending friend request received by the authenticated user.
+     * The friendship status is updated to {@code ACCEPTED}.
+     *
+     * @param friendshipId the ID of the {@link Friendship} record to accept
+     * @param session      the current HTTP session
+     * @return a redirect to the invites page with a status message
+     */
     @PostMapping("/accept/{id}")
     public String acceptInvite(@PathVariable(value="id") Long friendshipId, HttpSession session) {
         Long userId = getUserId(session);
@@ -95,6 +138,13 @@ public class FriendshipController {
         return "redirect:/users/friends/invites?msg=Vous etes maintenant amis avec " + friendship.getRequester().getName();
     }
 
+    /**
+     * Rejects a pending friend request by deleting the friendship record.
+     *
+     * @param friendshipId the ID of the {@link Friendship} record to reject
+     * @param session      the current HTTP session
+     * @return a redirect to the invites page with a status message
+     */
     @PostMapping("/reject/{id}")
     public String refuseInvite(@PathVariable(value="id") Long friendshipId, HttpSession session) {
         Long userId = getUserId(session);
@@ -114,8 +164,14 @@ public class FriendshipController {
         return "redirect:/users/friends/invites?msg=Invitation refusee";
     }
 
-    public Long getUserId(HttpSession session){
+    /**
+     * Returns the ID of the currently authenticated user from the session,
+     * or {@code null} if not logged in.
+     *
+     * @param session the current HTTP session
+     * @return the user ID, or {@code null}
+     */
+    public Long getUserId(HttpSession session) {
         return (Long) session.getAttribute("userId");
     }
-
 }

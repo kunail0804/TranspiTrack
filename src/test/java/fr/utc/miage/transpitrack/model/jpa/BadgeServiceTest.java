@@ -124,7 +124,7 @@ class BadgeServiceTest {
         verify(userBadgeRepository).save(any(UserBadge.class));
     }
 
-    // ── checkAndAwardBadges : déjà obtenu ──────────────────────────
+    // ── checkAndAwardBadges: already earned ───────────────────────
     @Test
     void checkAndAwardBadgesShouldNotAwardBadgeAlreadyEarned() {
         User user = new User();
@@ -142,7 +142,7 @@ class BadgeServiceTest {
         verify(userBadgeRepository, never()).save(any());
     }
 
-    // ── checkAndAwardBadges : plusieurs badges à la fois ───────────
+    // ── checkAndAwardBadges: multiple badges at once ───────────────
     @Test
     void checkAndAwardBadgesShouldAwardMultipleBadgesAtOnce() {
         User user = new User();

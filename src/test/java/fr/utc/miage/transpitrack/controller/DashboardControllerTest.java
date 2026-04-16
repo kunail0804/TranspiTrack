@@ -76,7 +76,6 @@ class DashboardControllerTest {
         verify(model).addAttribute("caloriesBySport", java.util.Map.of());
         verify(model).addAttribute("caloriesBySportName", java.util.Map.of());
         verify(model).addAttribute("totalCalories", 0.0);
-        verify(model).addAttribute(eq("activities"), any());
     }
 
     // ─────────────────────────────────────────────
@@ -118,11 +117,6 @@ class DashboardControllerTest {
         verify(model).addAttribute(eq("caloriesBySport"), any());
         verify(model).addAttribute(eq("caloriesBySportName"), any());
         verify(model).addAttribute(eq("totalCalories"), any());
-        verify(model).addAttribute(eq("activities"), any());
-        verify(model).addAttribute(eq("caloriesBySport"), any());
-        verify(model).addAttribute(eq("caloriesBySportName"), any());
-        verify(model).addAttribute(eq("totalCalories"), any());
-        verify(model).addAttribute(eq("activities"), any());
     }
 
     @Test

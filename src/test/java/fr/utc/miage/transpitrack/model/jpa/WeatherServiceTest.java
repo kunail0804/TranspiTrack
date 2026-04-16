@@ -58,7 +58,7 @@ class WeatherServiceTest {
         Exception exception = assertThrows(RuntimeException.class, ()
                 -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(exception.getMessage().contains("Utilisateur non trouvé"));
+        assertTrue(exception.getMessage().contains("User not found"));
     }
 
     @Test
@@ -69,7 +69,7 @@ class WeatherServiceTest {
         Exception exception = assertThrows(RuntimeException.class, ()
                 -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(exception.getMessage().contains("pas de ville renseignée"));
+        assertTrue(exception.getMessage().contains("has not set a city"));
     }
 
     @ParameterizedTest
@@ -92,7 +92,7 @@ class WeatherServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(ex.getMessage().contains("Ville introuvable"));
+        assertTrue(ex.getMessage().contains("City not found"));
     }
 
     @Test
@@ -114,7 +114,7 @@ class WeatherServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(ex.getMessage().contains("Erreur de format"));
+        assertTrue(ex.getMessage().contains("Weather response format error"));
     }
 
     @Test
@@ -136,7 +136,7 @@ class WeatherServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(ex.getMessage().contains("Erreur de format"));
+        assertTrue(ex.getMessage().contains("Weather response format error"));
     }
 
     @Test
@@ -150,7 +150,7 @@ class WeatherServiceTest {
         RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(ex.getMessage().contains("Erreur météo"));
+        assertTrue(ex.getMessage().contains("Weather error"));
     }
 
     @Test
@@ -161,7 +161,7 @@ class WeatherServiceTest {
         Exception exception = assertThrows(RuntimeException.class, ()
                 -> weatherService.getWeatherForUser(1L));
 
-        assertTrue(exception.getMessage().contains("pas de ville renseignée"));
+        assertTrue(exception.getMessage().contains("has not set a city"));
     }
 
     @Test
@@ -287,7 +287,7 @@ class WeatherServiceTest {
                 .thenReturn(geoResp);
 
         Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
-        assertTrue(e.getMessage().contains("Ville introuvable"));
+        assertTrue(e.getMessage().contains("City not found"));
     }
 
     @Test
@@ -305,7 +305,7 @@ class WeatherServiceTest {
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
         Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
-        assertTrue(e.getMessage().contains("Erreur de format"));
+        assertTrue(e.getMessage().contains("Weather response format error"));
     }
 
     @Test
@@ -326,7 +326,7 @@ class WeatherServiceTest {
         assertNull(activity.getWeatherCondition());
     }
 
-    // ── branches manquantes supplémentaires ───────────────────────
+    // ── additional missing branches ───────────────────────────────
     @Test
     @SuppressWarnings("unchecked")
     void getWeatherForUserShouldThrowWhenGeoResponseHasNoResultsKey() throws Exception {
@@ -337,7 +337,7 @@ class WeatherServiceTest {
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp);
 
         Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
-        assertTrue(e.getMessage().contains("Ville introuvable"));
+        assertTrue(e.getMessage().contains("City not found"));
     }
 
     @Test
@@ -355,7 +355,7 @@ class WeatherServiceTest {
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class))).thenReturn(geoResp, weatherResp);
 
         Exception e = assertThrows(RuntimeException.class, () -> weatherService.getWeatherForUser(1L));
-        assertTrue(e.getMessage().contains("Erreur de format"));
+        assertTrue(e.getMessage().contains("Weather response format error"));
     }
 
     @Test

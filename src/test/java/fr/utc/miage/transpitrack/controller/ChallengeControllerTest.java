@@ -4,10 +4,12 @@ import java.time.Duration;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import static org.mockito.Mockito.mock;
@@ -122,6 +124,7 @@ class ChallengeControllerTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void listChallengesShouldIncludeChallengesCreatedByFriendWhenUserIsRequester() {
         Challenge friendChallenge = new Challenge();
         User friend = mock(User.class);
@@ -141,10 +144,13 @@ class ChallengeControllerTest {
         String view = challengeController.listChallenges(session, model);
 
         assertEquals("challenge/listChallenges", view);
-        verify(model).addAttribute(eq("friendsChallenges"), any());
+        ArgumentCaptor<List<Challenge>> captor = ArgumentCaptor.forClass(List.class);
+        verify(model).addAttribute(eq("friendsChallenges"), captor.capture());
+        assertTrue(captor.getValue().contains(friendChallenge));
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void listChallengesShouldIncludeChallengesCreatedByFriendWhenUserIsReceiver() {
         Challenge friendChallenge = new Challenge();
         User friend = mock(User.class);
@@ -161,7 +167,9 @@ class ChallengeControllerTest {
         String view = challengeController.listChallenges(session, model);
 
         assertEquals("challenge/listChallenges", view);
-        verify(model).addAttribute(eq("friendsChallenges"), any());
+        ArgumentCaptor<List<Challenge>> captor = ArgumentCaptor.forClass(List.class);
+        verify(model).addAttribute(eq("friendsChallenges"), captor.capture());
+        assertTrue(captor.getValue().contains(friendChallenge));
     }
 
     // ── POST /challenges/joinChallenge ─────────────────────────────

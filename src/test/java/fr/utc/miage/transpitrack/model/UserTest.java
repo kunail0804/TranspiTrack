@@ -90,7 +90,7 @@ class UserTest {
         assertNotNull(user.getJoinedChallenges());
     }
 
-    // ── Logique métier ─────────────────────────────────────────────
+    // ── Business Logic ─────────────────────────────────────────────
 
     @Test
     void addPreferenceShouldAddUserSportToList() {

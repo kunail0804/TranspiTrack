@@ -22,31 +22,69 @@ import fr.utc.miage.transpitrack.dto.WeatherResponse;
 import fr.utc.miage.transpitrack.exception.WeatherServiceException;
 import fr.utc.miage.transpitrack.model.User;
 
+/**
+ * Service that fetches current weather and 7-day forecast data from the Open-Meteo API
+ * for a given user's city, and assigns weather conditions to recorded activities.
+ * <p>
+ * Two external APIs are called in sequence:
+ * <ol>
+ *   <li>Open-Meteo Geocoding API — converts a city name to latitude/longitude.</li>
+ *   <li>Open-Meteo Forecast API — retrieves temperature and weather code data.</li>
+ * </ol>
+ * <p>
+ * Network and parsing errors are wrapped in {@link WeatherServiceException}.
+ * </p>
+ */
 @Service
 public class WeatherService {
 
+    /** Repository used to load the user's city. */
     @Autowired
     private UserRepository userRepository;
 
+    /** Shared HTTP client bean used for all outbound API calls. */
     @Autowired
     private HttpClient httpClient;
 
+    /** JSON key for the daily forecast block in Open-Meteo responses. */
     private static final String STRINGDAILY = "daily";
+
+    /** JSON key for the geocoding results array in Open-Meteo responses. */
     private static final String STRINGRESULTS = "results";
+
+    /** JSON key for the current weather block in Open-Meteo responses. */
     private static final String STRINGCURRENTWEATHER = "current_weather";
 
+    /** Jackson mapper used to parse API JSON responses. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    /** SLF4J logger for this service. */
     private final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public WeatherService() {
+        // Spring-managed bean.
+    }
+
+    /**
+     * Retrieves the current weather and a 7-day forecast for the city associated
+     * with the given user.
+     *
+     * @param userId the ID of the user whose city is used for the lookup
+     * @return a {@link WeatherResponse} containing the current temperature, condition,
+     *         and forecast
+     * @throws WeatherServiceException if the user is not found, has no city set,
+     *         the city cannot be geocoded, the weather response is malformed, or
+     *         a network error occurs
+     */
     public WeatherResponse getWeatherForUser(Long userId) {
         try {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new WeatherServiceException("Utilisateur non trouvé"));
+                    .orElseThrow(() -> new WeatherServiceException("User not found"));
 
             String city = user.getCity();
             if (city == null || city.isBlank()) {
-                throw new WeatherServiceException("L'utilisateur n'a pas de ville renseignée.");
+                throw new WeatherServiceException("User has not set a city.");
             }
 
             String encodedCity = URLEncoder.encode(city, StandardCharsets.UTF_8);
@@ -57,7 +95,7 @@ public class WeatherService {
             JsonNode geoResponse = objectMapper.readTree(geoResponseStr.body());
 
             if (!geoResponse.has(STRINGRESULTS) || geoResponse.get(STRINGRESULTS).isEmpty()) {
-                throw new WeatherServiceException("Ville introuvable : " + city);
+                throw new WeatherServiceException("City not found: " + city);
             }
 
             JsonNode locationData = geoResponse.get(STRINGRESULTS).get(0);
@@ -73,7 +111,7 @@ public class WeatherService {
             JsonNode weatherData = objectMapper.readTree(weatherResponseStr.body());
 
             if (!weatherData.has(STRINGCURRENTWEATHER) || !weatherData.has(STRINGDAILY)) {
-                throw new WeatherServiceException("Erreur de format de la réponse météo");
+                throw new WeatherServiceException("Weather response format error");
             }
 
             double currentTemp = weatherData.get(STRINGCURRENTWEATHER).get("temperature").asDouble();
@@ -97,13 +135,20 @@ public class WeatherService {
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            throw new WeatherServiceException("Erreur météo", e);
+            throw new WeatherServiceException("Weather error", e);
 
         } catch (IOException e) {
-            throw new WeatherServiceException("Erreur météo", e);
+            throw new WeatherServiceException("Weather error", e);
         }
     }
 
+    /**
+     * Converts an Open-Meteo WMO weather code to a human-readable French condition string.
+     *
+     * @param code the WMO weather interpretation code
+     * @return a French condition label such as {@code "Ciel dégagé"}, {@code "Pluie"}, etc.;
+     *         defaults to {@code "Nuageux"} for unrecognised codes
+     */
     String interpretWeatherCode(int code) {
         if (code == 0) {
             return "Ciel dégagé";
@@ -126,6 +171,17 @@ public class WeatherService {
         return "Nuageux";
     }
 
+    /**
+     * Attempts to assign weather data (temperature and condition) to the given activity
+     * based on its city and date.
+     * <p>
+     * Does nothing if the activity has no city or no date. Geocoding and API failures
+     * are caught and logged silently so that activity saving is never blocked by a
+     * weather lookup failure.
+     * </p>
+     *
+     * @param activity the activity to enrich with weather data
+     */
     public void assignWeatherToActivity(fr.utc.miage.transpitrack.model.Activity activity) {
         if (activity.getCity() == null || activity.getCity().isBlank() || activity.getDate() == null) {
             return;
@@ -167,7 +223,7 @@ public class WeatherService {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            logger.error("Erreur lors de l'attribution de la météo à l'activité : " + e.getMessage(), e);
+            logger.error("Error assigning weather to activity: " + e.getMessage(), e);
         }
     }
 }
