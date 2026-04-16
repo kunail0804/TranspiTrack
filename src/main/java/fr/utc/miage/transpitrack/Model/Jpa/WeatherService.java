@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import fr.utc.miage.transpitrack.Dto.WeatherResponse;
 import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.exception.WeatherServiceException;
 
 @Service
 public class WeatherService {
@@ -41,11 +42,11 @@ public class WeatherService {
     public WeatherResponse getWeatherForUser(Long userId) {
         try {
             User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+                    .orElseThrow(() -> new WeatherServiceException("Utilisateur non trouvé"));
 
             String city = user.getCity();
             if (city == null || city.isBlank()) {
-                throw new RuntimeException("L'utilisateur n'a pas de ville renseignée.");
+                throw new WeatherServiceException("L'utilisateur n'a pas de ville renseignée.");
             }
 
             String encodedCity = URLEncoder.encode(city, StandardCharsets.UTF_8);
@@ -56,7 +57,7 @@ public class WeatherService {
             JsonNode geoResponse = objectMapper.readTree(geoResponseStr.body());
 
             if (!geoResponse.has(stringResults) || geoResponse.get(stringResults).isEmpty()) {
-                throw new RuntimeException("Ville introuvable : " + city);
+                throw new WeatherServiceException("Ville introuvable : " + city);
             }
 
             JsonNode locationData = geoResponse.get(stringResults).get(0);
@@ -72,7 +73,7 @@ public class WeatherService {
             JsonNode weatherData = objectMapper.readTree(weatherResponseStr.body());
 
             if (!weatherData.has(stringCurrentWeather) || !weatherData.has(stringDaily)) {
-                throw new RuntimeException("Erreur de format de la réponse météo");
+                throw new WeatherServiceException("Erreur de format de la réponse météo");
             }
 
             double currentTemp = weatherData.get(stringCurrentWeather).get("temperature").asDouble();
@@ -98,7 +99,7 @@ public class WeatherService {
             if (e instanceof InterruptedException) {
                 Thread.currentThread().interrupt();
             }
-            throw new RuntimeException("Erreur météo : " + e.getMessage(), e);
+            throw new WeatherServiceException("Erreur météo", e);
         }
     }
 
