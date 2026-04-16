@@ -12,25 +12,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
     <link rel="stylesheet" th:href="@{/css/style.css}" />
-    
+    <th:block th:replace="~{fragments/sidebar :: sidebar-styles}"></th:block>
+    <th:block th:replace="~{fragments/notifications :: notif-styles}"></th:block>
 </head>
 <body>
 
 <div class="layout">
 
-    <nav class="sidebar">
-        <div class="sidebar-logo">
-            <div class="sidebar-logo-icon">🏃</div>
-            <div>
-                <div class="sidebar-logo-text">TranspiTrack</div>
-            </div>
-        </div>
-
-        <span class="sidebar-section-label">Menu</span>
-        <a th:href="@{/activities}"><i class="bi bi-card-list"></i> Mes Activités</a>
-        <a th:href="@{/activities/add}" class="active"><i class="bi bi-plus-circle"></i> Nouvelle Activité</a>
-        <a th:href="@{/dashboard}"><i class="bi bi-graph-up"></i> Tableau de bord</a>
-    </nav>
+    <nav th:replace="~{fragments/sidebar :: sidebar-nav(activePage='activities-add')}"></nav>
 
     <main class="main">
 
@@ -118,7 +107,6 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-
+<th:block th:replace="~{fragments/notifications :: notif-container}"></th:block>
 </body>
 </html>

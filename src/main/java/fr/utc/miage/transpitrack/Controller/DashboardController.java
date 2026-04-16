@@ -11,9 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import fr.utc.miage.transpitrack.Dto.WeatherResponse;
 import fr.utc.miage.transpitrack.Model.Activity;
 import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
 import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.Model.Jpa.WeatherService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
@@ -22,6 +24,9 @@ public class DashboardController {
 
     @Autowired
     ActivityService activityService;
+
+    @Autowired
+    WeatherService weatherService;
 
     @GetMapping("")
     public String dashboard(Model model,
@@ -81,6 +86,13 @@ public class DashboardController {
         model.addAttribute("caloriesBySportName", caloriesBySportName);
         model.addAttribute("totalCalories", totalCalories);
         model.addAttribute("activities", activityUser);
+
+        try {
+            WeatherResponse weather = weatherService.getWeatherForUser(userId);
+            model.addAttribute("weather", weather);
+        } catch (Exception _) {
+            // Ville non renseignée ou API indisponible — widget absent
+        }
 
         return "users/dashboard";
     }

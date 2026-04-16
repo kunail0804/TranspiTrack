@@ -11,5 +11,6 @@ import fr.utc.miage.transpitrack.Model.Sport;
 public interface SportRepository extends JpaRepository<Sport, Long> {
     
     List<Sport> findByName(String name);
-    
+
+    boolean existsByName(String name);
 }

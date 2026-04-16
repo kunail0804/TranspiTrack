@@ -29,6 +29,8 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/activities")
 public class ActivityController {
 
+    private static final String SESSION_USER_ID = "userId";
+
     @Autowired
     private ActivityService activityService;
 
@@ -50,8 +52,12 @@ public class ActivityController {
     private static final String REDIRECTDETAILS = "redirect:/activities/details/";
 
     @RequestMapping("")
-    public String listActivities(Model model) {
-        List<Activity> activities = activityService.getAllActivities();
+    public String listActivities(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) {
+            return "redirect:/users/formLogin";
+        }
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
         activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
         model.addAttribute("activities", activities);
         return "activities/list";

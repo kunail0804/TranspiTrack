@@ -71,6 +71,7 @@ public class FriendshipController {
         }
 
         model.addAttribute("friendInvites", friendshipService.getMyPendingFriendships(userId));
+        model.addAttribute("sentInvites", friendshipService.getMySentPendingFriendships(userId));
         model.addAttribute("msg", msg);
         return "users/friendInvites";
     }
