@@ -204,24 +204,6 @@ public class ActivityController {
         return REDIRECTDETAILS + commentary.getActivity().getId();
     }
 
-    @GetMapping("/listActivitiesUser")
-    public String listActivitiesUser(Model model,
-                                    HttpSession session){
-        Long userId = getUserId(session);
-
-        if(userId==null){
-            model.addAttribute("message", "Il faut êtres connecter !");
-            return "formLogin";
-        }
-
-        List<Activity> activities = activityService.getActivitiesByUserId(userId);
-        activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
-        model.addAttribute("activities", activities);
-
-        return "activities/list";
-    }
-
-    
     public Long getUserId(HttpSession session){
         return (Long) session.getAttribute(SESSION_USER_ID);
     }

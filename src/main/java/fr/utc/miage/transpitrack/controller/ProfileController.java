@@ -1,0 +1,237 @@
+package fr.utc.miage.transpitrack.controller;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.Friendship;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.enumer.Gender;
+import fr.utc.miage.transpitrack.model.jpa.ActivityService;
+import fr.utc.miage.transpitrack.model.jpa.BadgeService;
+import fr.utc.miage.transpitrack.model.jpa.FriendshipService;
+import fr.utc.miage.transpitrack.model.jpa.ImageStorageService;
+import fr.utc.miage.transpitrack.model.jpa.UserService;
+import jakarta.servlet.http.HttpSession;
+
+@Controller
+@RequestMapping("/users")
+public class ProfileController {
+
+    private static final String REDIRECT_DASHBOARD   = "redirect:/users/dashboard";
+    private static final String REDIRECT_LOGIN       = "redirect:/users/formLogin";
+    private static final String REDIRECT_FORM_UPDATE = "redirect:/users/formUpdate";
+    private static final String REDIRECT_SEARCH      = "redirect:/users/search";
+    private static final String VIEW_FORM_UPDATE     = "users/formUpdate";
+    private static final String SESSION_USER_ID      = "userId";
+    private static final String ERROR_MSG            = "errorMessage";
+    private static final String SUCCESS_MSG          = "successMessage";
+    private static final String MSG                  = "message";
+    private static final String NEEDCONNEXION        = "Il faut être connecte !";
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ActivityService activityService;
+
+    @Autowired
+    FriendshipService friendshipService;
+
+    @Autowired
+    BadgeService badgeService;
+
+    @Autowired
+    ImageStorageService imageStorageService;
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    // ──────────────────────────────────────────────────────────────
+    // Modification du profil
+    // ──────────────────────────────────────────────────────────────
+
+    @GetMapping("/formUpdate")
+    public String formUpdate(Model model, HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        User user = userService.getUserById(userId);
+        model.addAttribute("user", user);
+        return VIEW_FORM_UPDATE;
+    }
+
+    @PostMapping("/updateUser")
+    public String updateUser(@RequestParam("firstName") String firstName,
+                            @RequestParam("name") String name,
+                            @RequestParam("email") String email,
+                            @RequestParam("password") String password,
+                            @RequestParam("age") int age,
+                            @RequestParam("height") double height,
+                            @RequestParam("gender") String gender,
+                            @RequestParam("weight") double weight,
+                            @RequestParam("city") String city,
+                            @RequestParam(value = "profileImage", required = false) MultipartFile profileImageFile,
+                            Model model,
+                            HttpSession session,
+                            RedirectAttributes redirectAttrs) {
+
+        Long actualUserId = (Long) session.getAttribute(SESSION_USER_ID);
+        User actualUser = userService.getUserById(actualUserId);
+
+        if (age < 0) {
+            model.addAttribute(MSG, "Age ne peut pas être négatif");
+            return REDIRECT_FORM_UPDATE;
+        }
+        if (height < 0) {
+            model.addAttribute(MSG, "Taille ne peut pas être négatif");
+            return REDIRECT_FORM_UPDATE;
+        }
+        if (weight < 0) {
+            model.addAttribute(MSG, "Poids ne peut pas être négatif");
+            return REDIRECT_FORM_UPDATE;
+        }
+
+        if (!email.equals(actualUser.getEmail())) {
+            User userExist = userService.getUserByEmail(email);
+            if (userExist != null) {
+                model.addAttribute(MSG, "email déja existant");
+                return REDIRECT_FORM_UPDATE;
+            }
+        }
+
+        actualUser.setName(name);
+        actualUser.setFirstName(firstName);
+        actualUser.setAge(age);
+        actualUser.setGender(Gender.valueOf(gender));
+        actualUser.setEmail(email);
+        actualUser.setHeight(height);
+        actualUser.setWeight(weight);
+        actualUser.setCity(city);
+        if (!password.isBlank()) {
+            actualUser.setPassword(encoder.encode(password));
+        }
+
+        try {
+            String newFilename = imageStorageService.store(profileImageFile);
+            if (newFilename != null) {
+                imageStorageService.delete(actualUser.getProfileImage());
+                actualUser.setProfileImage(newFilename);
+            }
+            userService.updateUser(actualUser);
+        } catch (IOException _) {
+            model.addAttribute(ERROR_MSG, "Erreur lors de l'upload de la photo de profil.");
+            return VIEW_FORM_UPDATE;
+        } catch (Exception _) {
+            model.addAttribute(MSG, "Email invalide");
+            return REDIRECT_FORM_UPDATE;
+        }
+
+        redirectAttrs.addFlashAttribute(SUCCESS_MSG, "Profil mis à jour avec succès !");
+        return REDIRECT_DASHBOARD;
+    }
+
+    @PostMapping("/deleteProfileImage")
+    public String deleteProfileImage(HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+        User user = userService.getUserById(userId);
+        imageStorageService.delete(user.getProfileImage());
+        user.setProfileImage(null);
+        userService.updateUser(user);
+        return REDIRECT_FORM_UPDATE;
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // Profil
+    // ──────────────────────────────────────────────────────────────
+
+    @GetMapping("/profile")
+    public String profilePage(HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) {
+            model.addAttribute(MSG, NEEDCONNEXION);
+            return REDIRECT_LOGIN;
+        }
+        User user = userService.getUserById(userId);
+        if (user == null) return REDIRECT_LOGIN;
+
+        List<Activity> activities = activityService.getActivitiesByUserId(userId);
+        List<Friendship> friendships = friendshipService.getMyFriendships(userId);
+        List<User> friends = friendships.stream()
+                .map(f -> f.getRequester().getId().equals(userId) ? f.getReceiver() : f.getRequester())
+                .toList();
+        int pendingFriendships = friendshipService.getMyPendingFriendships(userId).size();
+
+        activities.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
+        model.addAttribute("user", user);
+        model.addAttribute("activities", activities);
+        model.addAttribute("friends", friends);
+        model.addAttribute("pendingFriendships", pendingFriendships);
+        model.addAttribute("isOwner", true);
+        model.addAttribute("userBadges", badgeService.getUserBadges(user));
+
+        return "users/profile";
+    }
+
+    @GetMapping("/profile/{id}")
+    public String viewProfile(@PathVariable("id") Long profileId, Model model, HttpSession session) {
+        Long currentUserId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (currentUserId == null) return REDIRECT_LOGIN;
+
+        User profileUser = userService.getUserById(profileId);
+        if (profileUser == null) return REDIRECT_SEARCH;
+
+        List<Activity> activities = activityService.getActivitiesByUserId(profileId);
+        boolean isOwner = currentUserId.equals(profileId);
+        boolean requestSent = friendshipService.requestOrFriendshipExists(currentUserId, profileId);
+
+        model.addAttribute("user", profileUser);
+        model.addAttribute("activities", activities);
+        model.addAttribute("isOwner", isOwner);
+        model.addAttribute("requestSent", requestSent);
+        return "users/profile";
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // Recherche
+    // ──────────────────────────────────────────────────────────────
+
+    @GetMapping("/search")
+    public String searchUser(@RequestParam(required = false) String query,
+                             Model model,
+                             HttpSession session) {
+        Long userId = (Long) session.getAttribute(SESSION_USER_ID);
+        if (userId == null) return REDIRECT_LOGIN;
+
+        if (query != null && !query.isBlank()) {
+            model.addAttribute("users", userService.searchUsers(query));
+        } else {
+            model.addAttribute("users", List.of());
+        }
+
+        Set<Long> relatedUserIds = new HashSet<>();
+        friendshipService.getMyFriendships(userId).forEach(f ->
+            relatedUserIds.add(f.getRequester().getId().equals(userId) ? f.getReceiver().getId() : f.getRequester().getId())
+        );
+        friendshipService.getMySentPendingFriendships(userId).forEach(f -> relatedUserIds.add(f.getReceiver().getId()));
+        friendshipService.getMyPendingFriendships(userId).forEach(f -> relatedUserIds.add(f.getRequester().getId()));
+
+        model.addAttribute("currentUserId", userId);
+        model.addAttribute("relatedUserIds", relatedUserIds);
+        model.addAttribute("query", query);
+        return "search/searchUser";
+    }
+}

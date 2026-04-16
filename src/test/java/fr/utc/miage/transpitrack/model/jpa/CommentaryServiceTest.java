@@ -1,6 +1,7 @@
 package fr.utc.miage.transpitrack.model.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -113,6 +114,6 @@ class CommentaryServiceTest {
 
         Commentary result = commentaryService.getCommentaryById(id);
 
-        assertEquals(null, result);
+        assertNull(result);
     }
 }

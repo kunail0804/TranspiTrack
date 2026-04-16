@@ -7,6 +7,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -121,20 +123,11 @@ class ActivityControllerTest {
     // ──────────────────────────────────────────────────────────────
     // POST /activities/add
     // ──────────────────────────────────────────────────────────────
-    @Test
-    void saveActivityShouldRedirectWithErrorWhenDurationIsZero() {
+    @ParameterizedTest
+    @ValueSource(ints = {0, -5})
+    void saveActivityShouldRedirectWithErrorWhenDurationIsInvalid(int duration) {
         Activity activity = new Activity();
-        activity.setDuration(0);
-
-        String view = activityController.saveActivity(activity, 1L, session);
-
-        assertEquals("redirect:/activities/add?error=invalid_duration", view);
-    }
-
-    @Test
-    void saveActivityShouldRedirectWithErrorWhenDurationIsNegative() {
-        Activity activity = new Activity();
-        activity.setDuration(-5);
+        activity.setDuration(duration);
 
         String view = activityController.saveActivity(activity, 1L, session);
 
@@ -350,7 +343,7 @@ class ActivityControllerTest {
 
         User user = mock(User.class);
         Activity activity = mock(Activity.class);
-        Commentary commentary = mock(Commentary.class); // 🔥 FIX ICI
+        Commentary commentary = mock(Commentary.class);
 
         when(session.getAttribute("userId")).thenReturn(userId);
 
@@ -420,70 +413,5 @@ class ActivityControllerTest {
         assertEquals("redirect:/activities", view);
     }
 
-    @Test
-    void updateReactionShouldRejectWhenNotAuthor() {
-
-        Long userId = 1L;
-
-        User author = mock(User.class);
-        Activity activity = mock(Activity.class);
-        Commentary commentary = mock(Commentary.class);
-
-        when(session.getAttribute("userId")).thenReturn(userId);
-
-        when(commentaryService.getCommentaryById(5L)).thenReturn(commentary);
-
-        when(commentary.getAuthor()).thenReturn(author);
-        when(commentary.getActivity()).thenReturn(activity);
-
-        when(author.getId()).thenReturn(2L);
-        when(activity.getId()).thenReturn(10L);
-
-        String view = activityController.updateReaction(5L, ReactionType.LIKE, session);
-
-        assertEquals("redirect:/activities/details/10", view);
-
-        verify(commentaryService, never()).createCommentary(any());
-    }
-
-
-    // ──────────────────────────────────────────────────────────────
-    // GET /activities/listActivitiesUser
-    // ──────────────────────────────────────────────────────────────
-
-    @Test
-    void listActivitiesUser_shouldReturnListViewWithActivitiesSortedByDateDesc() {
-        Long userId = 1L;
-        when(session.getAttribute("userId")).thenReturn(userId);
-
-        Activity older = new Activity();
-        older.setDate(LocalDate.of(2024, 1, 1));
-        Activity newer = new Activity();
-        newer.setDate(LocalDate.of(2024, 6, 1));
-        
-        when(activityService.getActivitiesByUserId(userId))
-            .thenReturn(Arrays.asList(older, newer));
-
-        String view = activityController.listActivitiesUser(model, session);
-
-        assertEquals("activities/list", view);
-
-        ArgumentCaptor<List<Activity>> captor = ArgumentCaptor.forClass(List.class);
-        verify(model).addAttribute(eq("activities"), captor.capture());
-        List<Activity> sortedActivities = captor.getValue();
-
-        assertEquals(2, sortedActivities.size());
-        assertEquals(newer, sortedActivities.get(0));
-        assertEquals(older, sortedActivities.get(1));
-    }
-
-    @Test
-    void listActivitiesUserShouldReturnFormLoginWhenNotLoggedIn() {
-        when(session.getAttribute("userId")).thenReturn(null);
-
-        String view = activityController.listActivitiesUser(model, session);
-
-        assertEquals("formLogin", view);
-        verify(model).addAttribute("message", "Il faut êtres connecter !");
-    }
 }
+

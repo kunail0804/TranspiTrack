@@ -75,9 +75,6 @@ public class DashboardController {
             totalCalories += calories;
         }
 
-        // Tri des activités par date décroissante pour le tableau
-        activityUser.sort((a1, a2) -> a2.getDate().compareTo(a1.getDate()));
-
         model.addAttribute("distanceBySport", distanceBySport);
         model.addAttribute("durationBySport", durationBySport);
         model.addAttribute("countBySport", countBySport);
@@ -85,7 +82,6 @@ public class DashboardController {
         model.addAttribute("caloriesBySport", caloriesBySport);
         model.addAttribute("caloriesBySportName", caloriesBySportName);
         model.addAttribute("totalCalories", totalCalories);
-        model.addAttribute("activities", activityUser);
 
         try {
             WeatherResponse weather = weatherService.getWeatherForUser(userId);

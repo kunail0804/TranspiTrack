@@ -36,11 +36,9 @@ public class BadgeService {
 
             boolean earned = false;
 
-            if (badge.getBadgeType() == null) {
-                throw new IllegalStateException("Badge type cannot be null");
-            }
-
             switch (badge.getBadgeType()) {
+                case null ->
+                    throw new IllegalStateException("Badge type cannot be null");
                 case DISTANCE ->
                     earned = totalDistance >= badge.getThresholdValue();
                 case ACTIVITY_COUNT ->
