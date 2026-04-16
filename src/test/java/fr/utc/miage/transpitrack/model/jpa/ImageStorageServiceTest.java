@@ -28,6 +28,8 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.utc.miage.transpitrack.model.jpa.ImageStorageService;
+
 @ExtendWith(MockitoExtension.class)
 class ImageStorageServiceTest {
 

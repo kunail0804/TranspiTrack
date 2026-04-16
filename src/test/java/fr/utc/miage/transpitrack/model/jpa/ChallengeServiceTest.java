@@ -18,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.model.Challenge;
 import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.jpa.ChallengeRepository;
+import fr.utc.miage.transpitrack.model.jpa.ChallengeService;
 
 @ExtendWith(MockitoExtension.class)
 class ChallengeServiceTest {

@@ -18,6 +18,8 @@ import fr.utc.miage.transpitrack.model.Sport;
 import fr.utc.miage.transpitrack.model.User;
 import fr.utc.miage.transpitrack.model.UserSport;
 import fr.utc.miage.transpitrack.model.enumer.Level;
+import fr.utc.miage.transpitrack.model.jpa.UserSportRepository;
+import fr.utc.miage.transpitrack.model.jpa.UserSportService;
 
 @ExtendWith(MockitoExtension.class)
 class UserSportServiceTest {

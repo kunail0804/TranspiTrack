@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.ApplicationArguments;
 
+import fr.utc.miage.transpitrack.BadgeInitializer;
 import fr.utc.miage.transpitrack.model.Badge;
 import fr.utc.miage.transpitrack.model.jpa.BadgeRepository;
 

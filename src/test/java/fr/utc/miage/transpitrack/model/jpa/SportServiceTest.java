@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.jpa.SportRepository;
+import fr.utc.miage.transpitrack.model.jpa.SportService;
 
 @ExtendWith(MockitoExtension.class)
 class SportServiceTest {

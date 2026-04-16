@@ -16,6 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.model.Goal;
 import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.jpa.GoalRepository;
+import fr.utc.miage.transpitrack.model.jpa.GoalService;
 
 @ExtendWith(MockitoExtension.class)
 class GoalServiceTest {

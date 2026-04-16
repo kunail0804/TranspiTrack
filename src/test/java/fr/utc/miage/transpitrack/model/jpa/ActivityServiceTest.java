@@ -14,6 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.jpa.ActivityRepository;
+import fr.utc.miage.transpitrack.model.jpa.ActivityService;
 
 @ExtendWith(MockitoExtension.class)
 class ActivityServiceTest {

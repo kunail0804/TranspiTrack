@@ -22,6 +22,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import fr.utc.miage.transpitrack.model.Friendship;
 import fr.utc.miage.transpitrack.model.User;
 import fr.utc.miage.transpitrack.model.enumer.FriendshipStatus;
+import fr.utc.miage.transpitrack.model.jpa.FriendshipRepository;
+import fr.utc.miage.transpitrack.model.jpa.FriendshipService;
 
 @ExtendWith(MockitoExtension.class)
 class FriendshipServiceTest {

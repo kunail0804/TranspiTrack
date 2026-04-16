@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
+import fr.utc.miage.transpitrack.controller.WeatherViewController;
 import fr.utc.miage.transpitrack.dto.WeatherResponse;
 import fr.utc.miage.transpitrack.model.jpa.WeatherService;
 

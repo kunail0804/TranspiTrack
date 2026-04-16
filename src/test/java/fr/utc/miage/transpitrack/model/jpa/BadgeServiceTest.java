@@ -21,6 +21,9 @@ import fr.utc.miage.transpitrack.model.Badge;
 import fr.utc.miage.transpitrack.model.User;
 import fr.utc.miage.transpitrack.model.UserBadge;
 import fr.utc.miage.transpitrack.model.enumer.BadgeType;
+import fr.utc.miage.transpitrack.model.jpa.BadgeRepository;
+import fr.utc.miage.transpitrack.model.jpa.BadgeService;
+import fr.utc.miage.transpitrack.model.jpa.UserBadgeRepository;
 
 import org.junit.jupiter.api.function.Executable;
 

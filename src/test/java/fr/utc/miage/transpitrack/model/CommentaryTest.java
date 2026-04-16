@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
 
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.Commentary;
+import fr.utc.miage.transpitrack.model.User;
 import fr.utc.miage.transpitrack.model.enumer.ReactionType;
 
 import java.lang.reflect.Field;
