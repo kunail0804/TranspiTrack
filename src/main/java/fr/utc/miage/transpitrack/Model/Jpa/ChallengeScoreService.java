@@ -28,8 +28,6 @@ public class ChallengeScoreService {
     }
 
     public List<ChallengeScore> getClassementParChallenge(Long challengeId) {
-        
-        List<ChallengeScore> listeTriee = challengeScoreRepository.findByChallengeIdOrderByScoreDesc(challengeId);
-        return listeTriee;
+        return challengeScoreRepository.findByChallengeIdOrderByScoreDesc(challengeId);
     }
 }
