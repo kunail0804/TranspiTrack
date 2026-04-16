@@ -44,14 +44,14 @@ public class ChallengeController {
     @Autowired
     ChallengeScoreService challengeScoreService;
 
-    private static final String redirectFormLogin = "redirect:/users/formLogin";
-    private static final String redirectList = "redirect:/challenges/list";
+    private static final String REDIRECTFORMLOGIN = "redirect:/users/formLogin";
+    private static final String REDIRECTLIST = "redirect:/challenges/list";
 
     @GetMapping("/formCreate")
     public String formCreateChallenge(HttpSession session, Model model) {
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectFormLogin;
+            return REDIRECTFORMLOGIN;
         }
         model.addAttribute("sports", sportService.getAllSports());
         return "challenge/createChallenge";
@@ -62,7 +62,7 @@ public class ChallengeController {
                                       
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectFormLogin;
+            return REDIRECTFORMLOGIN;
         }
 
         if (durationDays < 0) {
@@ -84,7 +84,7 @@ public class ChallengeController {
     public String listChallenges(HttpSession session, Model model) {
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectFormLogin;
+            return REDIRECTFORMLOGIN;
         }
 
         List<Friendship> friendships = friendshipService.getMyFriendships(userId);
@@ -109,11 +109,11 @@ public class ChallengeController {
                                 HttpSession session) {
          Long userId = getUserId(session);
          if (userId == null) {
-            return redirectFormLogin;
+            return REDIRECTFORMLOGIN;
         }
 
         if(idChallenge==null){
-            return redirectList;
+            return REDIRECTLIST;
         }
 
         User user = userService.getUserById(userId);
@@ -122,12 +122,12 @@ public class ChallengeController {
 
         if(user.isAlreadyJoinChallenge(challenge)){
             model.addAttribute("message", "Vous participer deja a ce challenge !");
-            return redirectList;
+            return REDIRECTLIST;
         }
 
         if(challenge.getCreator()==user){
             model.addAttribute("message", "Vous participer deja a ce challenge car vous l'avez créer !");
-            return redirectList;
+            return REDIRECTLIST;
         }
 
         user.addChallenge(challenge);
@@ -142,7 +142,7 @@ public class ChallengeController {
     public String showChallengeDetails(@PathVariable("id") Long id, HttpSession session, Model model) {
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectFormLogin;
+            return REDIRECTFORMLOGIN;
         }
         User currentUser = userService.getUserById(userId);
         Challenge challenge = challengeService.getChallengeById(id);
@@ -168,7 +168,7 @@ public class ChallengeController {
                            HttpSession session) {
         Long userId = getUserId(session);
         if (userId == null) {
-            return redirectFormLogin;
+            return REDIRECTFORMLOGIN;
         }
         User currentUser = userService.getUserById(userId);
         Challenge challenge = challengeService.getChallengeById(id);

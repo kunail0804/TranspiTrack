@@ -27,7 +27,7 @@ public class FriendshipController {
     @Autowired
     private UserService userService;
 
-    private static final String redirectProfile = "redirect:/users/profile/";
+    private static final String REDIRECTPROFILE = "redirect:/users/profile/";
 
     @GetMapping("/addFriend/{id}")
     public String addFriend(@PathVariable(value="id") Long friendId, HttpSession session, Model model) {
@@ -45,21 +45,21 @@ public class FriendshipController {
         }
 
         if (friendId == null) {
-            return redirectProfile + friendId + "?msg=ID de l'ami est requis";
+            return REDIRECTPROFILE + friendId + "?msg=ID de l'ami est requis";
         }
 
         if(Objects.equals(friendId, userId)) {
-            return redirectProfile + friendId + "?msg=Vous ne pouvez pas vous ajouter en tant qu'ami";
+            return REDIRECTPROFILE + friendId + "?msg=Vous ne pouvez pas vous ajouter en tant qu'ami";
         }
 
         User friend = userService.getUserById(friendId);
         Friendship createdFriendship = friendshipService.sendFriendRequest(user, friend);
 
         if (createdFriendship == null) {
-            return redirectProfile + friendId + "?msg=Erreur lors de la creation de la demande d'amitie";
+            return REDIRECTPROFILE + friendId + "?msg=Erreur lors de la creation de la demande d'amitie";
         }
 
-        return redirectProfile + friendId + "?msg=Demande d'amitie envoyee avec succes";
+        return REDIRECTPROFILE + friendId + "?msg=Demande d'amitie envoyee avec succes";
     }
 
     @GetMapping("/invites")
