@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.ApplicationArguments;
 
-import fr.utc.miage.transpitrack.Model.Badge;
-import fr.utc.miage.transpitrack.Model.Jpa.BadgeRepository;
+import fr.utc.miage.transpitrack.model.Badge;
+import fr.utc.miage.transpitrack.model.jpa.BadgeRepository;
 
 @ExtendWith(MockitoExtension.class)
 class BadgeInitializerTest {

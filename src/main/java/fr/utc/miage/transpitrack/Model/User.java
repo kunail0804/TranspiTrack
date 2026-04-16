@@ -1,9 +1,9 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.utc.miage.transpitrack.Model.Enum.Gender;
+import fr.utc.miage.transpitrack.model.enumer.Gender;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,10 +14,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.utc.miage.transpitrack.Model.Enum.Level;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.UserSport;
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.UserSport;
+import fr.utc.miage.transpitrack.model.enumer.Level;
 
 @ExtendWith(MockitoExtension.class)
 class UserSportServiceTest {

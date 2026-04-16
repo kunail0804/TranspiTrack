@@ -5,9 +5,9 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import fr.utc.miage.transpitrack.Model.Badge;
-import fr.utc.miage.transpitrack.Model.Enum.BadgeType;
-import fr.utc.miage.transpitrack.Model.Jpa.BadgeRepository;
+import fr.utc.miage.transpitrack.model.Badge;
+import fr.utc.miage.transpitrack.model.enumer.BadgeType;
+import fr.utc.miage.transpitrack.model.jpa.BadgeRepository;
 
 @Component
 public class BadgeInitializer implements ApplicationRunner {

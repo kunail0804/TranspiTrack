@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -14,8 +14,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import fr.utc.miage.transpitrack.Model.Goal;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.model.Goal;
+import fr.utc.miage.transpitrack.model.User;
 
 @ExtendWith(MockitoExtension.class)
 class GoalServiceTest {

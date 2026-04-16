@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -24,23 +24,23 @@ import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import fr.utc.miage.transpitrack.Model.Activity;
-import fr.utc.miage.transpitrack.Model.Enum.Gender;
-import fr.utc.miage.transpitrack.Model.Enum.Level;
-import fr.utc.miage.transpitrack.Model.Enum.Temporality;
-import fr.utc.miage.transpitrack.Model.Friendship;
-import fr.utc.miage.transpitrack.Model.Goal;
-import fr.utc.miage.transpitrack.Model.Jpa.ActivityService;
-import fr.utc.miage.transpitrack.Model.Jpa.BadgeService;
-import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.GoalService;
-import fr.utc.miage.transpitrack.Model.Jpa.ImageStorageService;
-import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserSportService;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
-import fr.utc.miage.transpitrack.Model.UserSport;
+import fr.utc.miage.transpitrack.model.Activity;
+import fr.utc.miage.transpitrack.model.Friendship;
+import fr.utc.miage.transpitrack.model.Goal;
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.UserSport;
+import fr.utc.miage.transpitrack.model.enumer.Gender;
+import fr.utc.miage.transpitrack.model.enumer.Level;
+import fr.utc.miage.transpitrack.model.enumer.Temporality;
+import fr.utc.miage.transpitrack.model.jpa.ActivityService;
+import fr.utc.miage.transpitrack.model.jpa.BadgeService;
+import fr.utc.miage.transpitrack.model.jpa.FriendshipService;
+import fr.utc.miage.transpitrack.model.jpa.GoalService;
+import fr.utc.miage.transpitrack.model.jpa.ImageStorageService;
+import fr.utc.miage.transpitrack.model.jpa.SportService;
+import fr.utc.miage.transpitrack.model.jpa.UserService;
+import fr.utc.miage.transpitrack.model.jpa.UserSportService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)

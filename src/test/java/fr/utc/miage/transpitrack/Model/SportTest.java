@@ -1,10 +1,14 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import org.junit.jupiter.api.Test;
+
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.SportType;
+import fr.utc.miage.transpitrack.model.UserSport;
 
 class SportTest {
 

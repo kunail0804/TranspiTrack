@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Controller;
+package fr.utc.miage.transpitrack.controller;
 
 import java.time.Duration;
 import java.util.List;
@@ -17,16 +17,17 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ui.Model;
 
-import fr.utc.miage.transpitrack.Model.Challenge;
-import fr.utc.miage.transpitrack.Model.ChallengeScore;
-import fr.utc.miage.transpitrack.Model.Friendship;
-import fr.utc.miage.transpitrack.Model.Jpa.ChallengeScoreService;
-import fr.utc.miage.transpitrack.Model.Jpa.ChallengeService;
-import fr.utc.miage.transpitrack.Model.Jpa.FriendshipService;
-import fr.utc.miage.transpitrack.Model.Jpa.SportService;
-import fr.utc.miage.transpitrack.Model.Jpa.UserService;
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.controller.ChallengeController;
+import fr.utc.miage.transpitrack.model.Challenge;
+import fr.utc.miage.transpitrack.model.ChallengeScore;
+import fr.utc.miage.transpitrack.model.Friendship;
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.User;
+import fr.utc.miage.transpitrack.model.jpa.ChallengeScoreService;
+import fr.utc.miage.transpitrack.model.jpa.ChallengeService;
+import fr.utc.miage.transpitrack.model.jpa.FriendshipService;
+import fr.utc.miage.transpitrack.model.jpa.SportService;
+import fr.utc.miage.transpitrack.model.jpa.UserService;
 import jakarta.servlet.http.HttpSession;
 
 @ExtendWith(MockitoExtension.class)

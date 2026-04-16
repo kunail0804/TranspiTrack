@@ -6,10 +6,10 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import fr.utc.miage.transpitrack.Model.Sport;
-import fr.utc.miage.transpitrack.Model.SportType;
-import fr.utc.miage.transpitrack.Model.Jpa.SportRepository;
-import fr.utc.miage.transpitrack.Model.Jpa.SportTypeRepository;
+import fr.utc.miage.transpitrack.model.Sport;
+import fr.utc.miage.transpitrack.model.SportType;
+import fr.utc.miage.transpitrack.model.jpa.SportRepository;
+import fr.utc.miage.transpitrack.model.jpa.SportTypeRepository;
 
 @Component
 @Order(1)

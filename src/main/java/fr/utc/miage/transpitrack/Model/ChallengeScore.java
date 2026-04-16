@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

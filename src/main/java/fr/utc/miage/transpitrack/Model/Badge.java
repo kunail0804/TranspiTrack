@@ -1,6 +1,6 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
-import fr.utc.miage.transpitrack.Model.Enum.BadgeType;
+import fr.utc.miage.transpitrack.model.enumer.BadgeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

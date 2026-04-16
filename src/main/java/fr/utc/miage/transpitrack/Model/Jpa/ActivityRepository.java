@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import fr.utc.miage.transpitrack.Model.Activity;
+import fr.utc.miage.transpitrack.model.Activity;
 
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {

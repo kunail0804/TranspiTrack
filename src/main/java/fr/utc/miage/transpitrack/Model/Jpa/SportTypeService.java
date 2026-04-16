@@ -1,11 +1,11 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.utc.miage.transpitrack.Model.SportType;
+import fr.utc.miage.transpitrack.model.SportType;
 
 @Service
 public class SportTypeService {

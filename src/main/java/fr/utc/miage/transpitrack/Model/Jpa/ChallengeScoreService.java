@@ -1,13 +1,13 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.utc.miage.transpitrack.Model.Challenge;
-import fr.utc.miage.transpitrack.Model.ChallengeScore;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.model.Challenge;
+import fr.utc.miage.transpitrack.model.ChallengeScore;
+import fr.utc.miage.transpitrack.model.User;
 
 @Service
 public class ChallengeScoreService {

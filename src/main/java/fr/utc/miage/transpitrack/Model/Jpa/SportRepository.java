@@ -1,11 +1,11 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import fr.utc.miage.transpitrack.Model.Sport;
+import fr.utc.miage.transpitrack.model.Sport;
 
 @Repository
 public interface SportRepository extends JpaRepository<Sport, Long> {

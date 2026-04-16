@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import java.util.List;
 import java.util.ArrayList;

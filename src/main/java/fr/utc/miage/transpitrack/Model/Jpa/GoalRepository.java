@@ -1,11 +1,11 @@
-package fr.utc.miage.transpitrack.Model.Jpa;
+package fr.utc.miage.transpitrack.model.jpa;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import fr.utc.miage.transpitrack.Model.Goal;
-import fr.utc.miage.transpitrack.Model.User;
+import fr.utc.miage.transpitrack.model.Goal;
+import fr.utc.miage.transpitrack.model.User;
 
 public interface GoalRepository extends JpaRepository<Goal, Long>{
     

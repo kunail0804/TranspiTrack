@@ -1,12 +1,12 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Test;
+
+import fr.utc.miage.transpitrack.model.enumer.ReactionType;
+
 import java.lang.reflect.Field;
-
-
-import fr.utc.miage.transpitrack.Model.Enum.ReactionType;
 
 class CommentaryTest {
 

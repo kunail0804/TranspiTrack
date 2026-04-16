@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Model.Enum;
+package fr.utc.miage.transpitrack.model.enumer;
 
 public enum Temporality {
     QUOTIDIEN, 

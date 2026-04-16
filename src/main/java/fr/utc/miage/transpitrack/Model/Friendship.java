@@ -1,14 +1,13 @@
-package fr.utc.miage.transpitrack.Model;
+package fr.utc.miage.transpitrack.model;
 
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import fr.utc.miage.transpitrack.model.enumer.FriendshipStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-
-import fr.utc.miage.transpitrack.Model.Enum.FriendshipStatus;
 
 @Entity
 public class Friendship {

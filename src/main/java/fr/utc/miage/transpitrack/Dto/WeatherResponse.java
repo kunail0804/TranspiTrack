@@ -1,4 +1,4 @@
-package fr.utc.miage.transpitrack.Dto;
+package fr.utc.miage.transpitrack.dto;
 import java.util.List;
 
 public class WeatherResponse {
