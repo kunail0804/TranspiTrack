@@ -95,10 +95,11 @@ public class WeatherService {
 
             return new WeatherResponse(resolvedCityName, currentTemp, condition, forecast);
 
-        } catch (IOException | InterruptedException e) {
-            if (e instanceof InterruptedException) {
-                Thread.currentThread().interrupt();
-            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new WeatherServiceException("Erreur météo", e);
+
+        } catch (IOException e) {
             throw new WeatherServiceException("Erreur météo", e);
         }
     }
