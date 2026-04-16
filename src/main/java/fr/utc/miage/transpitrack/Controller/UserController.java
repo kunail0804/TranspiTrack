@@ -122,7 +122,15 @@ public class UserController {
         }
 
         try {
-            User newUser = new User(firstName, name, email, encoder.encode(password), age, height, Gender.valueOf(gender), weight, city);
+            User newUser = new User();
+            newUser.setName(name);
+            newUser.setFirstName(firstName);
+            newUser.setEmail(email);
+            newUser.setPassword(encoder.encode(password));
+            newUser.setAge(age);
+            newUser.setHeight(height);
+            newUser.setGender(Gender.valueOf(gender));
+            newUser.setWeight(weight);
 
             String filename = imageStorageService.store(profileImageFile);
             newUser.setProfileImage(filename);

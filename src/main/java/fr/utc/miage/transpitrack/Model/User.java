@@ -68,21 +68,6 @@ public class User {
 
     public User(){}
 
-    public User(String firstName, String name, String email,
-                String password, int age, double height, Gender gender, double weight, String city){
-
-        this.firstName =firstName;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.age = age;
-        this.height = height;
-        this.gender = gender;
-        this.weight=weight;
-        this.city = city;
-
-    }
-
     public Long getId() {
         return id;
     }

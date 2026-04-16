@@ -439,7 +439,16 @@ class UserControllerTest {
 
     @Test
     void updateUserShouldReturnFormUpdateWhenImageUploadFails() throws IOException {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
         when(imageStorageService.store(any(MultipartFile.class))).thenThrow(new IOException("disk full"));
@@ -454,7 +463,16 @@ class UserControllerTest {
 
     @Test
     void updateUserShouldReplaceOldImageWhenNewImageProvided() throws IOException {
-        User actualUser = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User actualUser = new User();
+        actualUser.setFirstName("Alice");
+        actualUser.setName("Dupont");
+        actualUser.setEmail("alice@example.com");
+        actualUser.setPassword("secret");
+        actualUser.setAge(25);
+        actualUser.setHeight(165.0);
+        actualUser.setGender(Gender.FEMALE);
+        actualUser.setWeight(60.0);
+        actualUser.setCity("Paris");
         actualUser.setProfileImage("old.jpg");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(actualUser);
@@ -484,7 +502,16 @@ class UserControllerTest {
 
     @Test
     void deleteProfileImageShouldDeleteImageAndRedirectToFormUpdate() {
-        User user = new User("Alice", "Dupont", "alice@example.com", "secret", 25, 165.0, Gender.FEMALE, 60.0, "Paris");
+        User user = new User();
+        user.setFirstName("Alice");
+        user.setName("Dupont");
+        user.setEmail("alice@example.com");
+        user.setPassword("secret");
+        user.setAge(25);
+        user.setHeight(165.0);
+        user.setGender(Gender.FEMALE);
+        user.setWeight(60.0);
+        user.setCity("Paris");
         user.setProfileImage("myimage.jpg");
         when(session.getAttribute("userId")).thenReturn(1L);
         when(userService.getUserById(1L)).thenReturn(user);
