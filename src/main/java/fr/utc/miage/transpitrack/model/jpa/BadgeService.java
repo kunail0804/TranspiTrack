@@ -30,6 +30,11 @@ public class BadgeService {
     @Autowired
     private UserBadgeRepository userBadgeRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public BadgeService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Returns the list of badges already earned by the given user.
      *

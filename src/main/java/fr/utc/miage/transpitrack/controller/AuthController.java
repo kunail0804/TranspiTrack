@@ -67,6 +67,11 @@ public class AuthController {
     /** BCrypt encoder used to hash passwords before storage and verify them on login. */
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public AuthController() {
+        // Spring-managed bean.
+    }
+
     // ──────────────────────────────────────────────────────────────
     // Registration
     // ──────────────────────────────────────────────────────────────

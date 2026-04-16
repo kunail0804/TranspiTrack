@@ -59,6 +59,11 @@ public class PreferenceController {
     @Autowired
     SportService sportService;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public PreferenceController() {
+        // Spring-managed bean.
+    }
+
     // ──────────────────────────────────────────────────────────────
     // Sports Preferences
     // ──────────────────────────────────────────────────────────────

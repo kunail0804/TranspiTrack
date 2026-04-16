@@ -20,6 +20,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Value("${app.upload.users-images-dir}")
     private String uploadDir;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public WebMvcConfig() {
+        // Spring-managed bean.
+    }
+
     /**
      * Registers a resource handler so that requests to {@code /images/users/**}
      * are served from the configured upload directory on disk.

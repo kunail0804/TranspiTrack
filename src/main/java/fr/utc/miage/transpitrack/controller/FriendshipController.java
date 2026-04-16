@@ -39,6 +39,11 @@ public class FriendshipController {
     /** Redirect prefix for the profile page of a specific user. */
     private static final String REDIRECTPROFILE = "redirect:/users/profile/";
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public FriendshipController() {
+        // Spring-managed bean.
+    }
+
     /**
      * Sends a friend request from the currently authenticated user to the user with
      * the given ID.

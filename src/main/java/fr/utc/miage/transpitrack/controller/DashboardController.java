@@ -38,6 +38,11 @@ public class DashboardController {
     @Autowired
     WeatherService weatherService;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public DashboardController() {
+        // Spring-managed bean.
+    }
+
     /**
      * Renders the dashboard page for the currently authenticated user.
      * <p>

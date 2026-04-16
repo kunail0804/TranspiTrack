@@ -56,6 +56,11 @@ public class GoalController {
     @Autowired
     SportService sportService;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public GoalController() {
+        // Spring-managed bean.
+    }
+
     // ──────────────────────────────────────────────────────────────
     // Goals
     // ──────────────────────────────────────────────────────────────

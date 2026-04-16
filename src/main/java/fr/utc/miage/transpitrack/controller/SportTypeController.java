@@ -26,6 +26,11 @@ public class SportTypeController {
     @Autowired
     private SportTypeService sportTypeService;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public SportTypeController() {
+        // Spring-managed bean.
+    }
+
     /**
      * Displays the list of all sport types.
      *

@@ -21,6 +21,11 @@ public class ChallengeService {
     @Autowired
     ChallengeRepository challengeRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ChallengeService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Persists a new challenge.
      *

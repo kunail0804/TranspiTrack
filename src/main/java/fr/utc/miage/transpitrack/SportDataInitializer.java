@@ -32,6 +32,11 @@ public class SportDataInitializer implements ApplicationRunner {
     @Autowired
     private SportRepository sportRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public SportDataInitializer() {
+        // Spring-managed bean.
+    }
+
     /**
      * Seeds all predefined sport types and sports on application startup.
      *

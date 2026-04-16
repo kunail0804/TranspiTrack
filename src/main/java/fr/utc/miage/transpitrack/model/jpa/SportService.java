@@ -21,6 +21,11 @@ public class SportService {
     @Autowired
     private SportRepository sportRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public SportService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Returns all sports with the given name.
      *

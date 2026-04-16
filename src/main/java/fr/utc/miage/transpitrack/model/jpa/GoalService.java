@@ -22,6 +22,11 @@ public class GoalService {
     @Autowired
     GoalRepository goalRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public GoalService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Returns all goals in the database.
      *

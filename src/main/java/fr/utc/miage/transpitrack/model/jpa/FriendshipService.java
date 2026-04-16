@@ -26,6 +26,11 @@ public class FriendshipService {
     @Autowired
     private FriendshipRepository friendshipRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public FriendshipService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Persists an updated friendship record.
      *

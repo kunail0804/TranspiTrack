@@ -31,6 +31,7 @@ import fr.utc.miage.transpitrack.model.User;
  *   <li>Open-Meteo Geocoding API — converts a city name to latitude/longitude.</li>
  *   <li>Open-Meteo Forecast API — retrieves temperature and weather code data.</li>
  * </ol>
+ * <p>
  * Network and parsing errors are wrapped in {@link WeatherServiceException}.
  * </p>
  */
@@ -59,6 +60,11 @@ public class WeatherService {
 
     /** SLF4J logger for this service. */
     private final Logger logger = LoggerFactory.getLogger(WeatherService.class);
+
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public WeatherService() {
+        // Spring-managed bean.
+    }
 
     /**
      * Retrieves the current weather and a 7-day forecast for the city associated

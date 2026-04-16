@@ -23,6 +23,11 @@ public class ChallengeScoreService {
     @Autowired
     ChallengeScoreRepository challengeScoreRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ChallengeScoreService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Persists a new or updated score entry.
      *

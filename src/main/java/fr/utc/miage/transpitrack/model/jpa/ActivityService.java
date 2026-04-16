@@ -21,6 +21,11 @@ public class ActivityService {
     @Autowired
     private ActivityRepository activityRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ActivityService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Persists a new or updated activity.
      *

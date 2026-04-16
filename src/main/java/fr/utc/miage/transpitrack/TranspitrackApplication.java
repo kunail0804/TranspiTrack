@@ -16,6 +16,11 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class TranspitrackApplication {
 
+	/** No-arg constructor; Spring manages instantiation and dependency injection. */
+	public TranspitrackApplication() {
+		// Spring-managed bean.
+	}
+
 	/**
 	 * Starts the Spring Boot application.
 	 *

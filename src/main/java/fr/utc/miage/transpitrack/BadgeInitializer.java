@@ -27,6 +27,11 @@ public class BadgeInitializer implements ApplicationRunner {
     @Autowired
     private BadgeRepository badgeRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public BadgeInitializer() {
+        // Spring-managed bean.
+    }
+
     /**
      * Seeds all predefined badges on application startup.
      *

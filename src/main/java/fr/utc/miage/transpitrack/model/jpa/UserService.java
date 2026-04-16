@@ -23,6 +23,11 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public UserService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Returns all users whose first name exactly matches the given value.
      *

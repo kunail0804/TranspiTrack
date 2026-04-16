@@ -93,6 +93,11 @@ public class ProfileController {
     /** BCrypt encoder used to hash passwords before storing them. */
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ProfileController() {
+        // Spring-managed bean.
+    }
+
     // ──────────────────────────────────────────────────────────────
     // Profile Update
     // ──────────────────────────────────────────────────────────────

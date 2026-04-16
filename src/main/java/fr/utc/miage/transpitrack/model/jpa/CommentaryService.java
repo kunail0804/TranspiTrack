@@ -21,6 +21,11 @@ public class CommentaryService {
     @Autowired
     CommentaryRepository commentaryRepository;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public CommentaryService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Persists a new or updated commentary.
      *

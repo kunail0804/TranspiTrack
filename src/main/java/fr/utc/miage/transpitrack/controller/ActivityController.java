@@ -68,6 +68,11 @@ public class ActivityController {
     /** Redirect prefix for the activity details page. */
     private static final String REDIRECTDETAILS = "redirect:/activities/details/";
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ActivityController() {
+        // Spring-managed bean.
+    }
+
     /**
      * Displays the list of activities for the currently logged-in user,
      * sorted by date descending.

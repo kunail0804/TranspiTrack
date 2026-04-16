@@ -67,6 +67,11 @@ public class ChallengeController {
     /** Redirect to the challenge list. */
     private static final String REDIRECTLIST = "redirect:/challenges/list";
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ChallengeController() {
+        // Spring-managed bean.
+    }
+
     /**
      * Displays the challenge creation form.
      *

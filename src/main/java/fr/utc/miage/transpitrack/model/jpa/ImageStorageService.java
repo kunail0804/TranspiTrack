@@ -34,6 +34,11 @@ public class ImageStorageService {
     /** Resolved {@link Path} to the upload directory, initialised on startup. */
     private Path uploadPath;
 
+    /** No-arg constructor; Spring manages instantiation and dependency injection. */
+    public ImageStorageService() {
+        // Spring-managed bean.
+    }
+
     /**
      * Initialises the upload directory on application startup, creating it if absent.
      *
