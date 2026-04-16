@@ -61,14 +61,14 @@ public class UserController {
     ImageStorageService imageStorageService;
 
     private String message = "";
-    private final String needConnexion = "Il faut être connecte !";
+    private static final String needConnexion = "Il faut être connecte !";
 
-    private final String redirectFormLogin = "redirect:/users/formLogin";
-    private final String redirectFormUpdate = "redirect:/users/formUpdate";
-    private final String redirectFormCreate = "redirect:/users/formCreate";
-    private final String redirectDashboard = "redirect:/users/dashboard";
-    private final String redirectConsultationPreferences = "redirect:/users/consultationPreferences";
-    private final String redirectConsultationGoals = "redirect:/users/consultationGoals";
+    private static final String redirectFormLogin = "redirect:/users/formLogin";
+    private static final String redirectFormUpdate = "redirect:/users/formUpdate";
+    private static final String redirectFormCreate = "redirect:/users/formCreate";
+    private static final String redirectDashboard = "redirect:/users/dashboard";
+    private static final String redirectConsultationPreferences = "redirect:/users/consultationPreferences";
+    private static final String redirectConsultationGoals = "redirect:/users/consultationGoals";
 
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
@@ -129,11 +129,11 @@ public class UserController {
 
             User savedUser = userService.createUser(newUser);
             setSession(session, savedUser.getId());
-        } catch (IOException e) {
+        } catch (IOException _) {
             message = "Erreur lors de l'upload de l'image";
             model.addAttribute(getViewAttributes(), message);
             return "users/formCreate";
-        } catch (Exception e) {
+        } catch (Exception _) {
             message = "Email invalide";
             return redirectWithMessage(message, redirectFormCreate, model);
         }
@@ -176,7 +176,7 @@ public class UserController {
                             @RequestParam(value = "profileImage", required = false) MultipartFile profileImageFile,
                             Model model,
                             HttpSession session) {
-                                
+
         String validationError = validateInputs(age, height, weight);
         if (validationError != null) {
             return redirectWithMessage(validationError, redirectFormUpdate, model);
@@ -225,11 +225,11 @@ public class UserController {
                 actualUser.setProfileImage(newFilename);
             }
             userService.updateUser(actualUser);
-        } catch (IOException e) {
+        } catch (IOException _) {
             message = "Erreur lors de l'upload de l'image";
             model.addAttribute(getViewAttributes(), message);
             return "users/formUpdate";
-        } catch (Exception e) {
+        } catch (Exception _) {
             message = "Email invalide";
             return redirectWithMessage(message, redirectFormUpdate, model);
         }
