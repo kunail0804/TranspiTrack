@@ -199,7 +199,7 @@ public class ChallengeController {
         user.addChallenge(challenge);
         userService.updateUser(user);
 
-        return "challenge/testSuccessJoin";
+        return REDIRECT_CHALLENGE_DETAILS + idChallenge;
     }
 
     /**

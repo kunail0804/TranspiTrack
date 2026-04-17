@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 
@@ -41,7 +40,7 @@ public class Commentary {
     private User author;
 
     /** The activity being commented on. */
-    @OneToOne
+    @ManyToOne
     private Activity activity;
 
     /**

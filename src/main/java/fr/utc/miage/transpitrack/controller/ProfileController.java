@@ -301,6 +301,7 @@ public class ProfileController {
         model.addAttribute("activities", activities);
         model.addAttribute("isOwner", isOwner);
         model.addAttribute("requestSent", requestSent);
+        model.addAttribute("userBadges", badgeService.getUserBadges(profileUser));
         return "users/profile";
     }
 
