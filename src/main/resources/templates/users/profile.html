@@ -69,10 +69,13 @@
                 <section class="mb-5">
                     <h3 class="section-title"><i class="bi bi-activity"></i> Activités récentes</h3>
                     <div class="d-flex flex-column gap-12">
-                        <div class="card-tt activity-card p-3" th:each="activity : ${activities}">
+                        <a th:href="@{/activities/details/{id}(id=${activity.id})}"
+                           class="card-tt activity-card p-3 text-decoration-none"
+                           style="color:inherit;"
+                           th:each="activity : ${activities}">
                             <div class="activity-card-sport" style="background:var(--primary-bg)">🏃</div>
                             <div class="activity-card-info">
-                                <div class="activity-card-title">Session sportive</div>
+                                <div class="activity-card-title" th:text="${activity.sport.name}">Session sportive</div>
                                 <div class="activity-card-meta">
                                     <span><i class="bi bi-calendar3"></i> <span th:text="${activity.date}">Date</span></span>
                                     <span><i class="bi bi-clock"></i> <span th:text="${activity.duration}">0</span> min</span>
@@ -82,7 +85,7 @@
                                 <div class="activity-card-distance" th:text="${activity.distance}">0</div>
                                 <div class="activity-card-unit">km</div>
                             </div>
-                        </div>
+                        </a>
                         <div class="empty-state p-4" th:if="${activities == null or activities.isEmpty()}">
                             <div class="empty-state-icon">💤</div>
                             <div class="empty-state-title">Aucune activité</div>

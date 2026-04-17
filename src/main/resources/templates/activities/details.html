@@ -26,7 +26,9 @@
             <div>
                 <h1>Détails de l'activité</h1>
                 <p>
-                    Réalisée par <strong class="text-primary" th:text="${author.firstName} + ' ' + ${author.name}">Nom Prénom</strong>
+                    Réalisée par
+                    <a th:href="@{/users/profile/{id}(id=${author.id})}" class="text-primary fw-700 text-decoration-none"
+                       th:text="${author.firstName} + ' ' + ${author.name}">Nom Prénom</a>
                     le <span th:text="${activity.date}">Date</span>
                 </p>
             </div>
