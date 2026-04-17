@@ -44,10 +44,10 @@
                             <form th:action="@{/users/updateLevel}" method="post" class="d-flex align-items-center gap-8 m-0">
                                 <input type="hidden" name="userSport" th:value="${sp.id}" />
                                 <select name="level" class="form-select form-select-sm" style="width: auto; padding: 4px 30px 4px 10px;" required>
-                                    <option value="BEGINNER" th:selected="${sp.level.name() == 'BEGINNER'}">Débutant (Beginner)</option>
+                                    <option value="BEGINNER" th:selected="${sp.level.name() == 'BEGINNER'}">Débutant</option>
                                     <option value="AMATEUR" th:selected="${sp.level.name() == 'AMATEUR'}">Amateur</option>
                                     <option value="INTERMEDIATE" th:selected="${sp.level.name() == 'INTERMEDIATE'}">Intermédiaire</option>
-                                    <option value="ADVANCED" th:selected="${sp.level.name() == 'ADVANCED'}">Avancé (Advanced)</option>
+                                    <option value="ADVANCED" th:selected="${sp.level.name() == 'ADVANCED'}">Avancé</option>
                                     <option value="PROFESSIONAL" th:selected="${sp.level.name() == 'PROFESSIONAL'}">Professionnel</option>
                                 </select>
                                 <button type="submit" class="btn-tt btn-outline-primary btn-sm"><i class="bi bi-save"></i> Mettre à jour</button>
